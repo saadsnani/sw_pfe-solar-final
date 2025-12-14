@@ -31,6 +31,7 @@ import SystemStatus from "@/components/system-status"
 import AlertsPanel from "@/components/alerts-panel"
 import AiPredictions from "@/components/ai-predictions"
 import WeatherWidget from "@/components/weather-widget"
+import AIControlPanel from "@/components/ai-control-panel"
 import EcoScore from "@/components/eco-score"
 import ReportGenerator from "@/components/report-generator"
 
@@ -227,8 +228,13 @@ export default function Dashboard({ onLogout }: DashboardProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <AIControlPanel />
           <WeatherWidget />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <EcoScore energyProduced={Number(data.energyToday)} batteryLevel={data.batteryLevel} />
+          <AiPredictions />
         </div>
 
         {/* System Control Card */}

@@ -21,47 +21,107 @@ const weatherConditions = [
   { icon: CloudSnow, label: "Orageux", temp: [14, 20] },
 ]
 
-function generateForecast(cityId: string) {
-  const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
-  const today = new Date()
+// Get weather icon based on condition code
+function getWeatherIcon(code: string) {
+  if (code.includes("01")) return Sun
+  if (code.includes("02") || code.includes("03")) return CloudSun
+  if (code.includes("04")) return Cloud
+  if (code.includes("09") || code.includes("10")) return CloudRain
+  if (code.includes("11") || code.includes("13")) return CloudSnow
+  return Sun
+}
 
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today)
-    date.setDate(today.getDate() + i)
-    const conditionIndex = Math.floor(Math.random() * weatherConditions.length)
-    const condition = weatherConditions[conditionIndex]
-    const tempBase = condition.temp[0] + Math.random() * (condition.temp[1] - condition.temp[0])
+async function fetchRealWeather(lat: number, lon: number) {
+  const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY || "demo"
+  
+  try {
+    // Current weather
+    const currentRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`
+    )
+    const current = await currentRes.json()
 
-    return {
-      day: days[date.getDay()],
-      date: date.getDate(),
-      condition: condition,
-      tempHigh: Math.round(tempBase + 3),
-      tempLow: Math.round(tempBase - 5),
-      humidity: Math.floor(Math.random() * 30 + 40),
-      wind: Math.floor(Math.random() * 20 + 5),
-    }
-  })
+    // 7-day forecast
+    const forecastRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`
+    )
+    const forecast = await forecastRes.json()
+
+    return { current, forecast }
+  } catch (error) {
+    console.error("Weather API Error:", error)
+    return null
+  }
 }
 
 export default function WeatherWidget() {
   const [selectedCity, setSelectedCity] = useState("fes")
-  const [forecast, setForecast] = useState(generateForecast("fes"))
+  const [forecast, setForecast] = useState<any[]>([])
   const [currentWeather, setCurrentWeather] = useState({
-    temp: 31,
-    humidity: 45,
-    wind: 12,
-    condition: weatherConditions[0],
+    temp: 0,
+    humidity: 0,
+    wind: 0,
+    condition: { icon: Sun, label: "Chargement..." },
   })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setForecast(generateForecast(selectedCity))
-    const conditionIndex = Math.floor(Math.random() * 3)
-    setCurrentWeather({
-      temp: Math.floor(Math.random() * 10 + 26),
-      humidity: Math.floor(Math.random() * 30 + 40),
-      wind: Math.floor(Math.random() * 15 + 8),
-      condition: weatherConditions[conditionIndex],
+    const city = cities.find(c => c.id === selectedCity)
+    if (!city) return
+
+    setLoading(true)
+    fetchRealWeather(city.lat, city.lon).then(data => {
+      if (data) {
+        // Set current weather
+        const Icon = getWeatherIcon(data.current.weather[0].icon)
+        setCurrentWeather({
+          temp: Math.round(data.current.main.temp),
+          humidity: data.current.main.humidity,
+          wind: Math.round(data.current.wind.speed * 3.6), // m/s to km/h
+          condition: {
+            icon: Icon,
+            label: data.current.weather[0].description,
+          },
+        })
+
+        // Process forecast (group by day, take midday values)
+        const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
+        const dailyData = new Map()
+        
+        data.forecast.list.forEach((item: any) => {
+          const date = new Date(item.dt * 1000)
+          const dayKey = date.toDateString()
+          
+          if (!dailyData.has(dayKey)) {
+            dailyData.set(dayKey, {
+              day: days[date.getDay()],
+              date: date.getDate(),
+              temps: [],
+              humidity: item.main.humidity,
+              wind: Math.round(item.wind.speed * 3.6),
+              icon: item.weather[0].icon,
+              description: item.weather[0].description,
+            })
+          }
+          dailyData.get(dayKey).temps.push(item.main.temp)
+        })
+
+        const forecastArray = Array.from(dailyData.values()).slice(0, 7).map(day => ({
+          day: day.day,
+          date: day.date,
+          condition: {
+            icon: getWeatherIcon(day.icon),
+            label: day.description,
+          },
+          tempHigh: Math.round(Math.max(...day.temps)),
+          tempLow: Math.round(Math.min(...day.temps)),
+          humidity: day.humidity,
+          wind: day.wind,
+        }))
+
+        setForecast(forecastArray)
+      }
+      setLoading(false)
     })
   }, [selectedCity])
 
@@ -73,7 +133,7 @@ export default function WeatherWidget() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Thermometer className="h-5 w-5 text-primary" />
-            Météo - Prévision 7 Jours
+            Météo - Prévision 7 Jours {loading && <span className="text-xs text-muted-foreground">(Chargement...)</span>}
           </CardTitle>
           <Select value={selectedCity} onValueChange={setSelectedCity}>
             <SelectTrigger className="w-[140px] h-8 text-sm">
