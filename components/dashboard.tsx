@@ -103,10 +103,10 @@ export default function Dashboard({ onLogout }: DashboardProps) {
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="flex flex-col">
           {/* Top bar with university branding */}
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-secondary/30">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between px-2 sm:px-4 py-1.5 sm:py-2 border-b border-border/50 bg-secondary/30">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* University Logo */}
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white p-1.5 shadow-md">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 md:h-12 md:w-12 items-center justify-center rounded-lg bg-white p-1 sm:p-1.5 shadow-md">
                 <Image
                   src="/image.png"
                   alt="EST Fès Logo"
@@ -116,11 +116,11 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                 />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-primary">École Supérieure de Technologie Fès</h2>
-                <p className="text-xs text-muted-foreground">Université Sidi Mohamed Ben Abdellah</p>
+                <h2 className="text-[10px] sm:text-xs md:text-sm font-semibold text-primary">École Supérieure de Technologie Fès</h2>
+                <p className="text-[9px] sm:text-xs text-muted-foreground hidden sm:block">Université Sidi Mohamed Ben Abdellah</p>
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-6 text-xs">
+            <div className="hidden lg:flex items-center gap-6 text-xs">
               <div className="flex items-center gap-2">
                 <GraduationCap className="h-4 w-4 text-primary" />
                 <div>
@@ -139,49 +139,52 @@ export default function Dashboard({ onLogout }: DashboardProps) {
           </div>
 
           {/* Main navigation bar */}
-          <div className="flex h-14 items-center justify-between px-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
-                <Sun className="h-5 w-5 text-primary" />
+          <div className="flex h-14 items-center justify-between px-2 md:px-4">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-xl bg-primary/10">
+                <Sun className="h-4 w-4 md:h-5 md:w-5 text-primary" />
               </div>
-              <div>
-                <h1 className="text-base font-semibold">Solar PV Dashboard</h1>
-                <p className="text-[10px] text-muted-foreground">Intelligent Off-Grid System - PFE 2024/2025</p>
+              <div className="hidden sm:block">
+                <h1 className="text-sm md:text-base font-semibold">Solar PV Dashboard</h1>
+                <p className="text-[10px] text-muted-foreground hidden md:block">Intelligent Off-Grid System - PFE 2024/2025</p>
               </div>
+              <h1 className="text-sm font-semibold sm:hidden">Dashboard</h1>
             </div>
 
-            <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-1 md:gap-2">
               <div className="hidden lg:flex flex-col items-end">
                 <span className="text-sm font-medium">{currentTime.toLocaleTimeString("fr-FR")}</span>
                 <span className="text-[10px] text-muted-foreground">{currentTime.toLocaleDateString("fr-FR")}</span>
               </div>
 
-              <Badge variant="outline" className="gap-1.5 text-xs">
+              <Badge variant="outline" className="gap-1.5 text-xs hidden md:flex">
                 <Wifi className="h-3 w-3 text-accent" />
                 <span className="hidden sm:inline">ESP32</span>
               </Badge>
 
-              <Badge variant={pvSystemOn ? "default" : "secondary"} className="gap-1.5 text-xs">
+              <Badge variant={pvSystemOn ? "default" : "secondary"} className="gap-1 text-[10px] md:text-xs px-1.5 md:px-2">
                 <Power className="h-3 w-3" />
-                {pvSystemOn ? "Online" : "Offline"}
+                <span className="hidden sm:inline">{pvSystemOn ? "Online" : "Offline"}</span>
               </Badge>
 
-              <ReportGenerator data={data} />
+              <div className="hidden md:block">
+                <ReportGenerator data={data} />
+              </div>
 
-              <Button variant="ghost" size="icon" className="relative h-8 w-8">
-                <Bell className="h-4 w-4" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-medium flex items-center justify-center text-destructive-foreground">
+              <Button variant="ghost" size="icon" className="relative h-7 w-7 md:h-8 md:w-8 hidden sm:flex">
+                <Bell className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 md:h-4 md:w-4 rounded-full bg-destructive text-[9px] md:text-[10px] font-medium flex items-center justify-center text-destructive-foreground">
                   3
                 </span>
               </Button>
 
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleRefresh} disabled={isRefreshing}>
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+              <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={handleRefresh} disabled={isRefreshing}>
+                <RefreshCw className={`h-3.5 w-3.5 md:h-4 md:w-4 ${isRefreshing ? "animate-spin" : ""}`} />
               </Button>
 
-              <Button variant="ghost" size="sm" onClick={onLogout} className="h-8">
-                <LogOut className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline text-xs">Logout</span>
+              <Button variant="ghost" size="sm" onClick={onLogout} className="h-7 md:h-8 px-2 md:px-3">
+                <LogOut className="h-3.5 w-3.5 md:h-4 md:w-4 md:mr-1" />
+                <span className="hidden md:inline text-xs">Logout</span>
               </Button>
             </div>
           </div>
@@ -189,7 +192,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
       </header>
 
       {/* Main Content */}
-      <main className="p-4 md:p-6 space-y-6">
+      <main className="p-2 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard
