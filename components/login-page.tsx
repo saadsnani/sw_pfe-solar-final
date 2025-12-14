@@ -1,181 +1,144 @@
 "use client"
 
 import type React from "react"
+
 import { useState } from "react"
-// [Imports dyawlk... Mat9isshomch]
+import { Eye, EyeOff, Sun, Loader2, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Sun, Lock, Mail, Eye, EyeOff } from "lucide-react"
 
-// Hadd l-interface rah s7i7a
 interface LoginPageProps {
   onLogin: () => void
 }
 
-export default function LoginPage({ onLogin }: LoginPageProps) {
+export function LoginPage({ onLogin }: LoginPageProps) {
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  
-  // HADI HIYA L-FUNCTION L-MSLL7A LI GHADI T-SEJJL L-MÉMOIRE
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
-
+    // Simulate login
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    if (email === "admin@example.com" && password === "1234") {
-      
-      // 👇👇👇 HADA HOWA L-CODE LI GHA Y-7LL L-MOUCHKIL 👇👇👇
-      if (rememberMe) {
-        // ILA L-Checkbox M-clikia: Khbbiha f l-Mémoire
-        localStorage.setItem("userLoggedIn", "true");
-      } else {
-        // Ila l-Checkbox Mamclikiax: Ms7 l-Mémoire
-        localStorage.removeItem("userLoggedIn");
-      }
-      // 👆👆👆 SALA L-MÉMOIRE HNA 👆👆👆
-      
-      onLogin() // Khdem l-Dashboard
-    } else {
-      setError("Invalid credentials. Please try again.")
-    }
     setIsLoading(false)
+    onLogin()
   }
 
-  // [return dyawlkom... Khllihom]
   return (
-    <div
-      className="relative min-h-screen w-full"
-    >
-      {/* Background image */}
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Image */}
       <div
-        className="absolute inset-0 -z-10 bg-cover bg-center bg-fixed"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/solar-bg.jpg')",
+          backgroundImage: `url('/large-solar-panel-farm-installation-at-sunset-with.jpg')`,
         }}
       />
-      {/* Dark overlay */}
-      <div className="absolute inset-0 -z-10 bg-black/65" />
 
-      {/* Content container */}
-      <div className="flex min-h-screen items-center justify-center px-4 py-8">
-        {/* ... L-code dyal l-Design... */}
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/60" />
 
-        <Card className="w-full max-w-lg bg-background/90 backdrop-blur-md border-border shadow-2xl">
-          <CardHeader className="text-center space-y-4 pb-8">
-            <div className="flex justify-center">
-              <Sun className="h-12 w-12 text-amber-500" />
+      {/* Animated particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-energy-green rounded-full opacity-40"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Login Card */}
+      <div className="relative z-10 w-full max-w-md">
+        <div className="glass rounded-2xl p-8 shadow-2xl border border-white/10">
+          {/* Logo */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-4 pulse-glow">
+              <Sun className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-4xl md:text-5xl leading-tight">
-              <span className="font-bold text-amber-500">SW</span>
-              <span className="font-normal text-white"> Intelligent Photovoltaic Supervision</span>
-            </CardTitle>
-            <CardDescription className="text-base">Système de supervision intelligent pour installations photovoltaïques</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-950 rounded-md">
-                  {error}
-                </div>
+            <h1 className="text-2xl font-bold text-foreground">Smart EMS</h1>
+            <p className="text-muted-foreground text-sm mt-1">Système Intelligent de Gestion d'Énergie</p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-foreground/80">
+                Adresse Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="admin@smartems.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-input/50 border-border/50 focus:border-primary h-12"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-foreground/80">
+                Mot de Passe
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-input/50 border-border/50 focus:border-primary h-12 pr-12"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button type="button" className="text-sm text-primary hover:text-primary/80 transition-colors">
+                Mot de passe oublié ?
+              </button>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Connexion...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-5 h-5 mr-2" />
+                  Se Connecter
+                </>
               )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground">
-                  Email Address
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="admin@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-background/50 border-border"
-                    required
-                  />
-                </div>
-              </div>
+            </Button>
+          </form>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-foreground">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 bg-background/50 border-border"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="remember"
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                  />
-                  <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
-                    Remember me
-                  </Label>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  "Sign In"
-                )}
-              </Button>
-
-              <p className="text-center text-sm text-muted-foreground">
-                Demo: admin@example.com / 1234
-              </p>
-            </form>
-            
-            <div className="mt-6 pt-6 border-t border-border">
-              <p className="text-center text-sm text-gray-400">
-                Projet de Fin d'Études - Génie Électrique
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Footer */}
+          <div className="mt-8 pt-6 border-t border-border/30 text-center">
+            <p className="text-xs text-muted-foreground">École Supérieure de Technologie - EST</p>
+          </div>
+        </div>
       </div>
     </div>
   )
