@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Sun, Lock, Mail } from "lucide-react"
 
+// Hadd l-interface rah s7i7a (onLogin: () => void)
 interface LoginPageProps {
   onLogin: () => void
 }
@@ -19,7 +20,9 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-
+  
+  // Had L-Code rah fih email w password:
+  // Khassek t-zid ghir l-Mémoire t7t onLogin()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -28,7 +31,18 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     if (email === "admin@example.com" && password === "1234") {
-      onLogin()
+      
+      // 👇👇👇 HAD L-CODE HOWA LI KAY-SJ-JL F L-MÉMOIRE 👇👇👇
+      if (rememberMe) {
+        // Ila l-Checkbox m-clikia: Khbbiha f l-Mémoire
+        localStorage.setItem("userLoggedIn", "true");
+      } else {
+        // Ila l-Checkbox Mamclikiax: Ms7 l-Mémoire
+        localStorage.removeItem("userLoggedIn");
+      }
+      // 👆👆👆 SALA L-MÉMOIRE HNA 👆👆👆
+      
+      onLogin() // Ghadi y-bdl l-Affichage l Dashboard
     } else {
       setError("Invalid credentials. Please try again.")
     }

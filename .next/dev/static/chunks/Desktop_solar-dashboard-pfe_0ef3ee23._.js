@@ -351,13 +351,24 @@ function LoginPage({ onLogin }) {
     const [rememberMe, setRememberMe] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    // Had L-Code rah fih email w password:
+    // Khassek t-zid ghir l-Mémoire t7t onLogin()
     const handleSubmit = async (e)=>{
         e.preventDefault();
         setIsLoading(true);
         setError("");
         await new Promise((resolve)=>setTimeout(resolve, 1500));
         if (email === "admin@example.com" && password === "1234") {
-            onLogin();
+            // 👇👇👇 HAD L-CODE HOWA LI KAY-SJ-JL F L-MÉMOIRE 👇👇👇
+            if (rememberMe) {
+                // Ila l-Checkbox m-clikia: Khbbiha f l-Mémoire
+                localStorage.setItem("userLoggedIn", "true");
+            } else {
+                // Ila l-Checkbox Mamclikiax: Ms7 l-Mémoire
+                localStorage.removeItem("userLoggedIn");
+            }
+            // 👆👆👆 SALA L-MÉMOIRE HNA 👆👆👆
+            onLogin(); // Ghadi y-bdl l-Affichage l Dashboard
         } else {
             setError("Invalid credentials. Please try again.");
         }
@@ -373,21 +384,21 @@ function LoginPage({ onLogin }) {
                 }
             }, void 0, false, {
                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                lineNumber: 41,
+                lineNumber: 55,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "absolute top-1/4 -left-32 w-64 h-64 bg-primary/10 rounded-full blur-3xl"
             }, void 0, false, {
                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                lineNumber: 49,
+                lineNumber: 63,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "absolute bottom-1/4 -right-32 w-64 h-64 bg-accent/10 rounded-full blur-3xl"
             }, void 0, false, {
                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                lineNumber: 50,
+                lineNumber: 64,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -404,12 +415,12 @@ function LoginPage({ onLogin }) {
                                         className: "h-8 w-8 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                        lineNumber: 57,
+                                        lineNumber: 71,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                    lineNumber: 56,
+                                    lineNumber: 70,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -421,13 +432,13 @@ function LoginPage({ onLogin }) {
                                             children: "Dashboard"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                            lineNumber: 60,
+                                            lineNumber: 74,
                                             columnNumber: 24
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                    lineNumber: 59,
+                                    lineNumber: 73,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -435,13 +446,13 @@ function LoginPage({ onLogin }) {
                                     children: "Intelligent Off-Grid Energy System"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                    lineNumber: 62,
+                                    lineNumber: 76,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                            lineNumber: 55,
+                            lineNumber: 69,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -455,20 +466,20 @@ function LoginPage({ onLogin }) {
                                             children: "Sign In"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                            lineNumber: 68,
+                                            lineNumber: 82,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                             children: "Enter your credentials to access the dashboard"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                            lineNumber: 69,
+                                            lineNumber: 83,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                    lineNumber: 67,
+                                    lineNumber: 81,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -485,7 +496,7 @@ function LoginPage({ onLogin }) {
                                                             children: "Email"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                            lineNumber: 74,
+                                                            lineNumber: 88,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -495,7 +506,7 @@ function LoginPage({ onLogin }) {
                                                                     className: "absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                    lineNumber: 76,
+                                                                    lineNumber: 90,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -508,19 +519,19 @@ function LoginPage({ onLogin }) {
                                                                     required: true
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                    lineNumber: 77,
+                                                                    lineNumber: 91,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                            lineNumber: 75,
+                                                            lineNumber: 89,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                    lineNumber: 73,
+                                                    lineNumber: 87,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -531,7 +542,7 @@ function LoginPage({ onLogin }) {
                                                             children: "Password"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                            lineNumber: 89,
+                                                            lineNumber: 103,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -541,7 +552,7 @@ function LoginPage({ onLogin }) {
                                                                     className: "absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                    lineNumber: 91,
+                                                                    lineNumber: 105,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -554,19 +565,19 @@ function LoginPage({ onLogin }) {
                                                                     required: true
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                    lineNumber: 92,
+                                                                    lineNumber: 106,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                            lineNumber: 90,
+                                                            lineNumber: 104,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                    lineNumber: 88,
+                                                    lineNumber: 102,
                                                     columnNumber: 17
                                                 }, this),
                                                 error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -574,7 +585,7 @@ function LoginPage({ onLogin }) {
                                                     children: error
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                    lineNumber: 105,
+                                                    lineNumber: 119,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -588,7 +599,7 @@ function LoginPage({ onLogin }) {
                                                                 onCheckedChange: (checked)=>setRememberMe(checked)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                lineNumber: 112,
+                                                                lineNumber: 126,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
@@ -597,18 +608,18 @@ function LoginPage({ onLogin }) {
                                                                 children: "Remember me"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                lineNumber: 117,
+                                                                lineNumber: 131,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                        lineNumber: 111,
+                                                        lineNumber: 125,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                    lineNumber: 110,
+                                                    lineNumber: 124,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -621,7 +632,7 @@ function LoginPage({ onLogin }) {
                                                                 className: "mr-2 h-4 w-4 animate-spin"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                                lineNumber: 130,
+                                                                lineNumber: 144,
                                                                 columnNumber: 23
                                                             }, this),
                                                             "Signing in..."
@@ -629,13 +640,13 @@ function LoginPage({ onLogin }) {
                                                     }, void 0, true) : "Sign In"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                    lineNumber: 123,
+                                                    lineNumber: 137,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                            lineNumber: 72,
+                                            lineNumber: 86,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -645,24 +656,24 @@ function LoginPage({ onLogin }) {
                                                 children: "Demo: admin@example.com / 1234"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                                lineNumber: 140,
+                                                lineNumber: 154,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                            lineNumber: 139,
+                                            lineNumber: 153,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                                    lineNumber: 71,
+                                    lineNumber: 85,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                            lineNumber: 66,
+                            lineNumber: 80,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -670,24 +681,24 @@ function LoginPage({ onLogin }) {
                             children: "PFE Project 2025 - Intelligent PV System"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                            lineNumber: 145,
+                            lineNumber: 159,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                    lineNumber: 53,
+                    lineNumber: 67,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-                lineNumber: 52,
+                lineNumber: 66,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Desktop/solar-dashboard-pfe/components/login-page.tsx",
-        lineNumber: 39,
+        lineNumber: 53,
         columnNumber: 5
     }, this);
 }
@@ -4780,25 +4791,52 @@ var _s = __turbopack_context__.k.signature();
 ;
 function Home() {
     _s();
-    const [isAuthenticated, setIsAuthenticated] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    if (!isAuthenticated) {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$login$2d$page$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-            onLogin: ()=>setIsAuthenticated(true)
+    // 1. DÉCLARATION DES VARIABLES (STATE)
+    const [isLoggedIn, setIsLoggedIn] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // 2. TAF3IL L-MÉMOIRE (useEffect): Kaykhddem ghir mrra w7da
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "Home.useEffect": ()=>{
+            // Kanjjbdou 'userLoggedIn' mn l-Mémoire
+            const savedLogin = localStorage.getItem("userLoggedIn");
+            if (savedLogin === "true") {
+                setIsLoggedIn(true);
+            }
+        }
+    }["Home.useEffect"], []);
+    // 3. FONCTION SUCCESS LOGIN (Melli t-dkhl b succès)
+    // Hadi katkhdem ghir melli LoginPage t-goul: "Safé, ra dkhlna"
+    const handleSuccessLogin = ()=>{
+        setIsLoggedIn(true);
+    // Note: L-Mémoire (localStorage.setItem) ghadi ydirha LoginPage bo7dha
+    };
+    // 4. FONCTION DÉCONNEXION (Logout)
+    const handleLogout = ()=>{
+        setIsLoggedIn(false);
+        // Ms7 l-Mémoire dyal Browser bach maybqa 3aqlch
+        localStorage.removeItem("userLoggedIn");
+        // Y3awd y-ch3l l-page bach yrj3 l-Login
+        window.location.reload();
+    };
+    // 5. L-AFFICHAGE
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+        children: isLoggedIn ? // Ila kan logged in: Affiche Dashboard w sift lih handleLogout
+        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$dashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+            onLogout: handleLogout
         }, void 0, false, {
             fileName: "[project]/Desktop/solar-dashboard-pfe/app/page.tsx",
-            lineNumber: 11,
-            columnNumber: 12
-        }, this);
-    }
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$dashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-        onLogout: ()=>setIsAuthenticated(false)
-    }, void 0, false, {
-        fileName: "[project]/Desktop/solar-dashboard-pfe/app/page.tsx",
-        lineNumber: 14,
-        columnNumber: 10
-    }, this);
+            lineNumber: 41,
+            columnNumber: 9
+        }, this) : // Sinon: Affiche Login Page w sift lih handleSuccessLogin
+        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$solar$2d$dashboard$2d$pfe$2f$components$2f$login$2d$page$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+            onLogin: handleSuccessLogin
+        }, void 0, false, {
+            fileName: "[project]/Desktop/solar-dashboard-pfe/app/page.tsx",
+            lineNumber: 44,
+            columnNumber: 9
+        }, this)
+    }, void 0, false);
 }
-_s(Home, "BT2f1XiqCgFHwobQTWR7kond0Ig=");
+_s(Home, "fKLMlyFH2GMrhNeUDpp+0z1yiCo=");
 _c = Home;
 var _c;
 __turbopack_context__.k.register(_c, "Home");
