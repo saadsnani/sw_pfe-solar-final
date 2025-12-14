@@ -1,50 +1,42 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import LoginPage from "@/components/login-page"; 
-import Dashboard from "@/components/dashboard"; 
+import { useEffect, useState } from "react"
+import LoginPage from "@/components/login-page"
+import Dashboard from "@/components/dashboard"
 
 export default function Home() {
-  // 1. DÉCLARATION DES VARIABLES (STATE)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
-  // 2. TAF3IL L-MÉMOIRE (useEffect): Kaykhddem ghir mrra w7da
+  // Initialize auth state from localStorage on first render
   useEffect(() => {
-    // Kanjjbdou 'userLoggedIn' mn l-Mémoire
-    const savedLogin = localStorage.getItem("userLoggedIn"); 
-    if (savedLogin === "true") {
-      setIsLoggedIn(true);
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("userLoggedIn") : null
+      if (stored === "true") {
+        setIsAuthenticated(true)
+      }
+    } catch {
+      // ignore storage access errors
     }
-  }, []);
+  }, [])
 
-  // 3. FONCTION SUCCESS LOGIN (Melli t-dkhl b succès)
-  // Hadi katkhdem ghir melli LoginPage t-goul: "Safé, ra dkhlna"
-  const handleSuccessLogin = () => {
-    setIsLoggedIn(true);
-    // Note: L-Mémoire (localStorage.setItem) ghadi ydirha LoginPage bo7dha
-  };
+  const handleLogin = () => {
+    setIsAuthenticated(true)
+  }
 
-  // 4. FONCTION DÉCONNEXION (Logout)
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    // Ms7 l-Mémoire dyal Browser bach maybqa 3aqlch
-    localStorage.removeItem("userLoggedIn"); 
-    // Y3awd y-ch3l l-page bach yrj3 l-Login
-    window.location.reload(); 
-  };
-  
-  // 5. L-AFFICHAGE
-  return (
-    <>
-      {isLoggedIn ? (
-        // Ila kan logged in: Affiche Dashboard w sift lih handleLogout
-        <Dashboard onLogout={handleLogout} /> 
-      ) : (
-        // Sinon: Affiche Login Page w sift lih handleSuccessLogin
-        <LoginPage 
-          onLogin={handleSuccessLogin} 
-        />
-      )}
-    </>
-  );
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("userLoggedIn")
+      }
+    } catch {
+      // ignore storage access errors
+    }
+    setIsAuthenticated(false)
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />
+  }
+
+  return <Dashboard onLogout={handleLogout} />
 }

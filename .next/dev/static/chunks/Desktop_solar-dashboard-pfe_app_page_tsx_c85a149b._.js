@@ -8,7 +8,7 @@
   "static/chunks/68ade_recharts_es6_693f220f._.js",
   "static/chunks/68ade_@radix-ui_a4ed06ea._.js",
   "static/chunks/68ade_@floating-ui_7ffc078d._.js",
-  "static/chunks/68ade_d3bcdd46._.js"
+  "static/chunks/68ade_5c07eae9._.js"
 ],
     source: "dynamic"
 });

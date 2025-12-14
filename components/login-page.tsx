@@ -2,14 +2,15 @@
 
 import type React from "react"
 import { useState } from "react"
+// [Imports dyawlk... Mat9isshomch]
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Sun, Lock, Mail } from "lucide-react"
+import { Loader2, Sun, Lock, Mail, Eye, EyeOff } from "lucide-react"
 
-// Hadd l-interface rah s7i7a (onLogin: () => void)
+// Hadd l-interface rah s7i7a
 interface LoginPageProps {
   onLogin: () => void
 }
@@ -20,9 +21,9 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   
-  // Had L-Code rah fih email w password:
-  // Khassek t-zid ghir l-Mémoire t7t onLogin()
+  // HADI HIYA L-FUNCTION L-MSLL7A LI GHADI T-SEJJL L-MÉMOIRE
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -32,9 +33,9 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
     if (email === "admin@example.com" && password === "1234") {
       
-      // 👇👇👇 HAD L-CODE HOWA LI KAY-SJ-JL F L-MÉMOIRE 👇👇👇
+      // 👇👇👇 HADA HOWA L-CODE LI GHA Y-7LL L-MOUCHKIL 👇👇👇
       if (rememberMe) {
-        // Ila l-Checkbox m-clikia: Khbbiha f l-Mémoire
+        // ILA L-Checkbox M-clikia: Khbbiha f l-Mémoire
         localStorage.setItem("userLoggedIn", "true");
       } else {
         // Ila l-Checkbox Mamclikiax: Ms7 l-Mémoire
@@ -42,122 +43,139 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       }
       // 👆👆👆 SALA L-MÉMOIRE HNA 👆👆👆
       
-      onLogin() // Ghadi y-bdl l-Affichage l Dashboard
+      onLogin() // Khdem l-Dashboard
     } else {
       setError("Invalid credentials. Please try again.")
     }
     setIsLoading(false)
   }
 
+  // [return dyawlkom... Khllihom]
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background to-secondary/20">
-      {/* Background pattern */}
+    <div
+      className="relative min-h-screen w-full"
+    >
+      {/* Background image */}
       <div
-        className="absolute inset-0 opacity-5"
+        className="absolute inset-0 -z-10 bg-cover bg-center bg-fixed"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23f59e0b' fillOpacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: "url('/solar-bg.jpg')",
         }}
       />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 -z-10 bg-black/65" />
 
-      {/* Glow effects */}
-      <div className="absolute top-1/4 -left-32 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
+      {/* Content container */}
+      <div className="flex min-h-screen items-center justify-center px-4 py-8">
+        {/* ... L-code dyal l-Design... */}
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-              <Sun className="h-8 w-8 text-primary" />
+        <Card className="w-full max-w-lg bg-background/90 backdrop-blur-md border-border shadow-2xl">
+          <CardHeader className="text-center space-y-4 pb-8">
+            <div className="flex justify-center">
+              <Sun className="h-12 w-12 text-amber-500" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Solar PV <span className="text-primary">Dashboard</span>
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">Intelligent Off-Grid Energy System</p>
-          </div>
-
-          {/* Login Card */}
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-            <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-xl">Sign In</CardTitle>
-              <CardDescription>Enter your credentials to access the dashboard</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="admin@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
+            <CardTitle className="text-4xl md:text-5xl leading-tight">
+              <span className="font-bold text-amber-500">SW</span>
+              <span className="font-normal text-white"> Intelligent Photovoltaic Supervision</span>
+            </CardTitle>
+            <CardDescription className="text-base">Système de supervision intelligent pour installations photovoltaïques</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-950 rounded-md">
+                  {error}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 bg-background/50 border-border"
+                    required
+                  />
                 </div>
-
-                {error && (
-                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
-                    {error}
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="remember"
-                      checked={rememberMe}
-                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                    />
-                    <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
-                      Remember me
-                    </Label>
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-              </form>
-
-              <div className="mt-4 p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground text-center">Demo: admin@example.com / 1234</p>
               </div>
-            </CardContent>
-          </Card>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">PFE Project 2025 - Intelligent PV System</p>
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-foreground">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 bg-background/50 border-border"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="remember"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                  />
+                  <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+                    Remember me
+                  </Label>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Demo: admin@example.com / 1234
+              </p>
+            </form>
+            
+            <div className="mt-6 pt-6 border-t border-border">
+              <p className="text-center text-sm text-gray-400">
+                Projet de Fin d'Études - Génie Électrique
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
