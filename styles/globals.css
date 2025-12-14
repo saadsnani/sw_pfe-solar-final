@@ -1,3 +1,5 @@
+/* stylelint-disable at-rule-no-unknown */
+/* CSS custom at-rules for Tailwind CSS v4 - these are valid */
 @import 'tailwindcss';
 @import 'tw-animate-css';
 

@@ -105,14 +105,11 @@ export default function Dashboard({ onLogout }: DashboardProps) {
           <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-secondary/30">
             <div className="flex items-center gap-3">
               {/* University Logo */}
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white p-1">
-                <Image
-                  src="/est-fes-university-logo-morocco.jpg"
-                  alt="EST Fès Logo"
-                  width={40}
-                  height={40}
-                  className="object-contain"
-                />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 p-2 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-primary">École Supérieure de Technologie Fès</h2>
