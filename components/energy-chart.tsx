@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
 import { BarChart3 } from "lucide-react"
@@ -15,7 +16,7 @@ const data = [
   { time: "20:00", production: 0, consumption: 380 },
 ]
 
-export function EnergyChart() {
+function EnergyChartComponent() {
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
       <CardHeader>
@@ -57,6 +58,7 @@ export function EnergyChart() {
                 strokeWidth={2}
                 fill="url(#productionGradient)"
                 name="Production"
+                isAnimationActive={false}
               />
               <Area
                 type="monotone"
@@ -65,6 +67,7 @@ export function EnergyChart() {
                 strokeWidth={2}
                 fill="url(#consumptionGradient)"
                 name="Consumption"
+                isAnimationActive={false}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -83,3 +86,5 @@ export function EnergyChart() {
     </Card>
   )
 }
+
+export const EnergyChart = memo(EnergyChartComponent)
