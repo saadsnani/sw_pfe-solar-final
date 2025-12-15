@@ -3,13 +3,15 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Eye, EyeOff, Sun, Loader2, Zap } from "lucide-react"
+import { Eye, EyeOff, Sun, Loader2, Zap, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { loginUser, registerUser, setCurrentUser } from "@/lib/auth"
+import { useAlert } from "@/lib/alert-provider"
 
 interface LoginPageProps {
-  onLogin: () => void
+  onLogin: (email: string) => void
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
@@ -17,14 +19,51 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isSignUpMode, setIsSignUpMode] = useState(false)
+  const { addAlert } = useAlert()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate inputs
+    if (!email || !password) {
+      addAlert({ type: "error", title: "Erreur", message: "Veuillez remplir tous les champs" })
+      return
+    }
+
+    if (password.length < 4) {
+      addAlert({ type: "error", title: "Erreur", message: "Le mot de passe doit contenir au moins 4 caractères" })
+      return
+    }
+
     setIsLoading(true)
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 800))
+    
+    if (isSignUpMode) {
+      // Register new user
+      const result = registerUser(email, password)
+      if (result.success) {
+        addAlert({ type: "success", title: "Succès", message: "Compte créé avec succès ! Vous pouvez maintenant vous connecter." })
+        setIsSignUpMode(false)
+        setPassword("")
+      } else {
+        addAlert({ type: "error", title: "Erreur", message: result.message })
+      }
+    } else {
+      // Login existing user
+      const result = loginUser(email, password)
+      if (result.success) {
+        setCurrentUser(email)
+        addAlert({ type: "success", title: "Connexion Réussie", message: `Bienvenue ${email}` })
+        onLogin(email)
+      } else {
+        addAlert({ type: "error", title: "Erreur de Connexion", message: result.message })
+      }
+    }
+    
     setIsLoading(false)
-    onLogin()
   }
 
   return (
@@ -65,7 +104,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <Sun className="w-8 h-8 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-foreground">Smart EMS</h1>
-            <p className="text-muted-foreground text-sm mt-1">Système Intelligent de Gestion d'Énergie</p>
+            <p className="text-muted-foreground text-sm mt-1">
+              {isSignUpMode ? "Créer un nouveau compte" : "Système Intelligent de Gestion d'Énergie"}
+            </p>
           </div>
 
           {/* Form */}
@@ -77,7 +118,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@smartems.com"
+                placeholder={isSignUpMode ? "votre-email@exemple.com" : "admin@smartems.com"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-input/50 border-border/50 focus:border-primary h-12"
@@ -87,7 +128,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-foreground/80">
-                Mot de Passe
+                Mot de Passe {isSignUpMode && <span className="text-xs text-muted-foreground">(min. 4 caractères)</span>}
               </Label>
               <div className="relative">
                 <Input
@@ -98,6 +139,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-input/50 border-border/50 focus:border-primary h-12 pr-12"
                   required
+                  minLength={4}
                 />
                 <button
                   type="button"
@@ -107,23 +149,33 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {isSignUpMode && password.length > 0 && password.length < 4 && (
+                <p className="text-xs text-red-500">Le mot de passe doit contenir au moins 4 caractères</p>
+              )}
             </div>
 
-            <div className="flex justify-end">
-              <button type="button" className="text-sm text-primary hover:text-primary/80 transition-colors">
-                Mot de passe oublié ?
-              </button>
-            </div>
+            {!isSignUpMode && (
+              <div className="flex justify-end">
+                <button type="button" className="text-sm text-primary hover:text-primary/80 transition-colors">
+                  Mot de passe oublié ?
+                </button>
+              </div>
+            )}
 
             <Button
               type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base"
-              disabled={isLoading}
+              disabled={isLoading || (isSignUpMode && password.length < 4)}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Connexion...
+                  {isSignUpMode ? "Création..." : "Connexion..."}
+                </>
+              ) : isSignUpMode ? (
+                <>
+                  <UserPlus className="w-5 h-5 mr-2" />
+                  Créer un Compte
                 </>
               ) : (
                 <>
@@ -132,6 +184,30 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 </>
               )}
             </Button>
+
+            {/* Toggle Sign Up / Sign In */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUpMode(!isSignUpMode)
+                  setPassword("")
+                }}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {isSignUpMode ? (
+                  <>
+                    Vous avez déjà un compte ?{" "}
+                    <span className="text-primary font-semibold">Se Connecter</span>
+                  </>
+                ) : (
+                  <>
+                    Pas encore de compte ?{" "}
+                    <span className="text-primary font-semibold">Créer un Compte</span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
 
           {/* Footer */}
