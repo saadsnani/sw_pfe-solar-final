@@ -130,6 +130,7 @@ export function UserLogsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Email</TableHead>
+                    <TableHead>Mot de Passe</TableHead>
                     <TableHead>Date de Création</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -137,6 +138,7 @@ export function UserLogsPage() {
                   {users.map((user, index) => (
                     <TableRow key={index}>
                       <TableCell className="font-medium">{user.email}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground">{user.password}</TableCell>
                       <TableCell>{formatDate(user.createdAt)}</TableCell>
                     </TableRow>
                   ))}
