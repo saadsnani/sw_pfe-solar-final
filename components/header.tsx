@@ -16,9 +16,10 @@ import {
 
 interface HeaderProps {
   onLogout: () => void
+  userEmail?: string
 }
 
-export function Header({ onLogout }: HeaderProps) {
+export function Header({ onLogout, userEmail }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
   const [currentTime, setCurrentTime] = useState("")
 
@@ -97,11 +98,18 @@ export function Header({ onLogout }: HeaderProps) {
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
                 <User className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="hidden sm:inline text-base font-semibold text-foreground">Admin</span>
+              <span className="hidden sm:inline text-base font-semibold text-foreground">
+                {userEmail ? userEmail.split("@")[0] : "Admin"}
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <div className="flex flex-col">
+                <span>Mon Compte</span>
+                {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1">{userEmail}</span>}
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
               <LogOut className="w-4 h-4 mr-2" />

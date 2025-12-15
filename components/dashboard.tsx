@@ -6,11 +6,12 @@ import { Header } from "@/components/header"
 import { DashboardContent } from "@/components/dashboard-content"
 
 // Lazy load heavy pages for better performance
-const AnalyticsPageEnhanced = lazy(() => import("@/components/analytics-page-enhanced").then(m => ({ default: m.AnalyticsPageEnhanced })))
-const AIPredictionsPage = lazy(() => import("@/components/ai-predictions-page").then(m => ({ default: m.AIPredictionsPage })))
-const SettingsPage = lazy(() => import("@/components/settings-page").then(m => ({ default: m.SettingsPage })))
-const SystemHealthPage = lazy(() => import("@/components/system-health-page").then(m => ({ default: m.SystemHealthPage })))
-const ProfilePage = lazy(() => import("@/components/profile-page").then(m => ({ default: m.ProfilePage })))
+const AnalyticsPageEnhanced = lazy(() => import("@/components/analytics-page-enhanced").then((m) => ({ default: m.AnalyticsPageEnhanced })))
+const AIPredictionsPage = lazy(() => import("@/components/ai-predictions-page").then((m) => ({ default: m.AIPredictionsPage })))
+const SettingsPage = lazy(() => import("@/components/settings-page").then((m) => ({ default: m.SettingsPage })))
+const SystemHealthPage = lazy(() => import("@/components/system-health-page").then((m) => ({ default: m.SystemHealthPage })))
+const ProfilePage = lazy(() => import("@/components/profile-page").then((m) => ({ default: m.ProfilePage })))
+const UserLogsPage = lazy(() => import("@/components/user-logs-page").then((m) => ({ default: m.UserLogsPage })))
 
 function LoadingFallback() {
   return (
@@ -22,11 +23,19 @@ function LoadingFallback() {
 
 interface DashboardProps {
   onLogout: () => void
+  userEmail?: string
 }
 
-export type PageType = "dashboard" | "analytics" | "ai-predictions" | "settings" | "system-health" | "profile"
+export type PageType =
+  | "dashboard"
+  | "analytics"
+  | "ai-predictions"
+  | "settings"
+  | "system-health"
+  | "profile"
+  | "user-logs"
 
-export function Dashboard({ onLogout }: DashboardProps) {
+export function Dashboard({ onLogout, userEmail }: DashboardProps) {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
@@ -64,6 +73,12 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <ProfilePage />
           </Suspense>
         )
+      case "user-logs":
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <UserLogsPage />
+          </Suspense>
+        )
       default:
         return <DashboardContent />
     }
@@ -76,9 +91,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
         onPageChange={setCurrentPage}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        userEmail={userEmail}
       />
       <div className="flex-1 flex flex-col min-h-screen">
-        <Header onLogout={onLogout} />
+        <Header onLogout={onLogout} userEmail={userEmail} />
         <main className="flex-1 p-6 overflow-auto">{renderPage()}</main>
       </div>
     </div>
