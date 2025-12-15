@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Cloud, CloudRain, Sun, Shirt } from "lucide-react"
+import { Cloud, CloudRain, Sun, CloudSun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const CITIES = [
@@ -131,14 +131,6 @@ export function WeatherForecast() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Clothing Advice */}
-                  <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border">
-                    <span className="text-2xl">{advice.emoji}</span>
-                    <div className="text-right hidden sm:block">
-                      <div className="text-xs font-medium text-foreground">{advice.text}</div>
-                    </div>
-                  </div>
                 </div>
               </div>
             )
@@ -153,8 +145,8 @@ export function WeatherForecast() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Shirt className="w-5 h-5" />
-            Prévisions météo & Conseils vestimentaires
+            <CloudSun className="w-5 h-5" />
+            Prévisions Météo
           </h2>
           <p className="text-sm text-muted-foreground">7 jours - Choisir votre ville</p>
         </div>
