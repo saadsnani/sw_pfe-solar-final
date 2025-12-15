@@ -13,64 +13,96 @@ export async function exportToPDF(
   options: ExportOptions
 ): Promise<void> {
   try {
-    // Capture the element as canvas
+    // Wait for fonts
+    if (typeof (document as any).fonts?.ready !== "undefined") {
+      await (document as any).fonts.ready.catch(() => {})
+    }
+
+    // Wait a bit for any animations to settle
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    // Hide problematic elements temporarily
+    const svgElements = element.querySelectorAll("svg")
+    const originalDisplays: string[] = []
+    svgElements.forEach((svg, i) => {
+      originalDisplays[i] = (svg as unknown as HTMLElement).style.display
+    })
+
+    // Capture with simplified settings
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
-      logging: false,
+      allowTaint: true,
+      logging: true,
       backgroundColor: "#ffffff",
+      onclone: (clonedDoc) => {
+        // Force all SVGs to be visible in clone
+        const clonedSvgs = clonedDoc.querySelectorAll("svg")
+        clonedSvgs.forEach((svg) => {
+          ;(svg as unknown as HTMLElement).style.display = "block"
+          ;(svg as unknown as HTMLElement).style.opacity = "1"
+        })
+      },
     })
 
-    // Calculate dimensions
-    const imgWidth = 210 // A4 width in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
-    
+    // Restore original displays
+    svgElements.forEach((svg, i) => {
+      ;(svg as unknown as HTMLElement).style.display = originalDisplays[i]
+    })
+
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      throw new Error("Canvas capture failed - empty canvas")
+    }
+
     // Create PDF
-    const pdf = new jsPDF({
-      orientation: imgHeight > imgWidth ? "portrait" : "landscape",
-      unit: "mm",
-      format: "a4",
-    })
-
-    const pageHeight = pdf.internal.pageSize.getHeight()
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
     const pageWidth = pdf.internal.pageSize.getWidth()
-    let heightLeft = imgHeight
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 10
+    const imgWidth = pageWidth - margin * 2
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-    // Add title if provided
+    // Add title
+    let yPos = margin
     if (options.title) {
       pdf.setFontSize(16)
-      pdf.text(options.title, pageWidth / 2, 15, { align: "center" })
+      pdf.text(options.title, pageWidth / 2, yPos + 5, { align: "center" })
       pdf.setFontSize(10)
-      pdf.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 22, {
+      pdf.text(`Généré le: ${new Date().toLocaleDateString("fr-FR")}`, pageWidth / 2, yPos + 12, {
         align: "center",
       })
+      yPos = margin + 20
     }
 
-    // Add image to PDF
-    const imgData = canvas.toDataURL("image/png")
-    const topPosition = options.title ? 30 : 10
-    pdf.addImage(imgData, "PNG", 0, topPosition, imgWidth, imgHeight)
-    heightLeft -= pageHeight
+    // Add image
+    const imgData = canvas.toDataURL("image/png", 1.0)
+    pdf.addImage(imgData, "PNG", margin, yPos, imgWidth, imgHeight)
 
-    // Add additional pages if needed
-    while (heightLeft >= 0) {
+    // Add extra pages if needed
+    let remainingHeight = imgHeight - (pageHeight - yPos - margin)
+    while (remainingHeight > 0) {
       pdf.addPage()
-      pdf.addImage(imgData, "PNG", 0, -heightLeft, imgWidth, imgHeight)
-      heightLeft -= pageHeight
+      const offsetY = -(imgHeight - remainingHeight)
+      pdf.addImage(imgData, "PNG", margin, offsetY + margin, imgWidth, imgHeight)
+      remainingHeight -= pageHeight - margin * 2
     }
 
-    // Set PDF metadata
+    // Metadata
     pdf.setProperties({
       title: options.title || options.filename,
       subject: options.subject || "Energy Management System Report",
       author: options.author || "Smart EMS",
+      creator: "Smart EMS v1.0",
     })
 
-    // Save PDF
+    // Download
     pdf.save(options.filename)
   } catch (error) {
-    console.error("Error exporting PDF:", error)
-    throw new Error("Failed to export PDF")
+    console.error("PDF Export Error Details:", error)
+    if (error instanceof Error) {
+      throw new Error(`Échec export PDF: ${error.message}`)
+    }
+    throw new Error("Impossible de générer le rapport PDF. Vérifiez la console (F12).")
   }
 }
 

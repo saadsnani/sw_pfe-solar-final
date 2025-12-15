@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun, User, Users } from "lucide-react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { PageType } from "@/components/dashboard"
 
@@ -17,7 +17,6 @@ const navItems = [
   { id: "analytics" as PageType, label: "Analyses & Rapports", icon: BarChart3 },
   { id: "ai-predictions" as PageType, label: "Prédictions IA", icon: Brain },
   { id: "system-health" as PageType, label: "Santé du Système", icon: Activity },
-  { id: "user-logs" as PageType, label: "Logs Connexions", icon: Users },
   { id: "settings" as PageType, label: "Paramètres", icon: Settings },
   { id: "profile" as PageType, label: "Mon Profil", icon: User },
 ]

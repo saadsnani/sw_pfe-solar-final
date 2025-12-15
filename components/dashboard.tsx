@@ -11,7 +11,7 @@ const AIPredictionsPage = lazy(() => import("@/components/ai-predictions-page").
 const SettingsPage = lazy(() => import("@/components/settings-page").then((m) => ({ default: m.SettingsPage })))
 const SystemHealthPage = lazy(() => import("@/components/system-health-page").then((m) => ({ default: m.SystemHealthPage })))
 const ProfilePage = lazy(() => import("@/components/profile-page").then((m) => ({ default: m.ProfilePage })))
-const UserLogsPage = lazy(() => import("@/components/user-logs-page").then((m) => ({ default: m.UserLogsPage })))
+// Logs Connexions page removed per request
 
 function LoadingFallback() {
   return (
@@ -33,7 +33,6 @@ export type PageType =
   | "settings"
   | "system-health"
   | "profile"
-  | "user-logs"
 
 export function Dashboard({ onLogout, userEmail }: DashboardProps) {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard")
@@ -73,12 +72,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
             <ProfilePage />
           </Suspense>
         )
-      case "user-logs":
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <UserLogsPage />
-          </Suspense>
-        )
+      
       default:
         return <DashboardContent />
     }

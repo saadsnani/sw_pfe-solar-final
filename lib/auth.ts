@@ -48,6 +48,17 @@ export const addLoginLog = (email: string, status: "success" | "failed") => {
   }
   logs.unshift(newLog) // Add to beginning
   saveLoginLogs(logs.slice(0, 100)) // Keep only last 100 logs
+
+  // Also send to server to persist in a local file (visible in VS Code)
+  if (typeof window !== "undefined") {
+    try {
+      fetch("/api/logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newLog),
+      }).catch(() => {})
+    } catch {}
+  }
 }
 
 // Register a new user
