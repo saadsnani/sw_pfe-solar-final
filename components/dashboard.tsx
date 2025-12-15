@@ -5,17 +5,17 @@ import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import { DashboardContent } from "@/components/dashboard-content"
 import { AnalyticsPage } from "@/components/analytics-page"
+import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
 import { AIPredictionsPage } from "@/components/ai-predictions-page"
 import { SettingsPage } from "@/components/settings-page"
 import { SystemHealthPage } from "@/components/system-health-page"
-import { ConsumptionManagement } from "@/components/consumption-management"
-import { AutonomyEstimation } from "@/components/autonomy-estimation"
+import { ProfilePage } from "@/components/profile-page"
 
 interface DashboardProps {
   onLogout: () => void
 }
 
-export type PageType = "dashboard" | "analytics" | "ai-predictions" | "settings" | "system-health" | "consumption" | "autonomy"
+export type PageType = "dashboard" | "analytics" | "ai-predictions" | "settings" | "system-health" | "profile"
 
 export function Dashboard({ onLogout }: DashboardProps) {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard")
@@ -26,17 +26,15 @@ export function Dashboard({ onLogout }: DashboardProps) {
       case "dashboard":
         return <DashboardContent />
       case "analytics":
-        return <AnalyticsPage />
+        return <AnalyticsPageEnhanced />
       case "ai-predictions":
         return <AIPredictionsPage />
       case "settings":
         return <SettingsPage />
       case "system-health":
         return <SystemHealthPage />
-      case "consumption":
-        return <ConsumptionManagement />
-      case "autonomy":
-        return <AutonomyEstimation />
+      case "profile":
+        return <ProfilePage />
       default:
         return <DashboardContent />
     }

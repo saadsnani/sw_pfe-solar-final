@@ -2,6 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { ThemeProvider } from "@/lib/theme-provider"
+import { AlertProvider } from "@/lib/alert-provider"
+import { AlertContainer } from "@/components/alert-container"
 import "./globals.css"
 
 const _inter = Inter({ subsets: ["latin"] })
@@ -36,10 +39,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`font-sans antialiased`}>
-        {children}
-        <Analytics />
+    <html lang="en">
+      <body className={`font-sans antialiased dark`}>
+        <AlertProvider>
+          <ThemeProvider>
+            <AlertContainer />
+            {children}
+            <Analytics />
+          </ThemeProvider>
+        </AlertProvider>
       </body>
     </html>
   )
