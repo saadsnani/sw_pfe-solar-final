@@ -3,6 +3,7 @@
 import { AlertCircle, CheckCircle, Clock, TrendingUp } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { GridIntegrationStatus } from "@/components/grid-integration-status"
 
 interface SystemStatus {
   id: string
@@ -108,6 +109,11 @@ export function SystemStatusBoard() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Grid Integration Status */}
+      <div className="mt-8 pt-8 border-t border-border">
+        <GridIntegrationStatus />
       </div>
     </div>
   )
