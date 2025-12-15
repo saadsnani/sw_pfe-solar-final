@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Activity, TrendingUp, Zap, AlertTriangle } from "lucide-react"
+import { Activity, TrendingUp, Zap } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -197,24 +197,6 @@ export function GridIntegrationStatus() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Summary Card */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-sm mb-1">Résumé d'Intégration</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
-                <li>✓ Connexion au réseau: <span className="font-semibold text-foreground">{gridStatus.gridConnected ? "Active" : "Inactive"}</span></li>
-                <li>✓ Tension: <span className="font-semibold text-foreground">{isVoltageNormal ? "Optimale" : "À surveiller"}</span></li>
-                <li>✓ Fréquence: <span className="font-semibold text-foreground">{isFrequencyNormal ? "Synchronisée" : "Écart détecté"}</span></li>
-                <li>✓ Échange d'énergie: <span className="font-semibold text-foreground">{gridStatus.powerExchange > 0 ? "Export" : "Import"} en cours</span></li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
