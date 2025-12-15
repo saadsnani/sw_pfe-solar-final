@@ -15,14 +15,23 @@ export interface LoginLog {
 // Get all users from localStorage
 export const getUsers = (): User[] => {
   if (typeof window === "undefined") return []
-  const users = localStorage.getItem("smart-ems-users")
-  return users ? JSON.parse(users) : []
+  try {
+    const users = localStorage.getItem("smart-ems-users")
+    return users ? JSON.parse(users) : []
+  } catch (e) {
+    console.error("Error reading users:", e)
+    return []
+  }
 }
 
 // Save users to localStorage
 export const saveUsers = (users: User[]) => {
   if (typeof window === "undefined") return
-  localStorage.setItem("smart-ems-users", JSON.stringify(users))
+  try {
+    localStorage.setItem("smart-ems-users", JSON.stringify(users))
+  } catch (e) {
+    console.error("Error saving users:", e)
+  }
 }
 
 // Get login logs from localStorage
@@ -70,21 +79,22 @@ export const registerUser = (email: string, password: string): { success: boolea
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
+  const normalizedEmail = email.trim()
+  if (!emailRegex.test(normalizedEmail)) {
     return { success: false, message: "Adresse email invalide" }
   }
 
   const users = getUsers()
 
-  // Check if user already exists
-  if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+  // Check if user already exists (case-insensitive)
+  if (users.some((u) => u.email.toLowerCase() === normalizedEmail.toLowerCase())) {
     return { success: false, message: "Un compte avec cet email existe déjà" }
   }
 
-  // Add new user
+  // Add new user (store email as-is but normalized)
   const newUser: User = {
-    email,
-    password, // In production, hash this!
+    email: normalizedEmail,
+    password: password.trim(), // Trim whitespace from password
     createdAt: new Date().toISOString(),
   }
 
@@ -97,14 +107,17 @@ export const registerUser = (email: string, password: string): { success: boolea
 // Login a user
 export const loginUser = (email: string, password: string): { success: boolean; message: string } => {
   const users = getUsers()
-  const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase())
+  // Normalize email for comparison (trim whitespace, lowercase)
+  const normalizedEmail = email.trim().toLowerCase()
+  const user = users.find((u) => u.email.toLowerCase() === normalizedEmail)
 
   if (!user) {
     addLoginLog(email, "failed")
     return { success: false, message: "Email ou mot de passe incorrect" }
   }
 
-  if (user.password !== password) {
+  // Compare passwords exactly as stored
+  if (user.password.trim() !== password.trim()) {
     addLoginLog(email, "failed")
     return { success: false, message: "Email ou mot de passe incorrect" }
   }

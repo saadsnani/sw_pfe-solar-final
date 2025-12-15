@@ -28,5 +28,10 @@
     "email": "admin@example.com",
     "timestamp": "2025-12-15T21:05:12.439Z",
     "status": "success"
+  },
+  {
+    "email": "saad.snani@usmba.ac.ma",
+    "timestamp": "2025-12-15T22:22:33.012Z",
+    "status": "failed"
   }
 ]
