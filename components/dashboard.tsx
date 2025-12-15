@@ -1,15 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, lazy, Suspense } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import { DashboardContent } from "@/components/dashboard-content"
-import { AnalyticsPage } from "@/components/analytics-page"
-import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
-import { AIPredictionsPage } from "@/components/ai-predictions-page"
-import { SettingsPage } from "@/components/settings-page"
-import { SystemHealthPage } from "@/components/system-health-page"
-import { ProfilePage } from "@/components/profile-page"
+
+// Lazy load heavy pages for better performance
+const AnalyticsPageEnhanced = lazy(() => import("@/components/analytics-page-enhanced").then(m => ({ default: m.AnalyticsPageEnhanced })))
+const AIPredictionsPage = lazy(() => import("@/components/ai-predictions-page").then(m => ({ default: m.AIPredictionsPage })))
+const SettingsPage = lazy(() => import("@/components/settings-page").then(m => ({ default: m.SettingsPage })))
+const SystemHealthPage = lazy(() => import("@/components/system-health-page").then(m => ({ default: m.SystemHealthPage })))
+const ProfilePage = lazy(() => import("@/components/profile-page").then(m => ({ default: m.ProfilePage })))
+
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center h-96">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  )
+}
 
 interface DashboardProps {
   onLogout: () => void
@@ -26,15 +35,35 @@ export function Dashboard({ onLogout }: DashboardProps) {
       case "dashboard":
         return <DashboardContent />
       case "analytics":
-        return <AnalyticsPageEnhanced />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <AnalyticsPageEnhanced />
+          </Suspense>
+        )
       case "ai-predictions":
-        return <AIPredictionsPage />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <AIPredictionsPage />
+          </Suspense>
+        )
       case "settings":
-        return <SettingsPage />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <SettingsPage />
+          </Suspense>
+        )
       case "system-health":
-        return <SystemHealthPage />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <SystemHealthPage />
+          </Suspense>
+        )
       case "profile":
-        return <ProfilePage />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <ProfilePage />
+          </Suspense>
+        )
       default:
         return <DashboardContent />
     }

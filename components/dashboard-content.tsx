@@ -1,13 +1,15 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, lazy, Suspense } from "react"
 import { SystemSynoptic } from "@/components/system-synoptic"
 import { MetricCards } from "@/components/metric-cards"
 import { EnergyChart } from "@/components/energy-chart"
 import { AIInsightsPanel } from "@/components/ai-insights-panel"
-import { WeatherForecast } from "@/components/weather-forecast"
 import { SystemStatusBoard } from "@/components/system-status-board"
 import { useAlert } from "@/lib/alert-provider"
+
+// Lazy load heavy components
+const WeatherForecast = lazy(() => import("@/components/weather-forecast").then(m => ({ default: m.WeatherForecast })))
 
 export function DashboardContent() {
   const { addAlert } = useAlert()
@@ -53,7 +55,9 @@ export function DashboardContent() {
         </div>
       </div>
 
-      <WeatherForecast />
+      <Suspense fallback={<div className="h-48 bg-muted rounded-lg animate-pulse" />}>
+        <WeatherForecast />
+      </Suspense>
     </div>
   )
 }
