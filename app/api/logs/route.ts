@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+
 type LogEntry = {
   email: string
   timestamp: string
