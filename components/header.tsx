@@ -1,6 +1,7 @@
 "use client"
 
-import { LogOut, User, Moon, Sun } from "lucide-react"
+import { useEffect, useState } from "react"
+import { LogOut, User, Moon, Sun, Clock } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/lib/theme-provider"
@@ -19,6 +20,22 @@ interface HeaderProps {
 
 export function Header({ onLogout }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
+  const [currentTime, setCurrentTime] = useState("")
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      const hours = now.getHours().toString().padStart(2, "0")
+      const minutes = now.getMinutes().toString().padStart(2, "0")
+      const seconds = now.getSeconds().toString().padStart(2, "0")
+      setCurrentTime(`${hours}:${minutes}:${seconds}`)
+    }
+
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <header className="border-b border-border bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-xl px-8 py-6 flex items-center justify-between shadow-lg">
       {/* Left - Institution */}
@@ -34,9 +51,15 @@ export function Header({ onLogout }: HeaderProps) {
           />
         </div>
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            École Supérieure de Technologie
-          </h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              École Supérieure de Technologie
+            </h2>
+            <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">
+              <Clock className="w-5 h-5 text-primary" />
+              <span className="text-lg font-mono font-bold text-primary">{currentTime}</span>
+            </div>
+          </div>
           <p className="text-base font-semibold text-primary">Système Intelligent de Gestion d'Énergie</p>
         </div>
       </div>

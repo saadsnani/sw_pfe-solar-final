@@ -30,20 +30,14 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Vue d'Ensemble du Système</h1>
-        <p className="text-muted-foreground">Surveillance en temps réel de votre système photovoltaïque</p>
-      </div>
-
-      {/* System Status */}
-      <SystemStatusBoard />
-
-      {/* System Synoptic */}
+      {/* System Synoptic - First */}
       <SystemSynoptic />
 
       {/* Metric Cards */}
       <MetricCards />
+
+      {/* System Status */}
+      <SystemStatusBoard />
 
       {/* Charts & AI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
