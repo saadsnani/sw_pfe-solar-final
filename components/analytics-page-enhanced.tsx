@@ -141,7 +141,7 @@ export function AnalyticsPageEnhanced() {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Économies</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{mockAnalyticsData.costSavings}€</div>
+                <div className="text-2xl font-bold">{mockAnalyticsData.costSavings} DH</div>
                 <p className="text-xs text-green-600 dark:text-green-400 mt-1">Coût évité ce mois</p>
               </CardContent>
             </Card>
