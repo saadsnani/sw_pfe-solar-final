@@ -1,8 +1,16 @@
 "use client"
 
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun, Zap, Battery } from "lucide-react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun, Zap, Battery, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { PageType } from "@/components/dashboard"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface SidebarProps {
   currentPage: PageType
@@ -29,8 +37,8 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
         collapsed ? "w-20" : "w-64",
       )}
     >
-      {/* Logo */}
-      <div className="p-4 border-b border-sidebar-border">
+      {/* Logo + Quick Menu */}
+      <div className="p-4 border-b border-sidebar-border space-y-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
             <Sun className="w-5 h-5 text-primary" />
@@ -42,6 +50,38 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
             </div>
           )}
         </div>
+
+        {/* Quick Menu Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium">
+              <Menu className="w-4 h-4" />
+              {!collapsed && <span>Accès rapide</span>}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="start" className="w-56">
+            <DropdownMenuLabel>Naviguer vers...</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive = currentPage === item.id
+              return (
+                <DropdownMenuItem
+                  key={item.id}
+                  onClick={() => onPageChange(item.id)}
+                  className={cn(
+                    "flex items-center gap-2 cursor-pointer",
+                    isActive && "bg-primary/10 text-primary"
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                  {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-primary" />}
+                </DropdownMenuItem>
+              )
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Navigation */}
