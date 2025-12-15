@@ -30,13 +30,13 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress }: Me
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-colors">
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className={`w-12 h-12 rounded-xl bg-secondary flex items-center justify-center ${statusColors[status]}`}>
+      <CardContent className="p-4 sm:p-5 md:p-6">
+        <div className="flex items-start justify-between mb-4 gap-2">
+          <div className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl bg-secondary flex items-center justify-center ${statusColors[status]}`}>
             {icon}
           </div>
           {progress !== undefined && (
-            <div className="relative w-16 h-16">
+            <div className="relative w-14 h-14 sm:w-16 sm:h-16">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                 <circle
                   cx="18"
@@ -60,18 +60,18 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress }: Me
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-xs font-bold ${statusColors[status]}`}>{progress}%</span>
+                <span className={`text-[11px] sm:text-xs font-bold ${statusColors[status]}`}>{progress}%</span>
               </div>
             </div>
           )}
         </div>
         <div>
-          <p className="text-sm text-muted-foreground mb-1">{label}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-1">{label}</p>
           <div className="flex items-baseline gap-1">
             <span className={`text-2xl sm:text-3xl font-bold ${statusColors[status]}`}>{value}</span>
-            <span className="text-sm text-muted-foreground">{unit}</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">{unit}</span>
           </div>
-          {subValue && <p className="text-xs text-muted-foreground mt-2">{subValue}</p>}
+          {subValue && <p className="text-[11px] sm:text-xs text-muted-foreground mt-2">{subValue}</p>}
         </div>
       </CardContent>
     </Card>
@@ -113,7 +113,7 @@ export function MetricCards() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 md:gap-6">
       <MetricCard
         icon={<Battery className="w-6 h-6" />}
         label="État de Charge (SOC)"
