@@ -9,7 +9,7 @@ import { EnergyChart } from "@/components/energy-chart"
 import { useAlert } from "@/lib/alert-provider"
 import { exportToPDF, downloadJSON } from "@/lib/export-utils"
 
-export function AnalyticsPage() {
+export function AnalyticsPageEnhanced() {
   const reportRef = useRef<HTMLDivElement>(null)
   const { addAlert } = useAlert()
 

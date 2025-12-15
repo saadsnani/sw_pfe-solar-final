@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { useEffect, useState } from "react"
 import { Battery, Sun, Zap, Thermometer } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -79,40 +79,73 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress }: Me
 }
 
 export function MetricCards() {
+  const [metrics, setMetrics] = useState({
+    soc: 85,
+    production: 280,
+    consumption: 450,
+    temp: 28,
+  })
+
+  useEffect(() => {
+    // Simulate real-time data updates
+    const interval = setInterval(() => {
+      setMetrics((prev) => ({
+        soc: Math.max(20, Math.min(100, prev.soc + (Math.random() - 0.5) * 5)),
+        production: Math.max(0, prev.production + (Math.random() - 0.5) * 50),
+        consumption: Math.max(100, prev.consumption + (Math.random() - 0.5) * 80),
+        temp: Math.max(15, Math.min(45, prev.temp + (Math.random() - 0.5) * 2)),
+      }))
+    }, 5000) // Update every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const getSOCStatus = (soc: number): "good" | "warning" | "critical" => {
+    if (soc >= 70) return "good"
+    if (soc >= 40) return "warning"
+    return "critical"
+  }
+
+  const getConsumptionStatus = (consumption: number): "good" | "warning" | "critical" => {
+    if (consumption <= 400) return "good"
+    if (consumption <= 600) return "warning"
+    return "critical"
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
         icon={<Battery className="w-6 h-6" />}
         label="État de Charge (SOC)"
-        value="85"
+        value={Math.round(metrics.soc).toString()}
         unit="%"
-        status="good"
-        progress={85}
-        subValue="Est. 8h restant"
+        status={getSOCStatus(metrics.soc)}
+        progress={Math.round(metrics.soc)}
+        subValue={`Est. ${Math.round((metrics.soc / 100) * 12)}h restant`}
       />
       <MetricCard
         icon={<Sun className="w-6 h-6" />}
         label="Production Solaire"
-        value="280"
+        value={Math.round(metrics.production).toString()}
         unit="W"
         status="good"
-        subValue="Pic : 350W aujourd'hui"
+        subValue={`Pic : ${Math.round(metrics.production * 1.25)}W aujourd'hui`}
       />
       <MetricCard
         icon={<Zap className="w-6 h-6" />}
         label="Consommation"
-        value="450"
+        value={Math.round(metrics.consumption).toString()}
         unit="W"
-        status="warning"
-        subValue="Au-dessus de la moyenne"
+        status={getConsumptionStatus(metrics.consumption)}
+        subValue={metrics.consumption > 500 ? "Au-dessus de la moyenne" : "Consommation normale"}
       />
       <MetricCard
         icon={<Thermometer className="w-6 h-6" />}
         label="Temp. Batterie"
-        value="28"
+        value={Math.round(metrics.temp).toString()}
         unit="°C"
-        status="good"
-        subValue="Plage optimale"
+        status={metrics.temp < 40 ? "good" : "warning"}
+        subValue={metrics.temp < 40 ? "Plage optimale" : "Surveiller la température"}
       />
     </div>
   )

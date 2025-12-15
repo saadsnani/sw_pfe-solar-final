@@ -6,6 +6,7 @@ import { MetricCards } from "@/components/metric-cards"
 import { EnergyChart } from "@/components/energy-chart"
 import { AIInsightsPanel } from "@/components/ai-insights-panel"
 import { WeatherForecast } from "@/components/weather-forecast"
+import { SystemStatusBoard } from "@/components/system-status-board"
 import { useAlert } from "@/lib/alert-provider"
 
 export function DashboardContent() {
@@ -32,6 +33,9 @@ export function DashboardContent() {
         <h1 className="text-2xl font-bold text-foreground">Vue d'Ensemble du Système</h1>
         <p className="text-muted-foreground">Surveillance en temps réel de votre système photovoltaïque</p>
       </div>
+
+      {/* System Status */}
+      <SystemStatusBoard />
 
       {/* System Synoptic */}
       <SystemSynoptic />
