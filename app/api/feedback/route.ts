@@ -11,7 +11,24 @@ type FeedbackEntry = {
   timestamp: string
 }
 
-const dataFile = path.join(process.cwd(), "data", "feedback.json")
+// Use a writable path on Vercel (/tmp). Fallback to env override for other hosts.
+const dataDir = process.env.FEEDBACK_DATA_DIR || path.join("/tmp", "feedback")
+const writableFile = path.join(dataDir, "feedback.json")
+const bundledFile = path.join(process.cwd(), "data", "feedback.json")
+
+async function readFeedbacks() {
+  try {
+    const raw = await fs.readFile(writableFile, "utf-8")
+    return JSON.parse(raw || "[]") as FeedbackEntry[]
+  } catch {
+    try {
+      const rawBundled = await fs.readFile(bundledFile, "utf-8")
+      return JSON.parse(rawBundled || "[]") as FeedbackEntry[]
+    } catch {
+      return []
+    }
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -38,23 +55,17 @@ export async function POST(request: Request) {
     }
 
     // Ensure data directory exists
-    await fs.mkdir(path.dirname(dataFile), { recursive: true })
+    await fs.mkdir(dataDir, { recursive: true })
 
-    // Read existing
-    let feedbacks: FeedbackEntry[] = []
-    try {
-      const raw = await fs.readFile(dataFile, "utf-8")
-      feedbacks = JSON.parse(raw || "[]")
-    } catch (e) {
-      feedbacks = []
-    }
+    // Read existing (writable first, fallback to bundled)
+    let feedbacks: FeedbackEntry[] = await readFeedbacks()
 
     // Append
     feedbacks.unshift(entry) // Add to beginning
     if (feedbacks.length > 200) feedbacks = feedbacks.slice(0, 200) // Keep last 200
 
     // Write back
-    await fs.writeFile(dataFile, JSON.stringify(feedbacks, null, 2), "utf-8")
+    await fs.writeFile(writableFile, JSON.stringify(feedbacks, null, 2), "utf-8")
 
     return NextResponse.json({ ok: true, message: "Merci pour votre avis !" })
   } catch (error) {
@@ -65,8 +76,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const raw = await fs.readFile(dataFile, "utf-8")
-    const feedbacks = JSON.parse(raw || "[]")
+    const feedbacks = await readFeedbacks()
     return NextResponse.json(feedbacks)
   } catch {
     return NextResponse.json([])
