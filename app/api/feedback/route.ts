@@ -23,7 +23,11 @@ async function readFeedbacks() {
   } catch {
     try {
       const rawBundled = await fs.readFile(bundledFile, "utf-8")
-      return JSON.parse(rawBundled || "[]") as FeedbackEntry[]
+      const parsed = JSON.parse(rawBundled || "[]") as FeedbackEntry[]
+      // Seed writable path for subsequent writes
+      await fs.mkdir(dataDir, { recursive: true })
+      await fs.writeFile(writableFile, JSON.stringify(parsed, null, 2), "utf-8")
+      return parsed
     } catch {
       return []
     }
