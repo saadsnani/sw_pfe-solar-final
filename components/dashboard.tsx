@@ -8,12 +8,14 @@ import { AnalyticsPage } from "@/components/analytics-page"
 import { AIPredictionsPage } from "@/components/ai-predictions-page"
 import { SettingsPage } from "@/components/settings-page"
 import { SystemHealthPage } from "@/components/system-health-page"
+import { ConsumptionManagement } from "@/components/consumption-management"
+import { AutonomyEstimation } from "@/components/autonomy-estimation"
 
 interface DashboardProps {
   onLogout: () => void
 }
 
-export type PageType = "dashboard" | "analytics" | "ai-predictions" | "settings" | "system-health"
+export type PageType = "dashboard" | "analytics" | "ai-predictions" | "settings" | "system-health" | "consumption" | "autonomy"
 
 export function Dashboard({ onLogout }: DashboardProps) {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard")
@@ -31,6 +33,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
         return <SettingsPage />
       case "system-health":
         return <SystemHealthPage />
+      case "consumption":
+        return <ConsumptionManagement />
+      case "autonomy":
+        return <AutonomyEstimation />
       default:
         return <DashboardContent />
     }

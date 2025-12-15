@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun } from "lucide-react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun, Zap, Battery } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { PageType } from "@/components/dashboard"
 
@@ -14,6 +14,8 @@ interface SidebarProps {
 const navItems = [
   { id: "dashboard" as PageType, label: "Tableau de Bord", icon: LayoutDashboard },
   { id: "analytics" as PageType, label: "Analyses & Rapports", icon: BarChart3 },
+  { id: "consumption" as PageType, label: "Gestion de Consommation", icon: Zap },
+  { id: "autonomy" as PageType, label: "Estimation de l'Autonomie", icon: Battery },
   { id: "ai-predictions" as PageType, label: "Prédictions IA", icon: Brain },
   { id: "system-health" as PageType, label: "Santé du Système", icon: Activity },
   { id: "settings" as PageType, label: "Paramètres", icon: Settings },
