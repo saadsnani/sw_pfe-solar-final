@@ -1,6 +1,7 @@
 "use client"
 
 import { LogOut, User } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -20,8 +21,15 @@ export function Header({ onLogout }: HeaderProps) {
     <header className="h-16 border-b border-border bg-card/50 backdrop-blur-sm px-6 flex items-center justify-between">
       {/* Left - Institution */}
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <span className="text-primary font-bold text-sm">EST</span>
+        <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+          <Image
+            src="/images.jpg"
+            alt="EST Logo"
+            width={40}
+            height={40}
+            className="object-cover"
+            priority
+          />
         </div>
         <div>
           <h2 className="font-semibold text-foreground">École Supérieure de Technologie</h2>

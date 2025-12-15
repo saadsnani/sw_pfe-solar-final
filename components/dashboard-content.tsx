@@ -4,6 +4,7 @@ import { SystemSynoptic } from "@/components/system-synoptic"
 import { MetricCards } from "@/components/metric-cards"
 import { EnergyChart } from "@/components/energy-chart"
 import { AIInsightsPanel } from "@/components/ai-insights-panel"
+import { WeatherForecast } from "@/components/weather-forecast"
 
 export function DashboardContent() {
   return (
@@ -29,6 +30,8 @@ export function DashboardContent() {
           <AIInsightsPanel />
         </div>
       </div>
+
+      <WeatherForecast />
     </div>
   )
 }
