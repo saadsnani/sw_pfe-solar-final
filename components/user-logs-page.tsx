@@ -125,13 +125,13 @@ export function UserLogsPage() {
           {users.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">Aucun utilisateur enregistré</div>
           ) : (
-            <div className="rounded-md border">
+            <div className="overflow-x-auto rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Mot de Passe</TableHead>
-                    <TableHead>Date de Création</TableHead>
+                    <TableHead className="min-w-[200px]">Email</TableHead>
+                    <TableHead className="min-w-[120px]">Mot de Passe</TableHead>
+                    <TableHead className="min-w-[180px]">Date de Création</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -159,13 +159,13 @@ export function UserLogsPage() {
           {logs.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">Aucun log de connexion</div>
           ) : (
-            <div className="rounded-md border">
+            <div className="overflow-x-auto rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Date & Heure</TableHead>
-                    <TableHead>Statut</TableHead>
+                    <TableHead className="min-w-[200px]">Email</TableHead>
+                    <TableHead className="min-w-[180px]">Date & Heure</TableHead>
+                    <TableHead className="min-w-[100px]">Statut</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
