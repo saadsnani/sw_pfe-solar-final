@@ -21,7 +21,7 @@ export function Header({ onLogout }: HeaderProps) {
     <header className="h-16 border-b border-border bg-card/50 backdrop-blur-sm px-6 flex items-center justify-between">
       {/* Left - Institution */}
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+        <div className="w-10 h-10 overflow-hidden bg-primary/10 flex items-center justify-center">
           <Image
             src="/images.jpg"
             alt="EST Logo"
