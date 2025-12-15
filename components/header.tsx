@@ -73,7 +73,7 @@ export function Header({ onLogout, userEmail }: HeaderProps) {
             <span className="font-semibold text-foreground">Encadré par :</span> Mr. Abdelaziz FRI
           </p>
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Réalisé par :</span> Walid EL HALOUAT & Saad SNANI
+            <span className="font-semibold text-foreground">Réalisé par :</span> Saad SNANI & Walid EL HALOUAT
           </p>
         </div>
 

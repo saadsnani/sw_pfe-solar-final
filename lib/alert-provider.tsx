@@ -9,7 +9,7 @@ export interface Alert {
   type: AlertType
   title: string
   message: string
-  duration?: number
+  duration?: number | false
 }
 
 interface AlertContextType {
@@ -28,9 +28,9 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
     const newAlert = { ...alert, id }
     setAlerts((prev) => [...prev, newAlert])
 
-    // Auto-remove after duration if specified
+    // Auto-remove after duration unless explicitly disabled with duration: false
     if (alert.duration !== false) {
-      const timeout = alert.duration || 5000
+      const timeout = alert.duration ?? 5000
       setTimeout(() => {
         removeAlert(id)
       }, timeout)
