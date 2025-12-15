@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { Cloud, CloudRain, Sun, Shirt } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const CITIES = [
   { name: "Fes", latitude: 34.0331, longitude: -5.0003 },
@@ -22,10 +24,25 @@ type CityForecast = {
   days: DailyForecast[]
 }
 
+function getClothingAdvice(tMax: number): { emoji: string; text: string } {
+  if (tMax < 10) return { emoji: "🧥", text: "Manteau lourd" }
+  if (tMax < 15) return { emoji: "🧤", text: "Veste + Pull" }
+  if (tMax < 20) return { emoji: "👕", text: "Pull léger" }
+  if (tMax < 25) return { emoji: "👔", text: "Chemise/T-shirt" }
+  return { emoji: "👙", text: "Vêtements légers" }
+}
+
+function getWeatherIcon(rainProb: number, tMax: number) {
+  if (rainProb > 50) return <CloudRain className="w-5 h-5 text-blue-500" />
+  if (rainProb > 20) return <Cloud className="w-5 h-5 text-gray-500" />
+  return <Sun className="w-5 h-5 text-yellow-500" />
+}
+
 export function WeatherForecast() {
   const [data, setData] = useState<CityForecast[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedCity, setSelectedCity] = useState("Fes")
 
   const fetchUrl = (lat: number, lon: number) =>
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7&timezone=auto`
@@ -67,45 +84,79 @@ export function WeatherForecast() {
     }
   }, [])
 
+  const selectedCityData = useMemo(() => {
+    return data.find((c) => c.city === selectedCity)
+  }, [data, selectedCity])
+
   const content = useMemo(() => {
     if (loading) return <p className="text-muted-foreground text-sm">Chargement des previsions...</p>
     if (error) return <p className="text-destructive text-sm">{error}</p>
-    if (!data.length) return <p className="text-muted-foreground text-sm">Aucune donnee meteo.</p>
+    if (!selectedCityData) return <p className="text-muted-foreground text-sm">Aucune donnee meteo.</p>
 
     return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {data.map((city) => (
-          <div key={city.city} className="rounded-lg border border-border bg-card p-4 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-base font-semibold text-foreground">{city.city}</h3>
-              <span className="text-xs text-muted-foreground">7 jours</span>
-            </div>
-            <div className="divide-y divide-border">
-              {city.days.map((day) => (
-                <div key={day.date} className="py-2 flex items-center justify-between text-sm text-foreground">
-                  <div className="flex flex-col">
-                    <span className="font-medium">{formatDay(day.date)}</span>
-                    <span className="text-muted-foreground text-xs">{formatDate(day.date)}</span>
+      <div className="space-y-4">
+        {/* City Selector */}
+        <div className="flex gap-2 flex-wrap">
+          {CITIES.map((city) => (
+            <Button
+              key={city.name}
+              variant={selectedCity === city.name ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCity(city.name)}
+              className="rounded-full"
+            >
+              {city.name}
+            </Button>
+          ))}
+        </div>
+
+        {/* Selected City Forecast */}
+        <div className="grid gap-3">
+          {selectedCityData.days.map((day) => {
+            const advice = getClothingAdvice(day.tMax)
+            return (
+              <div
+                key={day.date}
+                className="rounded-lg border border-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 flex-1">
+                    {getWeatherIcon(day.rainProb, day.tMax)}
+                    <div className="flex-1">
+                      <div className="font-semibold text-foreground">
+                        {formatDay(day.date)} - {formatDate(day.date)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {Math.round(day.tMax)}°C / {Math.round(day.tMin)}°C · Pluie: {Math.round(day.rainProb ?? 0)}%
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-semibold">{Math.round(day.tMax)}° / {Math.round(day.tMin)}°C</div>
-                    <div className="text-xs text-muted-foreground">Pluie: {Math.round(day.rainProb ?? 0)}%</div>
+
+                  {/* Clothing Advice */}
+                  <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border">
+                    <span className="text-2xl">{advice.emoji}</span>
+                    <div className="text-right hidden sm:block">
+                      <div className="text-xs font-medium text-foreground">{advice.text}</div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
-  }, [data, error, loading])
+  }, [loading, error, selectedCityData, selectedCity])
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Previsions meteo (7 jours)</h2>
-          <p className="text-sm text-muted-foreground">Fes وباقي المدن الكبرى</p>
+          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+            <Shirt className="w-5 h-5" />
+            Prévisions météo & Conseils vestimentaires
+          </h2>
+          <p className="text-sm text-muted-foreground">7 jours - Choisir votre ville</p>
         </div>
       </div>
       {content}
