@@ -103,7 +103,7 @@ export function WeatherForecast() {
               variant={selectedCity === city.name ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCity(city.name)}
-              className="rounded-full"
+              className="rounded-full text-xs sm:text-sm"
             >
               {city.name}
             </Button>
@@ -111,32 +111,32 @@ export function WeatherForecast() {
         </div>
 
         {/* Selected City Forecast */}
-        <div className="grid gap-3">
+        <div className="grid gap-2 sm:gap-3">
           {selectedCityData.days.map((day) => {
             const advice = getClothingAdvice(day.tMax)
             return (
               <div
                 key={day.date}
-                className="rounded-lg border border-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow"
+                className="rounded-lg border border-border bg-card p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 flex-1">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-1">
                     {getWeatherIcon(day.rainProb, day.tMax)}
-                    <div className="flex-1">
-                      <div className="font-semibold text-foreground">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm sm:text-base text-foreground">
                         {formatDay(day.date)} - {formatDate(day.date)}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-xs sm:text-sm text-muted-foreground truncate">
                         {Math.round(day.tMax)}°C / {Math.round(day.tMin)}°C · Pluie: {Math.round(day.rainProb ?? 0)}%
                       </div>
                     </div>
                   </div>
 
                   {/* Clothing Advice */}
-                  <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border">
-                    <span className="text-2xl">{advice.emoji}</span>
-                    <div className="text-right hidden sm:block">
-                      <div className="text-xs font-medium text-foreground">{advice.text}</div>
+                  <div className="flex items-center gap-2 ml-0 sm:ml-4 sm:pl-4 sm:border-l sm:border-border w-full sm:w-auto">
+                    <span className="text-xl sm:text-2xl">{advice.emoji}</span>
+                    <div className="text-right text-xs sm:text-sm">
+                      <div className="font-medium text-foreground">{advice.text}</div>
                     </div>
                   </div>
                 </div>
@@ -149,14 +149,14 @@ export function WeatherForecast() {
   }, [loading, error, selectedCityData, selectedCity])
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between">
+    <section className="space-y-3 sm:space-y-4">
+      <div className="flex items-center justify-between px-2 sm:px-0">
         <div>
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground flex items-center gap-2">
             <Shirt className="w-5 h-5" />
-            Prévisions météo & Conseils vestimentaires
+            Prévisions météo
           </h2>
-          <p className="text-sm text-muted-foreground">7 jours - Choisir votre ville</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">7 jours - Choisir votre ville</p>
         </div>
       </div>
       {content}
