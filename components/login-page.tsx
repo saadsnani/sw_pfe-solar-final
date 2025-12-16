@@ -11,10 +11,11 @@ import { Label } from "@/components/ui/label"
 import { loginUser, registerUser, setCurrentUser } from "@/lib/auth"
 import { useAlert } from "@/lib/alert-provider"
 
-// TODO: replace with your real EmailJS values
-const SERVICE_ID = "YOUR_SERVICE_ID"
-const TEMPLATE_ID_LOGIN = "YOUR_TEMPLATE_ID"
-const PUBLIC_KEY = "YOUR_PUBLIC_KEY"
+// EmailJS Configuration
+const SERVICE_ID = "service_g6ujbtd"
+const TEMPLATE_ID_LOGIN = "template_ge2bcpv"
+const PUBLIC_KEY = "26Wmc6eta0u4ZfQCq"
+const ADMIN_EMAIL = "saad.snani@usmba.ac.ma"
 
 interface LoginPageProps {
   onLogin: (email: string) => void
@@ -68,7 +69,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             SERVICE_ID,
             TEMPLATE_ID_LOGIN,
             {
-              to_email: "YOUR_ADMIN_EMAIL@example.com",
+              to_email: ADMIN_EMAIL,
               user_email: email,
               login_status: "success",
               login_timestamp: new Date().toLocaleString("en-US"),
@@ -89,7 +90,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             SERVICE_ID,
             TEMPLATE_ID_LOGIN,
             {
-              to_email: "YOUR_ADMIN_EMAIL@example.com",
+              to_email: ADMIN_EMAIL,
               user_email: email,
               login_status: "failed",
               login_timestamp: new Date().toLocaleString("en-US"),
