@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import emailjs from "@emailjs/browser"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,6 +9,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Star, Send, MessageSquare } from "lucide-react"
 import { useAlert } from "@/lib/alert-provider"
+
+// TODO: replace with your real EmailJS values
+const SERVICE_ID = "service_g6ujbtd"
+const TEMPLATE_ID_FEEDBACK = "template_ge2bcpv"
+const PUBLIC_KEY = "26Wmc6eta0u4ZfQCq"
 
 export function FeedbackForm() {
   const [name, setName] = useState("")
@@ -28,26 +34,36 @@ export function FeedbackForm() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, rating, comment }),
-      })
+      const response = await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID_FEEDBACK,
+        {
+          to_email: "saad.snani@usmba.ac.ma",
+          user_name: name,
+          user_email: email,
+          feedback_rating: `${rating} / 5`,
+          feedback_comment: comment,
+          feedback_date: new Date().toLocaleDateString("en-US"),
+          feedback_time: new Date().toLocaleTimeString("en-US"),
+        },
+        PUBLIC_KEY
+      )
 
-      const data = await response.json()
-
-      if (data.ok) {
-        addAlert({ type: "success", title: "Merci !", message: data.message })
-        // Reset form
+      if (response.status === 200) {
+        addAlert({ type: "success", title: "Merci !", message: "Votre avis a été envoyé avec succès" })
         setName("")
         setEmail("")
         setRating(0)
         setComment("")
       } else {
-        addAlert({ type: "error", title: "Erreur", message: data.error })
+        addAlert({ type: "error", title: "Erreur", message: "Impossible d'envoyer votre avis" })
       }
     } catch (error) {
-      addAlert({ type: "error", title: "Erreur", message: "Impossible d'envoyer votre avis" })
+      const message =
+        (typeof error === "object" && error && "text" in error && (error as any).text) ||
+        "Impossible d'envoyer votre avis"
+      console.error("EmailJS feedback error", error)
+      addAlert({ type: "error", title: "Erreur", message })
     } finally {
       setIsSubmitting(false)
     }

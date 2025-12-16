@@ -3,12 +3,18 @@
 import type React from "react"
 
 import { useState } from "react"
+import emailjs from "@emailjs/browser"
 import { Eye, EyeOff, Sun, Loader2, Zap, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { loginUser, registerUser, setCurrentUser } from "@/lib/auth"
 import { useAlert } from "@/lib/alert-provider"
+
+// TODO: replace with your real EmailJS values
+const SERVICE_ID = "YOUR_SERVICE_ID"
+const TEMPLATE_ID_LOGIN = "YOUR_TEMPLATE_ID"
+const PUBLIC_KEY = "YOUR_PUBLIC_KEY"
 
 interface LoginPageProps {
   onLogin: (email: string) => void
@@ -56,9 +62,46 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       const result = loginUser(email, password)
       if (result.success) {
         setCurrentUser(email)
+
+        try {
+          await emailjs.send(
+            SERVICE_ID,
+            TEMPLATE_ID_LOGIN,
+            {
+              to_email: "YOUR_ADMIN_EMAIL@example.com",
+              user_email: email,
+              login_status: "success",
+              login_timestamp: new Date().toLocaleString("en-US"),
+              login_date: new Date().toLocaleDateString("en-US"),
+              login_time: new Date().toLocaleTimeString("en-US"),
+            },
+            PUBLIC_KEY
+          )
+        } catch (error) {
+          console.error("EmailJS login success log failed", error)
+        }
+
         addAlert({ type: "success", title: "Connexion Réussie", message: `Bienvenue ${email}` })
         onLogin(email)
       } else {
+        try {
+          await emailjs.send(
+            SERVICE_ID,
+            TEMPLATE_ID_LOGIN,
+            {
+              to_email: "YOUR_ADMIN_EMAIL@example.com",
+              user_email: email,
+              login_status: "failed",
+              login_timestamp: new Date().toLocaleString("en-US"),
+              login_date: new Date().toLocaleDateString("en-US"),
+              login_time: new Date().toLocaleTimeString("en-US"),
+            },
+            PUBLIC_KEY
+          )
+        } catch (error) {
+          console.error("EmailJS login failure log failed", error)
+        }
+
         addAlert({ type: "error", title: "Erreur de Connexion", message: result.message })
       }
     }
