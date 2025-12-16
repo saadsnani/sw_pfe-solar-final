@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Settings, Bell, Shield, Zap, Save } from "lucide-react"
-import { FeedbackForm } from "@/components/feedback-form"
 
 export function SettingsPage() {
   return (
@@ -15,9 +14,6 @@ export function SettingsPage() {
         <h1 className="text-2xl font-bold text-foreground">Paramètres</h1>
         <p className="text-muted-foreground">Configurez vos préférences Smart EMS</p>
       </div>
-
-      {/* Feedback Section */}
-      <FeedbackForm />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Threshold Settings */}
