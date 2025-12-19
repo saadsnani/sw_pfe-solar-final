@@ -2,14 +2,15 @@
 
 import type React from "react"
 
-import { Sun, Battery, Zap, Home, ArrowRight } from "lucide-react"
+import { Sun, Battery, Zap, Home, ArrowRight, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import type { SystemSensorsState } from "@/lib/sensor-connection"
 
 interface ComponentNodeProps {
   icon: React.ReactNode
   label: string
   values: string[]
-  status: "good" | "warning" | "critical"
+  status: "good" | "warning" | "critical" | "disconnected"
 }
 
 function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
@@ -17,12 +18,14 @@ function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
     good: "border-energy-green bg-energy-green/10",
     warning: "border-energy-yellow bg-energy-yellow/10",
     critical: "border-energy-red bg-energy-red/10",
+    disconnected: "border-gray-400/50 bg-gray-400/5",
   }
 
   const iconColors = {
     good: "text-energy-green",
     warning: "text-energy-yellow",
     critical: "text-energy-red",
+    disconnected: "text-gray-400",
   }
 
   return (
@@ -34,11 +37,15 @@ function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
       </div>
       <h3 className="text-sm font-semibold text-foreground text-center mb-2">{label}</h3>
       <div className="space-y-1">
-        {values.map((value, index) => (
-          <p key={index} className="text-xs text-center font-mono text-muted-foreground">
-            {value}
-          </p>
-        ))}
+        {values.length === 0 ? (
+          <p className="text-xs text-center text-muted-foreground italic">Non connecté</p>
+        ) : (
+          values.map((value, index) => (
+            <p key={index} className="text-xs text-center font-mono text-muted-foreground">
+              {value}
+            </p>
+          ))
+        )}
       </div>
     </div>
   )
@@ -62,13 +69,33 @@ function EnergyFlowLine() {
   )
 }
 
-export function SystemSynoptic() {
+interface SystemSynopticProps {
+  sensors?: SystemSensorsState
+}
+
+export function SystemSynoptic({ sensors }: SystemSynopticProps) {
+  // Extract sensor values
+  const solarVoltage = sensors?.solarVoltage.value
+  const solarCurrent = sensors?.solarCurrent.value
+  const solarProduction = sensors?.production.value
+  const batteryVoltage = sensors?.battery.value
+  const batteryTemp = sensors?.temperature.value
+  const gridVoltage = sensors?.gridVoltage.value
+  const consumption = sensors?.consumption.value
+
+  const isSolarConnected = sensors?.solarVoltage.connected && sensors?.solarCurrent.connected
+  const isBatteryConnected = sensors?.battery.connected
+  const isGridConnected = sensors?.gridVoltage.connected
+  const isConsumptionConnected = sensors?.consumption.connected
+
+  const allConnected = isSolarConnected && isBatteryConnected && isGridConnected && isConsumptionConnected
+
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Zap className="w-5 h-5 text-primary" />
-          System Synoptic
+          Synoptique du Système
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -76,9 +103,13 @@ export function SystemSynoptic() {
           {/* Solar Panel */}
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}
-            label="Solar Panel"
-            values={["35V / 8A", "280W"]}
-            status="good"
+            label="Panneau Solaire"
+            values={
+              isSolarConnected && solarVoltage !== null && solarCurrent !== null
+                ? [`${solarVoltage.toFixed(1)}V / ${solarCurrent.toFixed(1)}A`, solarProduction ? `${solarProduction.toFixed(0)}W` : '']
+                : []
+            }
+            status={isSolarConnected ? "good" : "disconnected"}
           />
 
           <EnergyFlowLine />
@@ -86,9 +117,9 @@ export function SystemSynoptic() {
           {/* MPPT Controller */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
-            label="MPPT Controller"
-            values={["Efficiency: 98%", "Mode: MPPT"]}
-            status="good"
+            label="Contrôleur MPPT"
+            values={isSolarConnected ? ["Efficacité: 98%", "Mode: MPPT"] : []}
+            status={isSolarConnected ? "good" : "disconnected"}
           />
 
           <EnergyFlowLine />
@@ -96,19 +127,31 @@ export function SystemSynoptic() {
           {/* Battery */}
           <ComponentNode
             icon={<Battery className="w-6 h-6" />}
-            label="Battery 12V"
-            values={["12.8V / 85%", "Temp: 28°C"]}
-            status="good"
+            label="Batterie 12V"
+            values={
+              isBatteryConnected && batteryVoltage !== null
+                ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp ? `Temp: ${batteryTemp.toFixed(1)}°C` : '']
+                : []
+            }
+            status={
+              isBatteryConnected
+                ? batteryVoltage !== null && batteryVoltage >= 70
+                  ? "good"
+                  : batteryVoltage !== null && batteryVoltage >= 20
+                    ? "warning"
+                    : "critical"
+                : "disconnected"
+            }
           />
 
           <EnergyFlowLine />
 
-          {/* Inverter */}
+          {/* Grid/Inverter */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
-            label="Inverter 230V"
-            values={["230V AC", "450W Load"]}
-            status="good"
+            label="Onduleur / Réseau"
+            values={isGridConnected && gridVoltage !== null ? [`${gridVoltage.toFixed(1)}V AC`, "Mode: Connecté"] : []}
+            status={isGridConnected ? "good" : "disconnected"}
           />
 
           <EnergyFlowLine />
@@ -116,20 +159,37 @@ export function SystemSynoptic() {
           {/* Home Load */}
           <ComponentNode
             icon={<Home className="w-6 h-6" />}
-            label="Home Load"
-            values={["Active: 5 Devices", "Priority: Normal"]}
-            status="good"
+            label="Charge Maison"
+            values={isConsumptionConnected && consumption !== null ? [`${consumption.toFixed(0)}W`, "Actif"] : []}
+            status={isConsumptionConnected ? "good" : "disconnected"}
           />
         </div>
 
         {/* Status Bar */}
-        <div className="mt-6 p-4 rounded-xl bg-energy-green/10 border border-energy-green/30">
+        <div
+          className={`mt-6 p-4 rounded-xl border ${
+            allConnected
+              ? "bg-energy-green/10 border-energy-green/30"
+              : "bg-yellow-500/10 border-yellow-500/30"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-energy-green animate-pulse" />
-              <span className="text-sm text-energy-green font-medium">System Operating Normally</span>
+              {allConnected ? (
+                <>
+                  <div className="w-2 h-2 rounded-full bg-energy-green animate-pulse" />
+                  <span className="text-sm text-energy-green font-medium">Tous les capteurs connectés</span>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                  <span className="text-sm text-yellow-700 dark:text-yellow-300 font-medium">Certains capteurs non détectés</span>
+                </>
+              )}
             </div>
-            <span className="text-xs text-muted-foreground font-mono">Last Update: Just Now</span>
+            <span className="text-xs text-muted-foreground font-mono">
+              {sensors?.battery.lastUpdate ? new Date(sensors.battery.lastUpdate).toLocaleTimeString() : "Pas de données"}
+            </span>
           </div>
         </div>
       </CardContent>
