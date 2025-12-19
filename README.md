@@ -1,160 +1,402 @@
-# Solar Dashboard - Battery Temperature Monitoring
+# 🌞 Solar Dashboard - Real-Time Temperature Monitoring System
 
-Système complet pour afficher la température de la batterie en temps réel sur un dashboard solaire.
+[![GitHub](https://img.shields.io/badge/GitHub-saadsnani%2Fsw__pfe--solar--final-blue)](https://github.com/saadsnani/sw_pfe-solar-final)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 🎯 Fonctionnalités
+Système complet de monitoring de température en temps réel pour panneaux solaires avec intégration ESP32 + Arduino Mega.
 
-- ✅ Affichage température batterie temps réel
-- ✅ Graphique historique avec Recharts
-- ✅ Statuts colorés (Froid/Normal/Chaud/Critique)
-- ✅ Communication Arduino Mega ↔ ESP32
-- ✅ API REST + stockage JSON
-- ✅ Page de test intégrée
-- ✅ TypeScript full-stack
-- ✅ Responsive design
+## ✨ Fonctionnalités Principales
 
-## 🔧 Architecture
+- 🌡️ **Monitoring Double**: Température batterie + ambiante
+- 📊 **Graphiques en Temps Réel**: Historique de 20 lectures avec Recharts
+- 🎨 **Status Visuels**: Code couleur (Froid/Normal/Chaud/Critique)
+- 📡 **Communication Hardware**: Arduino Mega ↔ ESP32 via Serial
+- 🔄 **Auto-Refresh**: Mise à jour toutes les 3 secondes
+- 📱 **Responsive Design**: Fonctionne sur mobile, tablette, desktop
+- ⚡ **API REST**: Endpoints pour envoi/récupération de données
+- 🚨 **Alertes**: Notifications pour températures critiques
+- 📈 **Trend Indicators**: Flèches de tendance (↑ ↓ →)
+- 💾 **Stockage JSON**: Historique complet des lectures
+
+## 🏗️ Architecture du Système
+
+## 🏗️ Architecture du Système
 
 ```
-Arduino Mega (Capteur)
-    ↓ Serial2 (9600 baud)
-ESP32 (WiFi)
-    ↓ HTTP POST
-Next.js API (/api/sensor-data)
-    ↓ JSON
-React Dashboard
+┌─────────────────────────────────────────────────────┐
+│         Sensors (Physical Layer)                     │
+│  DS18B20 (Digital) + LM35/TMP36 (Analog)            │
+└──────────────────┬──────────────────────────────────┘
+                   │
+    ┌──────────────▼──────────────┐
+    │   Arduino Mega 2560         │
+    │   - Read DS18B20 (Pin 2)    │
+    │   - Read Analog (Pin A0)    │
+    │   - Format: "TEMP:X|BATT:Y" │
+    └──────────────┬──────────────┘
+                   │ Serial2 @ 9600 baud
+    ┌──────────────▼──────────────┐
+    │   ESP32 Dev Board           │
+    │   - Parse Serial Data       │
+    │   - Connect to WiFi         │
+    │   - HTTP POST to API        │
+    │   - Web Server (Optional)   │
+    └──────────────┬──────────────┘
+                   │ HTTP/WiFi
+    ┌──────────────▼──────────────┐
+    │   Next.js API Server        │
+    │   /api/sensor-data          │
+    │   - Validate Data           │
+    │   - Store to JSON           │
+    │   - Serve to Dashboard      │
+    └──────────────┬──────────────┘
+                   │ REST API
+    ┌──────────────▼──────────────┐
+    │   React Dashboard           │
+    │   - Real-time Display       │
+    │   - Charts & Graphs         │
+    │   - Status Indicators       │
+    │   - Mobile Responsive       │
+    └─────────────────────────────┘
 ```
 
-## 📋 Structure du Projet
+## 📁 Structure du Projet
 
 ```
 solar-dashboard-pfe/
-├── app/
-│   ├── api/sensor-data/        # API endpoints
-│   └── battery-test/            # Page de test
-├── components/
-│   ├── battery-temperature-card.tsx
-│   ├── battery-temperature-chart.tsx
-│   └── battery-temperature-test-page.tsx
-├── hooks/
-│   └── use-battery-temperature.ts
-├── lib/
-│   ├── battery-temperature-config.ts
-│   └── battery-temperature-utils.ts
-├── Arduino/
-│   ├── ESP32_Battery_Temperature_Example.ino
-│   └── Arduino_Mega_Temperature_Sensor.ino
-└── data/
-    └── battery-temperature.json
+├── 📱 app/
+│   ├── api/
+│   │   └── sensor-data/         # API REST endpoints
+│   ├── battery-test/            # Page de test
+│   └── page.tsx                 # Dashboard principal
+│
+├── 🎨 components/
+│   ├── temperature-display-card.tsx    # Carte température (NEW!)
+│   ├── battery-temperature-card.tsx    # Widget compact
+│   ├── battery-temperature-chart.tsx   # Graphique historique
+│   ├── dashboard-content.tsx           # Layout principal
+│   └── ui/                             # Composants réutilisables
+│
+├── 🔌 hooks/
+│   ├── use-battery-temperature.ts      # Hook données température
+│   └── use-sensor-connection.ts        # Gestion connexion
+│
+├── ⚙️ lib/
+│   ├── battery-temperature-config.ts   # Configuration
+│   ├── battery-temperature-utils.ts    # Utilitaires
+│   └── sensor-connection.ts            # Logique connexion
+│
+├── 🤖 Arduino/
+│   ├── ESP32_Battery_Temperature_Example.ino   # Code ESP32
+│   └── Arduino_Mega_Temperature_Sensor.ino     # Code Mega
+│
+├── 📊 data/
+│   ├── sensor-readings.json            # Données capteurs
+│   └── battery-temperature.json        # Historique batterie
+│
+└── 📚 Documentation/
+    ├── DEPLOYMENT.md                   # Guide de déploiement
+    ├── QUICK_START.md                  # Démarrage rapide
+    └── setup.bat / setup.sh            # Scripts d'installation
 ```
 
 ## 🚀 Démarrage Rapide
 
-### Frontend
+### Option 1: Installation Automatique (Recommandé)
+
+**Windows:**
+```bash
+setup.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+### Option 2: Installation Manuelle
 
 ```bash
-# Installation
+# 1. Cloner le repo
+git clone https://github.com/saadsnani/sw_pfe-solar-final.git
+cd sw_pfe-solar-final
+
+# 2. Installer les dépendances
 npm install
 
-# Développement
+# 3. Créer les fichiers de données
+mkdir -p data
+echo "[]" > data/sensor-readings.json
+echo "[]" > data/battery-temperature.json
+
+# 4. Lancer le serveur de développement
 npm run dev
-
-# Build production
-npm run build
-npm start
 ```
 
-Accédez à: `http://localhost:3000/battery-test`
+Accédez à: **http://localhost:3000**
 
-### Arduino/ESP32
+### Configuration Hardware
 
-1. **Modifiez les credentials WiFi** dans `ESP32_Battery_Temperature_Example.ino`:
+#### 1. Modifier les credentials WiFi
+Ouvrir `ESP32_Battery_Temperature_Example.ino` et modifier:
 ```cpp
-const char* ssid = "Votre_WiFi";
-const char* password = "Votre_Password";
-const char* serverUrl = "http://192.168.x.x:3000/api/sensor-data";
+const char* ssid = "Votre_WiFi";           // Ligne 23
+const char* password = "Votre_Password";   // Ligne 24
+const char* serverUrl = "http://192.168.x.x:3000/api/sensor-data";  // Ligne 27
 ```
 
-2. **Connectez les broches:**
-   - Mega TX (pin 1) → ESP32 RX2 (GPIO 16)
-   - Mega RX (pin 0) → ESP32 TX2 (GPIO 17)
-   - GND → GND
+#### 2. Câblage
+```
+ESP32 Pin 16 (RX2) ──→ Arduino Mega TX1 (Pin 18)
+ESP32 Pin 17 (TX2) ──→ Arduino Mega RX1 (Pin 19)
+ESP32 GND          ──→ Arduino Mega GND
 
-3. **Téléchargez le code:**
+DS18B20:
+  - VCC  → 5V
+  - DATA → Pin 2
+  - GND  → GND
+
+LM35/TMP36:
+  - VCC    → 5V
+  - OUTPUT → A0
+  - GND    → GND
+```
+
+#### 3. Upload du Code
 ```bash
-cd ESP32-Temperature-Sensor
-pio run -t upload
-pio device monitor
+# Arduino Mega
+# Ouvrir Arduino_Mega_Temperature_Sensor.ino
+# Tools > Board > Arduino Mega 2560
+# Tools > Port > (votre port)
+# Upload
+
+# ESP32
+# Ouvrir ESP32_Battery_Temperature_Example.ino
+# Tools > Board > ESP32 Dev Module
+# Tools > Port > (votre port)
+# Upload
 ```
 
 ## 📊 API Endpoints
 
-### Envoyer une température
+### Envoyer des données de capteurs
 ```bash
 POST /api/sensor-data
 Content-Type: application/json
 
 {
-  "batteryTemperature": 35.5
+  "batteryTemperature": 35.5,
+  "temperature": 25.2
 }
 ```
 
-### Récupérer les données
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Sensor data received",
+  "data": {
+    "batteryTemperature": 35.5,
+    "temperature": 25.2,
+    "timestamp": "2025-12-19T10:30:00.000Z"
+  }
+}
+```
+
+### Récupérer toutes les données
+```bash
+GET /api/sensor-data?type=all&limit=20
+```
+
+**Response:**
+```json
+{
+  "current": {
+    "batteryTemperature": 35.5,
+    "temperature": 25.2,
+    "timestamp": "2025-12-19T10:30:00.000Z"
+  },
+  "readings": [...],
+  "count": 20
+}
+```
+
+### Récupérer uniquement température batterie
 ```bash
 GET /api/sensor-data?type=battery
 ```
 
-## 🎨 Statuts Température
+## 🎨 Code Couleur des Statuts
 
-| Statut | Gamme | Couleur |
-|--------|-------|--------|
-| Froid | < 20°C | 🔵 Bleu |
-| Normal | 20-40°C | 🟢 Vert |
-| Chaud | 40-60°C | 🟡 Orange |
-| Critique | > 60°C | 🔴 Rouge |
+| Statut | Température | Couleur | Action |
+|--------|------------|---------|---------|
+| ❄️ Froid | < 20°C | 🔵 Bleu | Normal |
+| ☀️ Normal | 20-40°C | 🟢 Vert | OK |
+| 🌡️ Chaud | 40-60°C | 🟡 Jaune | Surveiller |
+| 🚨 Critique | > 60°C | 🔴 Rouge | **Alerte!** |
+
+## 🌐 Déploiement en Production
+
+### Vercel (Recommandé - Gratuit)
+
+1. **Push vers GitHub** (déjà fait ✅)
+2. **Créer compte Vercel**: [vercel.com](https://vercel.com)
+3. **Import projet**: `saadsnani/sw_pfe-solar-final`
+4. **Deploy**: Automatique sur chaque push!
+5. **URL**: `https://votre-projet.vercel.app`
+
+📖 Guide complet: [DEPLOYMENT.md](DEPLOYMENT.md)
+
+### Configuration ESP32 pour Production
+```cpp
+// Remplacer localhost par URL Vercel
+const char* serverUrl = "https://votre-projet.vercel.app/api/sensor-data";
+```
+
+## 📱 Accès Mobile
+
+Le dashboard est **100% responsive** et fonctionne sur:
+- 📱 Smartphones (iOS/Android)
+- 💻 Tablettes (iPad/Android)
+- 🖥️ Desktop (Windows/Mac/Linux)
+
+Accès: `https://votre-projet.vercel.app` (après déploiement)
 
 ## 📁 Stockage Données
 
-- **Fichier:** `data/battery-temperature.json`
+- **Fichier:** `data/sensor-readings.json` + `data/battery-temperature.json`
 - **Format:** JSON Array
-- **Limit:** 500 dernières lectures
+- **Limite:** 1000 dernières lectures (auto-nettoyage)
 - **Auto-créé:** ✅ Oui
+- **Git Ignore:** ✅ Oui (données sensibles)
 
-## 🔌 Connexions Requises
+## 📚 Documentation Complète
 
-### ESP32
-- Pin 16 (RX2) ← Mega TX
-- Pin 17 (TX2) ← Mega RX
-- GND ← GND
+| Document | Description |
+|----------|-------------|
+| [DEPLOYMENT.md](DEPLOYMENT.md) | 🚀 Guide de déploiement complet |
+| [QUICK_START_BATTERY.md](QUICK_START_BATTERY.md) | ⚡ Démarrage rapide 2 min |
+| [BATTERY_TEMPERATURE_README.md](BATTERY_TEMPERATURE_README.md) | 📖 Guide utilisateur |
+| [BATTERY_TEMPERATURE_GUIDE.md](BATTERY_TEMPERATURE_GUIDE.md) | 🔧 Détails techniques |
+| [BATTERY_TEMPERATURE_CHECKLIST.md](BATTERY_TEMPERATURE_CHECKLIST.md) | ✅ Checklist déploiement |
 
-### Arduino Mega
-- Pin 2: Capteur DS18B20
-- Pin A0: Capteur température batterie (analogique)
-- Pin 1 (TX) → ESP32 RX2
-- Pin 0 (RX) → ESP32 TX2
+## 🛠️ Stack Technologique
 
-## 📚 Documentation
-
-- [QUICK_START_BATTERY.md](QUICK_START_BATTERY.md) - Démarrage 2 min
-- [BATTERY_TEMPERATURE_README.md](BATTERY_TEMPERATURE_README.md) - Guide complet
-- [BATTERY_TEMPERATURE_GUIDE.md](BATTERY_TEMPERATURE_GUIDE.md) - Détails techniques
-- [BATTERY_TEMPERATURE_CHECKLIST.md](BATTERY_TEMPERATURE_CHECKLIST.md) - Checklist déploiement
-
-## 🛠️ Technologies
-
-### Frontend
-- Next.js 16+
-- React 19
-- TypeScript
-- Recharts
-- Tailwind CSS
-- Radix UI
-
-### Backend
-- Next.js API Routes
-- Node.js fs (JSON Storage)
+### Frontend & Backend
+- ⚛️ **Next.js 16** - React framework avec API routes
+- 📘 **TypeScript** - Type safety
+- 🎨 **Tailwind CSS** - Styling moderne
+- 📊 **Recharts** - Graphiques interactifs
+- 🧩 **Radix UI** - Composants accessibles
+- 🎯 **React Hooks** - State management
 
 ### Hardware
+- 🔌 **ESP32** - WiFi & Communication
+- 🤖 **Arduino Mega 2560** - Lecture capteurs
+- 🌡️ **DS18B20** - Capteur température digital
+- 📡 **LM35/TMP36** - Capteur température analogique
+
+### Communication
+- 📶 **Serial Protocol** - Arduino ↔ ESP32 @ 9600 baud
+- 🌐 **HTTP/REST API** - ESP32 ↔ Next.js Server
+- 💾 **JSON Storage** - Persistance des données
+
+## 🎯 Fonctionnalités Avancées
+
+- ✅ **Auto-Refresh** - Mise à jour toutes les 3 secondes
+- ✅ **Validation** - Température entre -50°C et 100°C
+- ✅ **Error Handling** - Gestion déconnexions
+- ✅ **Trend Analysis** - Flèches de tendance (↑ ↓ →)
+- ✅ **Critical Alerts** - Animation pulse pour alertes
+- ✅ **Connection Status** - Indicateur temps réel
+- ✅ **Historical Data** - Graphique 20 dernières lectures
+- ✅ **Responsive Design** - Mobile-first
+- ✅ **Dark Mode** - Interface moderne
+
+## 🔧 Configuration Avancée
+
+### Variables d'Environnement
+Créer `.env.local`:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+### Personnalisation Seuils
+Éditer `lib/battery-temperature-config.ts`:
+```typescript
+export const TEMPERATURE_THRESHOLDS = {
+  COLD: 20,
+  NORMAL: 40,
+  HOT: 60,
+  CRITICAL: 80
+}
+```
+
+## 🐛 Dépannage
+
+### ESP32 ne se connecte pas au WiFi
+```cpp
+// Vérifier credentials ligne 23-24
+const char* ssid = "Votre_WiFi";
+const char* password = "Votre_Password";
+```
+
+### Pas de données dans le dashboard
+1. Vérifier connexion Serial (ESP32 ↔ Mega)
+2. Ouvrir Serial Monitor (115200 baud)
+3. Vérifier URL serveur dans ESP32 code
+4. Tester API: `curl http://localhost:3000/api/sensor-data?type=all`
+
+### Erreur lecture capteur
+- Vérifier câblage DS18B20 (Pin 2)
+- Installer bibliothèques: `OneWire`, `DallasTemperature`
+- Vérifier alimentation 5V
+
+## 📈 Roadmap
+
+- [ ] Support base de données (PostgreSQL/MongoDB)
+- [ ] Notifications email/SMS
+- [ ] Export CSV/Excel
+- [ ] Authentification utilisateur
+- [ ] Mode multi-utilisateur
+- [ ] API GraphQL
+- [ ] Application mobile native
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues! 
+
+1. Fork le projet
+2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+3. Commit (`git commit -m 'Add some AmazingFeature'`)
+4. Push (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
+
+## 📝 License
+
+Ce projet est sous licence MIT. Voir [LICENSE](LICENSE) pour plus de détails.
+
+## 👨‍💻 Auteur
+
+**Saad Snani**  
+- GitHub: [@saadsnani](https://github.com/saadsnani)
+- Projet: [sw_pfe-solar-final](https://github.com/saadsnani/sw_pfe-solar-final)
+
+## 🙏 Remerciements
+
+- Next.js Team pour le framework
+- Vercel pour l'hébergement gratuit
+- Recharts pour les graphiques
+- Communauté Arduino & ESP32
+
+---
+
+**⭐ N'oubliez pas de star le projet si vous le trouvez utile!**
+
+**🚀 Ready to deploy? Read [DEPLOYMENT.md](DEPLOYMENT.md)**
 - Arduino Mega
 - ESP32
 - DS18B20 Temperature Sensor
