@@ -242,11 +242,19 @@ GET /api/sensor-data?type=battery
 
 ### Vercel (Recommandé - Gratuit)
 
+⚠️ **IMPORTANT:** Lisez [VERCEL_NOTES.md](VERCEL_NOTES.md) pour les détails sur le stockage des données!
+
 1. **Push vers GitHub** (déjà fait ✅)
 2. **Créer compte Vercel**: [vercel.com](https://vercel.com)
 3. **Import projet**: `saadsnani/sw_pfe-solar-final`
 4. **Deploy**: Automatique sur chaque push!
 5. **URL**: `https://votre-projet.vercel.app`
+
+**📝 Note sur les Données:**
+- ✅ Fonctionne immédiatement pour les démos
+- ⚠️ Données temporaires sur Vercel (filesystem read-only)
+- 💡 Pour persistence: Utiliser Vercel KV (gratuit, 15 min setup)
+- 📖 Guide complet: [VERCEL_NOTES.md](VERCEL_NOTES.md)
 
 📖 Guide complet: [DEPLOYMENT.md](DEPLOYMENT.md)
 
