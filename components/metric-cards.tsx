@@ -1,31 +1,35 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useState } from "react"
 import { Battery, Sun, Zap, Thermometer } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
+import { getSensorDisplayMessage, hasRealData } from "@/lib/sensor-connection"
+import type { SystemSensorsState } from "@/lib/sensor-connection"
 
 interface MetricCardProps {
   icon: React.ReactNode
   label: string
-  value: string
+  value: string | null
   unit: string
-  status: "good" | "warning" | "critical"
+  status: "good" | "warning" | "critical" | "no-data"
   subValue?: string
-  progress?: number
+  progress?: number | null
+  isConnected?: boolean
 }
 
-function MetricCard({ icon, label, value, unit, status, subValue, progress }: MetricCardProps) {
+function MetricCard({ icon, label, value, unit, status, subValue, progress, isConnected }: MetricCardProps) {
   const statusColors = {
     good: "text-energy-green",
     warning: "text-energy-yellow",
     critical: "text-energy-red",
+    "no-data": "text-muted-foreground",
   }
 
   const progressColors = {
     good: "bg-energy-green",
     warning: "bg-energy-yellow",
     critical: "bg-energy-red",
+    "no-data": "bg-muted",
   }
 
   return (
@@ -35,7 +39,7 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress }: Me
           <div className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl bg-secondary flex items-center justify-center ${statusColors[status]}`}>
             {icon}
           </div>
-          {progress !== undefined && (
+          {progress !== undefined && progress !== null && (
             <div className="relative w-14 h-14 sm:w-16 sm:h-16">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                 <circle
@@ -68,8 +72,14 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress }: Me
         <div>
           <p className="text-xs sm:text-sm text-muted-foreground mb-1">{label}</p>
           <div className="flex items-baseline gap-1">
-            <span className={`text-2xl sm:text-3xl font-bold ${statusColors[status]}`}>{value}</span>
-            <span className="text-xs sm:text-sm text-muted-foreground">{unit}</span>
+            {isConnected && value !== null ? (
+              <>
+                <span className={`text-2xl sm:text-3xl font-bold ${statusColors[status]}`}>{value}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">{unit}</span>
+              </>
+            ) : (
+              <span className="text-sm text-muted-foreground">Non connecté</span>
+            )}
           </div>
           {subValue && <p className="text-[11px] sm:text-xs text-muted-foreground mt-2">{subValue}</p>}
         </div>
@@ -78,38 +88,36 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress }: Me
   )
 }
 
-export function MetricCards() {
-  const [metrics, setMetrics] = useState({
-    soc: 85,
-    production: 280,
-    consumption: 450,
-    temp: 28,
-  })
+export function MetricCards({ sensors }: { sensors?: SystemSensorsState }) {
+  // Default: all disconnected (no hardware detected)
+  const soc = sensors?.battery.value ?? null
+  const production = sensors?.production.value ?? null
+  const consumption = sensors?.consumption.value ?? null
+  const temp = sensors?.temperature.value ?? null
 
-  useEffect(() => {
-    // Simulate real-time data updates
-    const interval = setInterval(() => {
-      setMetrics((prev) => ({
-        soc: Math.max(20, Math.min(100, prev.soc + (Math.random() - 0.5) * 5)),
-        production: Math.max(0, prev.production + (Math.random() - 0.5) * 50),
-        consumption: Math.max(100, prev.consumption + (Math.random() - 0.5) * 80),
-        temp: Math.max(15, Math.min(45, prev.temp + (Math.random() - 0.5) * 2)),
-      }))
-    }, 5000) // Update every 5 seconds
+  const isBatteryConnected = sensors?.battery.connected ?? false
+  const isProductionConnected = sensors?.production.connected ?? false
+  const isConsumptionConnected = sensors?.consumption.connected ?? false
+  const isTempConnected = sensors?.temperature.connected ?? false
 
-    return () => clearInterval(interval)
-  }, [])
-
-  const getSOCStatus = (soc: number): "good" | "warning" | "critical" => {
+  const getSOCStatus = (soc: number | null): "good" | "warning" | "critical" | "no-data" => {
+    if (soc === null) return "no-data"
     if (soc >= 70) return "good"
     if (soc >= 40) return "warning"
     return "critical"
   }
 
-  const getConsumptionStatus = (consumption: number): "good" | "warning" | "critical" => {
+  const getConsumptionStatus = (consumption: number | null): "good" | "warning" | "critical" | "no-data" => {
+    if (consumption === null) return "no-data"
     if (consumption <= 400) return "good"
     if (consumption <= 600) return "warning"
     return "critical"
+  }
+
+  const getTempStatus = (temp: number | null): "good" | "warning" | "critical" | "no-data" => {
+    if (temp === null) return "no-data"
+    if (temp < 40) return "good"
+    return "warning"
   }
 
   return (
@@ -117,35 +125,39 @@ export function MetricCards() {
       <MetricCard
         icon={<Battery className="w-6 h-6" />}
         label="État de Charge (SOC)"
-        value={Math.round(metrics.soc).toString()}
+        value={soc !== null ? Math.round(soc).toString() : null}
         unit="%"
-        status={getSOCStatus(metrics.soc)}
-        progress={Math.round(metrics.soc)}
-        subValue={`Est. ${Math.round((metrics.soc / 100) * 12)}h restant`}
+        status={getSOCStatus(soc)}
+        progress={soc !== null ? Math.round(soc) : null}
+        isConnected={isBatteryConnected}
+        subValue={soc !== null ? `Est. ${Math.round((soc / 100) * 12)}h restant` : undefined}
       />
       <MetricCard
         icon={<Sun className="w-6 h-6" />}
         label="Production Solaire"
-        value={Math.round(metrics.production).toString()}
+        value={production !== null ? Math.round(production).toString() : null}
         unit="W"
-        status="good"
-        subValue={`Pic : ${Math.round(metrics.production * 1.25)}W aujourd'hui`}
+        status={isProductionConnected ? "good" : "no-data"}
+        isConnected={isProductionConnected}
+        subValue={production !== null ? `Pic : ${Math.round(production * 1.25)}W` : undefined}
       />
       <MetricCard
         icon={<Zap className="w-6 h-6" />}
         label="Consommation"
-        value={Math.round(metrics.consumption).toString()}
+        value={consumption !== null ? Math.round(consumption).toString() : null}
         unit="W"
-        status={getConsumptionStatus(metrics.consumption)}
-        subValue={metrics.consumption > 500 ? "Au-dessus de la moyenne" : "Consommation normale"}
+        status={getConsumptionStatus(consumption)}
+        isConnected={isConsumptionConnected}
+        subValue={consumption !== null ? (consumption > 500 ? "Au-dessus de la moyenne" : "Consommation normale") : undefined}
       />
       <MetricCard
         icon={<Thermometer className="w-6 h-6" />}
         label="Temp. Batterie"
-        value={Math.round(metrics.temp).toString()}
+        value={temp !== null ? Math.round(temp).toString() : null}
         unit="°C"
-        status={metrics.temp < 40 ? "good" : "warning"}
-        subValue={metrics.temp < 40 ? "Plage optimale" : "Surveiller la température"}
+        status={getTempStatus(temp)}
+        isConnected={isTempConnected}
+        subValue={temp !== null ? (temp < 40 ? "Plage optimale" : "Surveiller la température") : undefined}
       />
     </div>
   )
