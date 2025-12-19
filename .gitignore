@@ -26,8 +26,11 @@ Thumbs.db
 .idea/
 *.swp
 
-# Data
+# Data files (keep examples but ignore real sensor data)
 data/battery-temperature.json
+data/sensor-readings.json
+data/login-logs.json
+data/feedback.json
 
 # Arduino
 .pio/

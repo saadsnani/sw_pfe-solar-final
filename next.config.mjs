@@ -10,7 +10,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year cache
+    minimumCacheTTL: 60 * 60 * 24 * 365,
     formats: ['image/avif', 'image/webp'],
   },
   turbopack: {

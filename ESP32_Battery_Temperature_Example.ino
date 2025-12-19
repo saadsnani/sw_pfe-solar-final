@@ -1,27 +1,58 @@
+/*
+ * ========================================
+ * ESP32 Battery Temperature Monitoring
+ * ========================================
+ * Description: This system reads temperature data from Arduino Mega
+ *              and sends it to Next.js dashboard via WiFi
+ * 
+ * Hardware: ESP32 + Arduino Mega + Temperature Sensors
+ * Communication: Serial2 (RX:16, TX:17) @ 9600 baud
+ * ========================================
+ */
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WebServer.h>
 
-// --- WIFI CREDENTIALS ---
-const char* ssid = "Smiya_Dyal_Wifi";     // Bedel hadi
-const char* password = "Code_Dyal_Wifi";  // Bedel hadi
+// ========================================
+// CONFIGURATION SECTION
+// ========================================
 
-// --- SERVER URL (Bedel l-IP ta3 Serveur Next.js Dyal3 ---
-const char* serverUrl = "http://192.168.x.x:3000/api/sensor-data";  // Bedel X.X dyal IP ta3k
+// WiFi Credentials (Update these)
+const char* ssid = "Smiya_Dyal_Wifi";
+const char* password = "Code_Dyal_Wifi";
 
-// Pins Serial 2 (Communication m3a Mega)
+// Server URL (Update with your Next.js server IP)
+const char* serverUrl = "http://192.168.x.x:3000/api/sensor-data";
+
+// Serial2 Pins (Communication with Arduino Mega)
 #define RXD2 16
 #define TXD2 17
+#define SERIAL_BAUD 9600
 
-// Variable bach nghankhbiw l-temperature
+// Timing Constants
+#define WIFI_TIMEOUT 20
+#define LOOP_DELAY 100
+
+// ========================================
+// GLOBAL VARIABLES
+// ========================================
 String temperature = "--";
 String batteryTemperature = "--";
 
-// Server Web f Port 80 (Optional - bach tchouf temperature f browser)
+// Web Server on Port 80 (Optional - for browser access)
 WebServer server(80);
 
-// --- PAGE HTML ---
+// ========================================
+// WEB SERVER FUNCTIONS
+// ========================================
+
+/**
+ * Handle root web page request
+ * Displays current temperature readings in HTML format
+ * Auto-refreshes every 3 seconds
+ */
 void handleRoot() {
   String html = "<!DOCTYPE html><html>";
   html += "<head><meta name='viewport' content='width=device-width, initial-scale=1'>";
@@ -52,104 +83,160 @@ void handleRoot() {
   server.send(200, "text/html", html);
 }
 
-// Function bach t3ati data l server Next.js
-void sendSensorDataToServer(float batteryTemp) {
+// ========================================
+// DATA TRANSMISSION FUNCTIONS
+// ========================================
+
+/**
+ * Send battery temperature data to Next.js server
+ * @param batteryTemp: Battery temperature value in Celsius
+ * @param ambientTemp: Ambient temperature value in Celsius
+ */
+void sendSensorDataToServer(float batteryTemp, float ambientTemp) {
+  // Check WiFi connection
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi pas connecte!");
+    Serial.println("[ERROR] WiFi not connected!");
     return;
   }
 
+  // Initialize HTTP client
   HTTPClient http;
   http.begin(serverUrl);
   http.addHeader("Content-Type", "application/json");
+  http.setTimeout(5000); // 5 second timeout
   
-  // Create JSON payload
-  String jsonPayload = "{\"batteryTemperature\": " + String(batteryTemp, 2) + "}";
+  // Create JSON payload with both temperatures
+  String jsonPayload = "{\"batteryTemperature\": " + String(batteryTemp, 2) + 
+                       ", \"temperature\": " + String(ambientTemp, 2) + "}";
   
-  Serial.println("Envoi donnees: " + jsonPayload);
+  Serial.println("[INFO] Sending data: " + jsonPayload);
   
+  // Send POST request
   int httpResponseCode = http.POST(jsonPayload);
   
+  // Handle response
   if (httpResponseCode > 0) {
     String response = http.getString();
-    Serial.println("Response code: " + String(httpResponseCode));
-    Serial.println("Response: " + response);
+    Serial.println("[SUCCESS] Response code: " + String(httpResponseCode));
+    Serial.println("[INFO] Response: " + response);
   } else {
-    Serial.println("Error sending data: " + String(httpResponseCode));
+    Serial.println("[ERROR] Failed to send data. Code: " + String(httpResponseCode));
   }
   
   http.end();
 }
 
+// ========================================
+// SETUP FUNCTION
+// ========================================
+
+/**
+ * Initialize system components
+ * - Serial communication (115200 for monitoring, 9600 for Mega)
+ * - WiFi connection
+ * - Web server
+ */
 void setup() {
-  // Serial bach nchoufo l-IP
+  // Initialize Serial Monitor
   Serial.begin(115200);
   delay(1000);
   
   Serial.println("\n\n");
-  Serial.println("=== DEMARRAGE SYSTEME ===");
+  Serial.println("================================");
+  Serial.println("  ESP32 Temperature Monitor");
+  Serial.println("================================");
   
-  // Serial2 bach ntsnto l Mega (RX=16, TX=17)
-  // Lazem tkun 9600 hit Mega dayra 9600
-  Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
+  // Initialize Serial2 for Arduino Mega communication
+  // Must match Mega's baud rate (9600)
+  Serial2.begin(SERIAL_BAUD, SERIAL_8N1, RXD2, TXD2);
+  Serial.println("[OK] Serial2 initialized (RX:16, TX:17)");
 
-  // Connection WiFi
-  Serial.print("Connexion WiFi...");
+  // Connect to WiFi
+  Serial.print("[INFO] Connecting to WiFi...");
   WiFi.begin(ssid, password);
   
+  // Wait for connection
   int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+  while (WiFi.status() != WL_CONNECTED && attempts < WIFI_TIMEOUT) {
     delay(500);
     Serial.print(".");
     attempts++;
   }
   
+  // Display connection status
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nWiFi Connecte!");
-    Serial.print("IP: http://");
+    Serial.println("\n[OK] WiFi Connected!");
+    Serial.print("[INFO] IP Address: http://");
     Serial.println(WiFi.localIP());
+    Serial.println("[INFO] Open browser to view readings");
   } else {
-    Serial.println("\nWiFi Pas Connecte - Mode Local Uniquement");
+    Serial.println("\n[WARNING] WiFi not connected - Local mode only");
   }
 
-  // Demarrage Server (optional)
+  // Start web server
   server.on("/", handleRoot);
   server.begin();
+  Serial.println("[OK] Web server started on port 80");
   
-  Serial.println("=== SYSTEME PRET ===\n");
+  Serial.println("\n================================");
+  Serial.println("  System Ready");
+  Serial.println("================================\n");
 }
 
+// ========================================
+// MAIN LOOP
+// ========================================
+
+/**
+ * Main loop - continuously:
+ * 1. Handle web server requests
+ * 2. Read data from Arduino Mega via Serial2
+ * 3. Parse and display temperature data
+ * 4. Send data to Next.js server
+ */
 void loop() {
+  // Handle web server client requests
   server.handleClient();
 
-  // Wach kayna chi haja jat mn Mega?
+  // Check for incoming data from Arduino Mega
   if (Serial2.available()) {
+    // Read incoming data
     String data = Serial2.readStringUntil('\n');
     data.trim();
     
     if (data.length() > 0) {
-      // Parse data - format: "TEMP:25.5|BATT:35.2"
+      Serial.println("[DATA] Received: " + data);
+      
+      // Parse data - Expected format: "TEMP:25.5|BATT:35.2"
       int tempIndex = data.indexOf("TEMP:");
       int battIndex = data.indexOf("BATT:");
       
+      // Extract ambient temperature
       if (tempIndex >= 0) {
         int endIndex = data.indexOf("|", tempIndex);
         if (endIndex < 0) endIndex = data.length();
         temperature = data.substring(tempIndex + 5, endIndex);
+        Serial.println("[INFO] Ambient Temp: " + temperature + "°C");
       }
       
+      // Extract battery temperature and send to server
       if (battIndex >= 0) {
         batteryTemperature = data.substring(battIndex + 5);
-        // Try to parse as float
         float battTemp = batteryTemperature.toFloat();
+        float ambTemp = temperature.toFloat();
         
-        // Send to server
-        sendSensorDataToServer(battTemp);
+        // Validate temperature readings
+        if (battTemp > -50 && battTemp < 100) {
+          Serial.println("[INFO] Battery Temp: " + batteryTemperature + "°C");
+          
+          // Send both temperatures to server
+          sendSensorDataToServer(battTemp, ambTemp);
+        } else {
+          Serial.println("[WARNING] Invalid temperature reading: " + String(battTemp));
+        }
       }
-      
-      Serial.println("Data received: " + data);
     }
   }
   
-  delay(100);
+  delay(LOOP_DELAY);
 }
