@@ -109,12 +109,44 @@ export async function GET(request: NextRequest) {
   try {
     ensureDataFile();
     
-    // Check if we need battery temperature data
     const url = new URL(request.url);
     const dataType = url.searchParams.get('type');
+    const limit = parseInt(url.searchParams.get('limit') || '100');
     
+    // Return all sensor data (battery + ambient)
+    if (dataType === 'all') {
+      let batteryReadings: SensorReading[] = [];
+      let standardReadings: SensorReading[] = [];
+      
+      // Read battery temperature data
+      if (fs.existsSync(BATTERY_TEMP_FILE)) {
+        const batteryContent = fs.readFileSync(BATTERY_TEMP_FILE, 'utf-8');
+        batteryReadings = JSON.parse(batteryContent);
+      }
+      
+      // Read standard sensor data
+      if (fs.existsSync(DATA_FILE)) {
+        const standardContent = fs.readFileSync(DATA_FILE, 'utf-8');
+        standardReadings = JSON.parse(standardContent);
+      }
+      
+      // Merge and sort by timestamp
+      const allReadings = [...batteryReadings, ...standardReadings]
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, limit);
+      
+      // Get latest reading
+      const current = allReadings.length > 0 ? allReadings[0] : null;
+      
+      return NextResponse.json({
+        current,
+        readings: allReadings,
+        count: allReadings.length
+      });
+    }
+    
+    // Return battery temperature data only
     if (dataType === 'battery') {
-      // Return battery temperature data
       if (!fs.existsSync(BATTERY_TEMP_FILE)) {
         return NextResponse.json({ 
           current: null,
@@ -125,12 +157,11 @@ export async function GET(request: NextRequest) {
       const fileContent = fs.readFileSync(BATTERY_TEMP_FILE, 'utf-8');
       const readings: SensorReading[] = JSON.parse(fileContent);
       
-      // Get latest reading
       const current = readings.length > 0 ? readings[readings.length - 1] : null;
       
       return NextResponse.json({
         current,
-        readings,
+        readings: readings.slice(-limit),
         count: readings.length
       });
     }
@@ -143,7 +174,7 @@ export async function GET(request: NextRequest) {
     const fileContent = fs.readFileSync(DATA_FILE, 'utf-8');
     const readings: SensorReading[] = JSON.parse(fileContent);
     
-    return NextResponse.json(readings);
+    return NextResponse.json(readings.slice(-limit));
   } catch (error) {
     console.error('Error reading sensor data:', error);
     return NextResponse.json(
