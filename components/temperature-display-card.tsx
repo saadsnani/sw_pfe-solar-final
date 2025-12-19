@@ -18,6 +18,7 @@ export function TemperatureDisplayCard() {
   const [isConnected, setIsConnected] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<string>("")
   const [trend, setTrend] = useState<"up" | "down" | "stable">("stable")
+  const [errorMsg, setErrorMsg] = useState<string>("")
 
   useEffect(() => {
     fetchTemperatureData()
@@ -27,8 +28,12 @@ export function TemperatureDisplayCard() {
 
   const fetchTemperatureData = async () => {
     try {
-      const response = await fetch("/api/sensor-data?type=all&limit=20")
+      const response = await fetch("/api/sensor-data?type=all&limit=20", { cache: "no-store" })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
       const data = await response.json()
+      console.log("[TemperatureDisplayCard] API data", data)
 
       if (data.current) {
         const newBatteryTemp = data.current.batteryTemperature
@@ -45,6 +50,7 @@ export function TemperatureDisplayCard() {
         setBatteryTemp(newBatteryTemp ?? null)
         setAmbientTemp(newAmbientTemp ?? null)
         setIsConnected(true)
+        setErrorMsg("")
 
         const date = new Date(data.current.timestamp)
         setLastUpdate(date.toLocaleTimeString("fr-FR"))
@@ -66,9 +72,10 @@ export function TemperatureDisplayCard() {
         
         setHistory(chartData)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching temperature data:", error)
       setIsConnected(false)
+      setErrorMsg(error?.message ?? "Erreur de connexion")
     }
   }
 
@@ -223,6 +230,9 @@ export function TemperatureDisplayCard() {
           <div className="flex items-center gap-2">
             {lastUpdate && (
               <span>📡 Dernière mise à jour: {lastUpdate}</span>
+            )}
+            {errorMsg && (
+              <span className="text-red-500 font-medium">API Error: {errorMsg}</span>
             )}
           </div>
           {!isConnected && (
