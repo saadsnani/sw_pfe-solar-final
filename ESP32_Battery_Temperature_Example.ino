@@ -23,8 +23,8 @@
 const char* ssid = "Smiya_Dyal_Wifi";
 const char* password = "Code_Dyal_Wifi";
 
-// Server URL (Update with your Next.js server IP)
-const char* serverUrl = "http://192.168.x.x:3000/api/sensor-data";
+// Server URL - Vercel Production (Update with your Vercel URL)
+const char* serverUrl = "https://sw-pfe-solar-final.vercel.app/api/sensor-data";
 
 // Serial2 Pins (Communication with Arduino Mega)
 #define RXD2 16
