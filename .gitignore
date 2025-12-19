@@ -1,6 +1,8 @@
 node_modules/
 .next/
 out/
+build/
+dist/
 
 # Environment files
 .env
@@ -18,6 +20,23 @@ logs
 *.log
 
 # OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Data
+data/battery-temperature.json
+
+# Arduino
+.pio/
+.vscode-pio/
+ESP32-Temperature-Sensor/.pio/
+ESP32-Temperature-Sensor/build/
+
+# Turbo
+.turbo/
 .DS_Store
 Thumbs.db
 .vscode/

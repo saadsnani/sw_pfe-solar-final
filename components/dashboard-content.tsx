@@ -8,6 +8,7 @@ import { AIInsightsPanel } from "@/components/ai-insights-panel"
 import { SystemStatusBoard } from "@/components/system-status-board"
 import { GridIntegrationStatus } from "@/components/grid-integration-status"
 import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
+import { BatteryTemperatureCard } from "@/components/battery-temperature-card"
 import { useAlert } from "@/lib/alert-provider"
 import { useSystemSensors } from "@/hooks/use-sensor-connection"
 import { createDefaultSystemState } from "@/lib/sensor-connection"
@@ -42,6 +43,11 @@ export function DashboardContent() {
 
       {/* Metric Cards */}
       <MetricCards sensors={sensors} />
+
+      {/* Battery Temperature - New */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <BatteryTemperatureCard />
+      </div>
 
       {/* Grid Integration */}
       <GridIntegrationStatus sensors={sensors} />
