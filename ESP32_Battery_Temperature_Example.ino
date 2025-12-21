@@ -20,8 +20,8 @@
 // ========================================
 
 // WiFi Credentials (Update these)
-const char* ssid = "Smiya_Dyal_Wifi";
-const char* password = "Code_Dyal_Wifi";
+const char* ssid = "SS2";
+const char* password = "00000000";
 
 // Server URL - Vercel Production (Update with your Vercel URL)
 const char* serverUrl = "https://sw-pfe-solar-final.vercel.app/api/sensor-data";
@@ -148,8 +148,9 @@ void setup() {
   
   // Initialize Serial2 for Arduino Mega communication
   // Must match Mega's baud rate (9600)
+  // RXD2=16 (receives from Mega TX3), TXD2=17 (not used for Mega)
   Serial2.begin(SERIAL_BAUD, SERIAL_8N1, RXD2, TXD2);
-  Serial.println("[OK] Serial2 initialized (RX:16, TX:17)");
+  Serial.println("[OK] Serial2 initialized for Mega communication (RX:16, TX:17)");
 
   // Connect to WiFi
   Serial.print("[INFO] Connecting to WiFi...");
