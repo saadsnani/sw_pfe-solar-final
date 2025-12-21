@@ -209,6 +209,7 @@ void loop() {
       Serial.println("[DATA] Received: " + data);
       
       // Parse data - Expected format: "TEMP:25.5|BATT:35.2"
+      // Also handle simple numeric lines (e.g., "35.2") as battery temp fallback
       int tempIndex = data.indexOf("TEMP:");
       int battIndex = data.indexOf("BATT:");
       
@@ -234,6 +235,18 @@ void loop() {
           sendSensorDataToServer(battTemp, ambTemp);
         } else {
           Serial.println("[WARNING] Invalid temperature reading: " + String(battTemp));
+        }
+      } else {
+        // Fallback: try to parse plain numeric line as battery temperature
+        char *endptr = nullptr;
+        float simpleVal = data.toFloat();
+        if (!isnan(simpleVal) && simpleVal > -50 && simpleVal < 100) {
+          batteryTemperature = String(simpleVal, 2);
+          float ambTemp = temperature.toFloat();
+          Serial.println("[INFO] Battery Temp (fallback): " + batteryTemperature + "°C");
+          sendSensorDataToServer(simpleVal, ambTemp);
+        } else {
+          Serial.println("[WARNING] Unrecognized data format");
         }
       }
     }

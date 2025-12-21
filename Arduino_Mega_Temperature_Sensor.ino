@@ -56,6 +56,8 @@ void setup() {
   // Initialize Serial for communication with ESP32
   Serial.begin(SERIAL_BAUD);
   delay(500);
+  // Serial3 is wired to ESP32 (TX3:14, RX3:15)
+  Serial3.begin(SERIAL_BAUD);
   
   Serial.println("\n================================");
   Serial.println("  Arduino Mega Temperature System");
@@ -169,11 +171,12 @@ float readBatteryTemperature() {
  */
 void sendData() {
   // Build and send data string
-  Serial.print("TEMP:");
-  Serial.print(tempAmbient, 1);  // 1 decimal place
-  Serial.print("|");
-  Serial.print("BATT:");
-  Serial.println(tempBattery, 1);  // 1 decimal place
+  // Send to ESP32 via Serial3
+  Serial3.print("TEMP:");
+  Serial3.print(tempAmbient, 1);  // 1 decimal place
+  Serial3.print("|");
+  Serial3.print("BATT:");
+  Serial3.println(tempBattery, 1);  // 1 decimal place
   
   // Optional: Print to Serial Monitor for debugging
   // debugPrint();
