@@ -13,6 +13,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <WebServer.h>
 
 // ========================================
@@ -101,7 +102,13 @@ void sendSensorDataToServer(float batteryTemp, float ambientTemp) {
 
   // Initialize HTTP client
   HTTPClient http;
-  http.begin(serverUrl);
+  // Use TLS for HTTPS endpoints (Vercel) without certificate pinning
+  WiFiClientSecure client;
+  client.setInsecure();
+  if (!http.begin(client, serverUrl)) {
+    Serial.println("[ERROR] HTTP begin failed");
+    return;
+  }
   http.addHeader("Content-Type", "application/json");
   http.setTimeout(5000); // 5 second timeout
   
