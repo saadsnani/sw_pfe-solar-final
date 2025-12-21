@@ -1,70 +1,34 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
 
-// 1. MA3LOUMAT WIFI (Badlhom ila mbddlin)
-const char* ssid = "SS2";
-const char* password = "00000000";
-
-// 2. SERVER (IP Dyalek)
-const char* serverName = "http://192.168.137.1:3000/api/sensor-data";
-
-// 3. PINS (Liaison Directe m3a Mega)
-#define RXD2 16
-#define TXD2 17
+// Pins li khtariti (GND common darori!)
+#define RX_PIN 16 // RX2 Default dyal ESP32 (Ghaliban Pin 16)
+#define TX_PIN 17 // TX2 Default dyal ESP32 (Ghaliban Pin 17)
+// Oula sta3ml Pins dialk li knti dayr:
+// #define RX_PIN 4 
+// #define TX_PIN 2
 
 void setup() {
-  Serial.begin(115200); // Monitor d PC
-  // Mohim: 9600 bach ytfahm m3a Mega
-  Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2); 
-
-  Serial.println();
-  Serial.print("Kanhawel n-connecta l ");
-  Serial.println(ssid);
+  Serial.begin(9600); // Monitor ESP32 bach tchouf f PC
   
-  WiFi.begin(ssid, password);
+  // Configuration Serial2 (RX, TX)
+  // Serial2 3andha pins par defaut f ESP32 (16 et 17 often)
+  // Walakin n9dro nbddlohom l ay pin bghina:
+  Serial2.begin(9600, SERIAL_8N1, 4, 2); // RX=4, TX=2 kima knti dayr
   
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  
-  Serial.println("\nWiFi Connecté!");
-  Serial.print("IP ESP32: ");
-  Serial.println(WiFi.localIP());
+  Serial.println("ESP32 wajda! Kan-tsna l-7arara...");
 }
 
 void loop() {
-  // Wach kayna chi data jat mn Mega?
   if (Serial2.available()) {
-    String tempString = Serial2.readStringUntil('\n');
-    tempString.trim(); // Nqiyha mn l-khrbich
+    // Qra l-message hta l-khr dyal str (newline)
+    String temperature = Serial2.readStringUntil('\n');
 
-    // Ila kan raqm mzyan (fih ktar mn 0 huruf)
-    if (tempString.length() > 0) {
-      Serial.print("Reçu via Serial2: ");
-      Serial.println(tempString);
+    // Nqqi l-message
+    temperature.trim(); 
 
-      if (WiFi.status() == WL_CONNECTED) {
-        HTTPClient http;
-        http.begin(serverName);
-        http.addHeader("Content-Type", "application/json");
-
-        // --- TSHIH JSON (Hada li kan dayr mochkil 500) ---
-        // Server baghi: {"batteryTemperature": 25.5}
-        String jsonData = "{\"batteryTemperature\": " + tempString + "}";
-
-        int httpCode = http.POST(jsonData);
-        
-        if (httpCode > 0) {
-          Serial.print("Server jawb b: ");
-          Serial.println(httpCode); // Daba khassha tkon 200!
-        } else {
-          Serial.print("Error f l-envoi: ");
-          Serial.println(httpCode);
-        }
-        http.end();
-      }
-    }
+    // Affiche f Serial Monitor dyal ESP32
+    Serial.print("Ssi3r mn Mega: ");
+    Serial.print(temperature);
+    Serial.println(" °C");
   }
 }
