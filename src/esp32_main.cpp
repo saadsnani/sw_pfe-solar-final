@@ -27,7 +27,7 @@ const char* password = "00000000";
 // Server URL (Change to your server)
 // Local: http://192.168.137.1:3000/api/sensor-data
 // Vercel: https://sw-pfe-solar-final.vercel.app/api/sensor-data
-const char* serverUrl = "http://192.168.137.1:3000/api/sensor-data";
+const char* serverUrl = "https://sw-pfe-solar-final.vercel.app/api/sensor-data";
 
 // Serial2 Pins (connected to Mega Serial3)
 #define RXD2 4  // GPIO 4 ← Mega TX3 (Pin 14)

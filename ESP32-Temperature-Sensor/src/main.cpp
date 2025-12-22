@@ -8,7 +8,7 @@ const char* password = "00000000";
 
 // IP ديال السيرفر (Windows Hotspot Default IP)
 // إلا ماخدمش، دير ipconfig وتأكد من IP
-const char* serverName = "http://192.168.137.1:3000/api/sensor-data";
+const char* serverName = "https://sw-pfe-solar-final.vercel.app/api/sensor-data";
 
 // Pins ربط Mega مع ESP32
 #define RX_PIN 16 // ركب فيه خيط Mega TX (14)
