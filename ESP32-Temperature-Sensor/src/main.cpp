@@ -1,34 +1,72 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
-// Pins li khtariti (GND common darori!)
-#define RX_PIN 16 // RX2 Default dyal ESP32 (Ghaliban Pin 16)
-#define TX_PIN 17 // TX2 Default dyal ESP32 (Ghaliban Pin 17)
-// Oula sta3ml Pins dialk li knti dayr:
-// #define RX_PIN 4 
-// #define TX_PIN 2
+// معلومات الويفي ديال Hotspot ديالك
+const char* ssid = "SS2";
+const char* password = "00000000";
+
+// IP ديال السيرفر (Windows Hotspot Default IP)
+// إلا ماخدمش، دير ipconfig وتأكد من IP
+const char* serverName = "http://192.168.137.1:3000/api/sensor-data";
+
+// Pins ربط Mega مع ESP32
+#define RX_PIN 16 // ركب فيه خيط Mega TX (14)
+#define TX_PIN 17 // ركب فيه خيط Mega RX (15)
 
 void setup() {
-  Serial.begin(9600); // Monitor ESP32 bach tchouf f PC
+  Serial.begin(9600); // Monitor USB
   
-  // Configuration Serial2 (RX, TX)
-  // Serial2 3andha pins par defaut f ESP32 (16 et 17 often)
-  // Walakin n9dro nbddlohom l ay pin bghina:
-  Serial2.begin(9600, SERIAL_8N1, 4, 2); // RX=4, TX=2 kima knti dayr
-  
-  Serial.println("ESP32 wajda! Kan-tsna l-7arara...");
+  // ديماري Port باش تهضر مع Mega
+  Serial2.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
+
+  // ديماري الويفي
+  Serial.print("Connexion à ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi Connecté!");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
 }
 
 void loop() {
+  // 1. واش Mega صيفطات شي حاجة؟
   if (Serial2.available()) {
-    // Qra l-message hta l-khr dyal str (newline)
-    String temperature = Serial2.readStringUntil('\n');
+    String tempString = Serial2.readStringUntil('\n');
+    tempString.trim(); // مسح الفراغات
 
-    // Nqqi l-message
-    temperature.trim(); 
+    if (tempString.length() > 0) {
+      Serial.print("Wasla mn Mega: ");
+      Serial.println(tempString);
 
-    // Affiche f Serial Monitor dyal ESP32
-    Serial.print("Ssi3r mn Mega: ");
-    Serial.print(temperature);
-    Serial.println(" °C");
+      // 2. صيفط للسيرفر دابا
+      if(WiFi.status() == WL_CONNECTED){
+        HTTPClient http;
+        http.begin(serverName);
+        http.addHeader("Content-Type", "application/json");
+
+        // قاد JSON: {"temperature": 25.0, "batteryTemperature": 0}
+        String jsonData = "{\"temperature\":" + tempString + ", \"batteryTemperature\":0}";
+        
+        Serial.println("Envoi au serveur...");
+        int httpResponseCode = http.POST(jsonData);
+        
+        if(httpResponseCode > 0){
+          Serial.print("Réponse Serveur: ");
+          Serial.println(httpResponseCode); // خاص تكون 200
+        } else {
+          Serial.print("Erreur HTTP: ");
+          Serial.println(httpResponseCode);
+        }
+        http.end();
+      } else {
+        Serial.println("WiFi M9to3!");
+      }
+    }
   }
 }

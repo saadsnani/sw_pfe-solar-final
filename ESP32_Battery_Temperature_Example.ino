@@ -28,8 +28,8 @@ const char* password = "00000000";
 const char* serverUrl = "https://sw-pfe-solar-final.vercel.app/api/sensor-data";
 
 // Serial2 Pins (Communication with Arduino Mega)
-#define RXD2 16
-#define TXD2 17
+#define RXD2 4   // ESP32 D4 → Mega TX3 (pin 14)
+#define TXD2 2   // ESP32 D2 → Mega RX3 (pin 15)
 #define SERIAL_BAUD 9600
 
 // Timing Constants
@@ -95,7 +95,7 @@ void handleRoot() {
  */
 void sendSensorDataToServer(float batteryTemp, float ambientTemp) {
   // Check WiFi connection
-  if (WiFi.status() != WL_CONNECTED) {
+  if (mmWiFi.status() != WL_CONNECTED) {
     Serial.println("[ERROR] WiFi not connected!");
     return;
   }
