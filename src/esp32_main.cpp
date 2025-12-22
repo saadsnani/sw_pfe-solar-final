@@ -34,7 +34,7 @@ const char* serverUrl = "http://192.168.137.1:3000/api/sensor-data";
 #define TXD2 2  // GPIO 2 → Mega RX3 (Pin 15)
 
 // Constants
-#define SERIAL_MONITOR 115200
+#define SERIAL_MONITOR 9600
 #define SERIAL2_BAUD 9600
 #define WIFI_TIMEOUT 20000 // 20 seconds
 
@@ -52,6 +52,7 @@ const unsigned long sendInterval = 2000; // Send every 2 seconds
 
 void connectWiFi();
 void sendDataToServer(float temperature);
+void sendErrorToServer();
 
 // ========================================
 // SETUP
@@ -111,6 +112,8 @@ void loop() {
       }
     } else {
       Serial.println("[ERROR] Mega reported sensor error");
+      // Send error status to server (ESP still connected, but sensor failed)
+      sendErrorToServer();
     }
   }
   
@@ -165,9 +168,12 @@ void sendDataToServer(float temperature) {
   http.addHeader("Content-Type", "application/json");
   
   // Create JSON payload
-  String jsonPayload = "{\"temperature\":";
+  // Treat DS18B20 value as battery temperature and include WiFi SSID
+  String jsonPayload = "{\"batteryTemperature\":";
   jsonPayload += String(temperature, 2);
-  jsonPayload += "}";
+  jsonPayload += ",\"wifiSsid\":\"";
+  jsonPayload += ssid;
+  jsonPayload += "\"}";
   
   Serial.print("[INFO] Sending to server: ");
   Serial.println(jsonPayload);
@@ -178,6 +184,50 @@ void sendDataToServer(float temperature) {
   // Check response
   if (httpResponseCode > 0) {
     Serial.print("[SUCCESS] Response code: ");
+    Serial.println(httpResponseCode);
+    
+    String response = http.getString();
+    Serial.print("[RESPONSE] ");
+    Serial.println(response);
+  } else {
+    Serial.print("[ERROR] HTTP POST failed! Error: ");
+    Serial.println(http.errorToString(httpResponseCode));
+  }
+  
+  http.end();
+}
+
+// ========================================
+// SEND ERROR STATUS TO SERVER
+// ========================================
+
+void sendErrorToServer() {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[ERROR] WiFi not connected!");
+    return;
+  }
+  
+  HTTPClient http;
+  
+  // Initialize HTTP connection
+  http.begin(serverUrl);
+  http.addHeader("Content-Type", "application/json");
+  
+  // Create JSON payload with error status
+  // batteryTemperature = null or -999 to indicate sensor error
+  String jsonPayload = "{\"batteryTemperature\":null,\"sensorError\":true,\"wifiSsid\":\"";
+  jsonPayload += ssid;
+  jsonPayload += "\"}";
+  
+  Serial.print("[INFO] Sending error to server: ");
+  Serial.println(jsonPayload);
+  
+  // Send POST request
+  int httpResponseCode = http.POST(jsonPayload);
+  
+  // Check response
+  if (httpResponseCode > 0) {
+    Serial.print("[SUCCESS] Error reported. Response code: ");
     Serial.println(httpResponseCode);
     
     String response = http.getString();

@@ -21,7 +21,7 @@
 // ========================================
 
 #define ONE_WIRE_BUS 2        // DS18B20 data pin
-#define SERIAL_MONITOR 115200 // USB Serial for debugging
+#define SERIAL_MONITOR 9600 // USB Serial for debugging
 #define SERIAL3_BAUD 9600     // Serial3 to ESP32
 #define READ_INTERVAL 2000    // Read every 2 seconds
 

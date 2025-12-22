@@ -11,6 +11,8 @@ interface SensorReading {
   temperature?: number;
   humidity?: number;
   batteryTemperature?: number;
+  wifiSsid?: string;
+  sensorError?: boolean;
   timestamp: string;
 }
 
@@ -44,10 +46,10 @@ function ensureDataFile() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { temperature, humidity, batteryTemperature } = body;
+    const { temperature, humidity, batteryTemperature, wifiSsid, sensorError } = body;
     
-    // Validate data
-    if (temperature === undefined && humidity === undefined && batteryTemperature === undefined) {
+    // Validate data - allow error status even without readings
+    if (temperature === undefined && humidity === undefined && batteryTemperature === undefined && !sensorError) {
       return NextResponse.json(
         { error: 'At least one sensor reading is required' },
         { status: 400 }
@@ -58,7 +60,9 @@ export async function POST(request: NextRequest) {
     const reading: SensorReading = {
       ...(temperature !== undefined && { temperature: parseFloat(temperature) }),
       ...(humidity !== undefined && { humidity: parseFloat(humidity) }),
-      ...(batteryTemperature !== undefined && { batteryTemperature: parseFloat(batteryTemperature) }),
+      ...(batteryTemperature !== undefined && batteryTemperature !== null && { batteryTemperature: parseFloat(batteryTemperature) }),
+      ...(wifiSsid !== undefined && { wifiSsid: String(wifiSsid) }),
+      ...(sensorError && { sensorError: true }),
       timestamp: new Date().toISOString(),
     };
     

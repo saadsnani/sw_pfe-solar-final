@@ -50,8 +50,8 @@ void loop() {
         http.begin(serverName);
         http.addHeader("Content-Type", "application/json");
 
-        // قاد JSON: {"temperature": 25.0, "batteryTemperature": 0}
-        String jsonData = "{\"temperature\":" + tempString + ", \"batteryTemperature\":0}";
+        // قاد JSON: نخلي القيمة ديال DS18B20 كبطارية + نزيد SSID
+        String jsonData = "{\"batteryTemperature\":" + tempString + ", \"wifiSsid\":\"" + String(ssid) + "\"}";
         
         Serial.println("Envoi au serveur...");
         int httpResponseCode = http.POST(jsonData);
@@ -59,6 +59,7 @@ void loop() {
         if(httpResponseCode > 0){
           Serial.print("Réponse Serveur: ");
           Serial.println(httpResponseCode); // خاص تكون 200
+          Serial.println(http.getString());
         } else {
           Serial.print("Erreur HTTP: ");
           Serial.println(httpResponseCode);
