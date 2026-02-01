@@ -1,0 +1,25 @@
+{
+  "name": "solar-dashboard",
+  "description": "Système de monitoring température batterie en temps réel",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "license": "MIT",
+  "keywords": [
+    "solar",
+    "dashboard",
+    "temperature",
+    "battery",
+    "monitoring",
+    "esp32",
+    "arduino",
+    "iot"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/solar-dashboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/solar-dashboard/issues"
+  },
+  "homepage": "https://github.com/your-username/solar-dashboard#readme"
+}
