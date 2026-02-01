@@ -1,0 +1,63 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel local config
+.vercel
+
+# Logs
+logs
+!app/api/logs/
+*.log
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Data files (keep examples but ignore real sensor data)
+data/battery-temperature.json
+data/sensor-readings.json
+data/login-logs.json
+data/feedback.json
+
+# Setup/Build scripts (temporary)
+*.bat
+mobile-dev.bat
+setup-mobile.bat
+create-zip-whatsapp.bat
+
+# Arduino
+.pio/
+.vscode-pio/
+ESP32-Temperature-Sensor/.pio/
+ESP32-Temperature-Sensor/build/
+
+# Turbo
+.turbo/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+
+# Swap files
+*.swp
+*.swo
+
+# Package manager lock (optional; keep if you prefer reproducible installs)
+# pnpm-lock.yaml
+.env*.local
