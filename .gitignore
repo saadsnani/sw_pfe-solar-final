@@ -61,3 +61,6 @@ coverage/
 # Package manager lock (optional; keep if you prefer reproducible installs)
 # pnpm-lock.yaml
 .env*.local
+
+.vercel
+.env*.local
