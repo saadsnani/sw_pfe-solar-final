@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { getCollection, COLLECTIONS } from '@/lib/db';
+import { SensorDataModel } from '@/lib/db-models';
 
-// Force dynamic behavior on Vercel (no caching)
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
+// Allow static export for mobile app
+// This will be cached when used with "output: export"
+export const revalidate = 3600; // Revalidate every hour
 
 interface SensorReading {
   temperature?: number;
@@ -70,6 +71,28 @@ export async function POST(request: NextRequest) {
     memoryStorage.push(reading);
     if (memoryStorage.length > MAX_READINGS) {
       memoryStorage = memoryStorage.slice(-MAX_READINGS);
+    }
+    
+    // Try to save to MongoDB database (WiFi data storage)
+    try {
+      const sensorData: SensorDataModel = {
+        timestamp: new Date(),
+        temperature: temperature !== undefined ? parseFloat(temperature) : 0,
+        humidity: humidity !== undefined ? parseFloat(humidity) : undefined,
+        voltage: undefined,
+        current: undefined,
+        power: undefined,
+        deviceId: wifiSsid || 'unknown',
+        wifiSignal: undefined,
+        source: 'esp32',
+      };
+      
+      const collection = await getCollection(COLLECTIONS.SENSOR_DATA);
+      await collection.insertOne(sensorData);
+      console.log('[DB] ✅ Data t-sav-at f MongoDB via WiFi');
+    } catch (dbError) {
+      console.error('[DB] ⚠️ Ma-qderti-ch tsave f database:', dbError);
+      // Continue even if DB fails - memory storage still works
     }
     
     // Also try to save to file in development only
@@ -140,20 +163,32 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const dataType = url.searchParams.get('type');
-    const limit = parseInt(url.searchParams.get('limit') || '100');
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '100') || 100, 500);
+    
+    // Validate limit
+    if (limit < 1) {
+      return NextResponse.json(
+        { error: 'Invalid limit parameter', current: null, readings: [], count: 0 },
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
     
     // In production, use memory storage
     if (isProduction || memoryStorage.length > 0) {
       const readings = memoryStorage.slice(-limit).reverse();
       const current = readings.length > 0 ? readings[0] : null;
       
-      return NextResponse.json({
-        current,
-        readings,
-        count: readings.length,
-        source: 'memory',
-        totalInMemory: memoryStorage.length
-      });
+      return NextResponse.json(
+        {
+          current,
+          readings,
+          count: readings.length,
+          source: 'memory',
+          totalInMemory: memoryStorage.length,
+          timestamp: new Date().toISOString()
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
     }
     
     // In development, try to read from files
@@ -163,12 +198,24 @@ export async function GET(request: NextRequest) {
       let batteryReadings: SensorReading[] = [];
       let standardReadings: SensorReading[] = [];
       
-      if (fs.existsSync(BATTERY_TEMP_FILE)) {
-        batteryReadings = JSON.parse(fs.readFileSync(BATTERY_TEMP_FILE, 'utf-8'));
+      try {
+        if (fs.existsSync(BATTERY_TEMP_FILE)) {
+          const batteryContent = fs.readFileSync(BATTERY_TEMP_FILE, 'utf-8');
+          batteryReadings = JSON.parse(batteryContent);
+        }
+      } catch (e) {
+        console.error('[API] Battery file parse error:', e);
+        // Continue with empty array if parse fails
       }
       
-      if (fs.existsSync(DATA_FILE)) {
-        standardReadings = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+      try {
+        if (fs.existsSync(DATA_FILE)) {
+          const dataContent = fs.readFileSync(DATA_FILE, 'utf-8');
+          standardReadings = JSON.parse(dataContent);
+        }
+      } catch (e) {
+        console.error('[API] Data file parse error:', e);
+        // Continue with empty array if parse fails
       }
       
       const allReadings = [...batteryReadings, ...standardReadings]
@@ -177,48 +224,104 @@ export async function GET(request: NextRequest) {
       
       const current = allReadings.length > 0 ? allReadings[0] : null;
       
-      return NextResponse.json({
-        current,
-        readings: allReadings,
-        count: allReadings.length,
-        source: 'file'
-      });
+      return NextResponse.json(
+        {
+          current,
+          readings: allReadings,
+          count: allReadings.length,
+          source: 'file',
+          timestamp: new Date().toISOString()
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
     }
     
     if (dataType === 'battery') {
       if (!fs.existsSync(BATTERY_TEMP_FILE)) {
-        return NextResponse.json({ 
-          current: null,
-          readings: [],
-          source: 'file'
-        });
+        return NextResponse.json(
+          { 
+            current: null,
+            readings: [],
+            count: 0,
+            source: 'file',
+            timestamp: new Date().toISOString()
+          },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
       }
       
-      const readings: SensorReading[] = JSON.parse(fs.readFileSync(BATTERY_TEMP_FILE, 'utf-8'));
-      const current = readings.length > 0 ? readings[readings.length - 1] : null;
-      
-      return NextResponse.json({
-        current,
-        readings: readings.slice(-limit),
-        count: readings.length,
-        source: 'file'
-      });
+      try {
+        const batteryContent = fs.readFileSync(BATTERY_TEMP_FILE, 'utf-8');
+        const readings: SensorReading[] = JSON.parse(batteryContent);
+        const current = readings.length > 0 ? readings[readings.length - 1] : null;
+        
+        return NextResponse.json(
+          {
+            current,
+            readings: readings.slice(-limit),
+            count: readings.length,
+            source: 'file',
+            timestamp: new Date().toISOString()
+          },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+      } catch (parseError) {
+        console.error('[API] Battery temp file parse error:', parseError);
+        // Return empty response instead of error to prevent JSON parse errors in client
+        return NextResponse.json(
+          {
+            current: null,
+            readings: [],
+            count: 0,
+            source: 'file',
+            timestamp: new Date().toISOString()
+          },
+          { headers: { 'Content-Type': 'application/json' }, status: 200 }
+        );
+      }
     }
     
     // Default: return standard sensor data
     if (!fs.existsSync(DATA_FILE)) {
-      return NextResponse.json({ 
-        current: null, 
-        readings: [],
-        source: 'file'
-      });
+      return NextResponse.json(
+        { 
+          current: null, 
+          readings: [],
+          count: 0,
+          source: 'file',
+          timestamp: new Date().toISOString()
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
     }
     
-    const readings: SensorReading[] = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-    return NextResponse.json({
-      readings: readings.slice(-limit),
-      source: 'file'
-    });
+    try {
+      const dataContent = fs.readFileSync(DATA_FILE, 'utf-8');
+      const readings: SensorReading[] = JSON.parse(dataContent);
+      return NextResponse.json(
+        {
+          current: readings.length > 0 ? readings[readings.length - 1] : null,
+          readings: readings.slice(-limit),
+          count: readings.length,
+          source: 'file',
+          timestamp: new Date().toISOString()
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    } catch (parseError) {
+      console.error('[API] Data file parse error:', parseError);
+      // Return empty response instead of error
+      return NextResponse.json(
+        {
+          current: null,
+          readings: [],
+          count: 0,
+          source: 'file',
+          timestamp: new Date().toISOString()
+        },
+        { headers: { 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
     
   } catch (error) {
     console.error('[API] Error reading sensor data:', error);

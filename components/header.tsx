@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { LogOut, User, Moon, Sun, Clock } from "lucide-react"
+import { LogOut, User, Menu, Activity, Clock } from "lucide-react"
 import Image from "next/image"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "@/lib/theme-provider"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,19 +17,19 @@ import {
 interface HeaderProps {
   onLogout: () => void
   userEmail?: string
+  onMenuClick?: () => void
 }
 
-export function Header({ onLogout, userEmail }: HeaderProps) {
-  const { theme, toggleTheme } = useTheme()
-  const [currentTime, setCurrentTime] = useState("")
+export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
+  const [time, setTime] = useState<string>("00:00:00")
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      const hours = now.getHours().toString().padStart(2, "0")
-      const minutes = now.getMinutes().toString().padStart(2, "0")
-      const seconds = now.getSeconds().toString().padStart(2, "0")
-      setCurrentTime(`${hours}:${minutes}:${seconds}`)
+      const hours = String(now.getHours()).padStart(2, "0")
+      const minutes = String(now.getMinutes()).padStart(2, "0")
+      const seconds = String(now.getSeconds()).padStart(2, "0")
+      setTime(`${hours}:${minutes}:${seconds}`)
     }
 
     updateTime()
@@ -38,85 +38,70 @@ export function Header({ onLogout, userEmail }: HeaderProps) {
   }, [])
 
   return (
-    <header className="border-b border-border bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-xl px-8 py-6 flex items-center justify-between shadow-lg">
-      {/* Left - Institution */}
-      <div className="flex items-center gap-6">
-        <div className="w-16 h-16 overflow-hidden bg-primary/10 border-2 border-primary/20 flex items-center justify-center shadow-md">
-          <Image
-            src="/images.jpg"
-            alt="EST Logo"
-            width={64}
-            height={64}
-            className="object-cover"
-            priority
-          />
-        </div>
-        <div className="space-y-1">
-          <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              École Supérieure de Technologie
-            </h2>
-            <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">
-              <Clock className="w-5 h-5 text-primary" />
-              <span className="text-lg font-mono font-bold text-primary">{currentTime}</span>
+    <header className="sticky top-0 z-40 h-16 sm:h-20 border-b border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/50 backdrop-blur-xl px-3 sm:px-4 md:px-6">
+      <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
+        {/* Left - Logo & School Info */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
+          <div className="w-10 sm:w-12 h-10 sm:h-12 flex-shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
+            <Image
+              src="/images.jpg"
+              alt="EST Logo"
+              width={64}
+              height={64}
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="text-left leading-tight hidden xs:block min-w-0">
+            <div className="text-xs sm:text-sm md:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">
+              École Supérieure
+            </div>
+            <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 truncate">
+              Gestion d&apos;Energie
             </div>
           </div>
-          <p className="text-base font-semibold text-primary">Système Intelligent de Gestion d'Énergie</p>
-        </div>
-      </div>
-
-      {/* Right - Team & User */}
-      <div className="flex items-center gap-8">
-        {/* Team Info */}
-        <div className="hidden lg:block text-right border-r border-border pr-8">
-          <p className="text-sm text-muted-foreground mb-2">
-            <span className="font-semibold text-foreground">Encadré par :</span> Mr. Abdelaziz FRI
-          </p>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Réalisé par :</span> Saad SNANI & Walid EL HALOUAT
-          </p>
         </div>
 
-        {/* Theme Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className="h-10 w-10 rounded-lg hover:bg-primary/10 transition-colors"
-        >
-          {theme === "dark" ? (
-            <Sun className="h-5 w-5 text-yellow-500" />
-          ) : (
-            <Moon className="h-5 w-5 text-slate-700" />
-          )}
-        </Button>
+        {/* Center - Time & Project Info */}
+        <div className="flex-1 hidden md:flex items-center justify-center gap-2 lg:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2 bg-emerald-500/10 border border-emerald-500/30 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex-shrink-0">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-xs sm:text-base font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
+          </div>
+          <div className="hidden lg:flex flex-col items-start text-xs leading-relaxed">
+            <span className="text-muted-foreground">Encadré par : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span></span>
+            <span className="text-muted-foreground">Réalisé par : <span className="text-foreground font-semibold">Saad SNANI & Walid EL HALOUAT</span></span>
+          </div>
+        </div>
 
-        {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 px-4 h-12 rounded-lg hover:bg-primary/10 transition-colors">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
-                <User className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="hidden sm:inline text-base font-semibold text-foreground">
-                {userEmail ? userEmail.split("@")[0] : "Admin"}
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span>Mon Compte</span>
-                {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1">{userEmail}</span>}
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
-              <LogOut className="w-4 h-4 mr-2" />
-              Déconnexion
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Right - User Dropdown */}
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10">
+                <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md flex-shrink-0">
+                  <User className="w-3 sm:w-4 h-3 sm:h-4 text-primary-foreground" />
+                </div>
+                <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-foreground truncate max-w-[120px]">
+                  {userEmail ? userEmail.split("@")[0] : "Admin"}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 sm:w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col">
+                  <span className="text-sm">Mon Compte</span>
+                  {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1 truncate">{userEmail}</span>}
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
+                <LogOut className="w-4 h-4 mr-2" />
+                Déconnexion
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   )

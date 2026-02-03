@@ -7,9 +7,10 @@ import type { SystemSensorsState } from "@/lib/sensor-connection"
 
 interface GridIntegrationStatusProps {
   sensors?: SystemSensorsState
+  gridStatus?: "Active" | "Inactive"
 }
 
-export function GridIntegrationStatus({ sensors }: GridIntegrationStatusProps) {
+export function GridIntegrationStatus({ sensors, gridStatus }: GridIntegrationStatusProps) {
   // All disconnected by default if no sensors provided
   const voltage = sensors?.gridVoltage.value ?? null
   const frequency = sensors?.gridFrequency.value ?? null
@@ -53,6 +54,9 @@ export function GridIntegrationStatus({ sensors }: GridIntegrationStatusProps) {
                       <Badge className="bg-green-500">En ligne</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">Synchronisation réseau active</p>
+                    {gridStatus && (
+                      <p className="text-xs text-muted-foreground mt-1">Statut réseau: {gridStatus}</p>
+                    )}
                   </>
                 ) : (
                   <>
@@ -61,6 +65,9 @@ export function GridIntegrationStatus({ sensors }: GridIntegrationStatusProps) {
                       <Badge className="bg-red-500">Hors ligne</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">Capteurs non détectés</p>
+                    {gridStatus && (
+                      <p className="text-xs text-muted-foreground mt-1">Statut réseau: {gridStatus}</p>
+                    )}
                   </>
                 )}
               </div>

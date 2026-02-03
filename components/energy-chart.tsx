@@ -31,11 +31,11 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
   const displayData = hasData ? historicalData : currentData
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-[22px] font-bold">
           <BarChart3 className="w-5 h-5 text-primary" />
-          Production vs Consommation
+          Prévision de Production
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -52,12 +52,8 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
               <AreaChart data={displayData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="productionGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.75 0.2 145)" stopOpacity={0.4} />
+                    <stop offset="5%" stopColor="oklch(0.75 0.2 145)" stopOpacity={0.6} />
                     <stop offset="95%" stopColor="oklch(0.75 0.2 145)" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="consumptionGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.7 0.15 60)" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="oklch(0.7 0.15 60)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.01 260)" />
@@ -84,17 +80,6 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
                     isAnimationActive={false}
                   />
                 )}
-                {sensors?.consumption.connected && (
-                  <Area
-                    type="monotone"
-                    dataKey="consumption"
-                    stroke="oklch(0.7 0.15 60)"
-                    strokeWidth={2}
-                    fill="url(#consumptionGradient)"
-                    name="Consommation"
-                    isAnimationActive={false}
-                  />
-                )}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -104,12 +89,6 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-energy-green" />
               <span className="text-sm text-muted-foreground">Production</span>
-            </div>
-          )}
-          {sensors?.consumption.connected && (
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-energy-yellow" />
-              <span className="text-sm text-muted-foreground">Consommation</span>
             </div>
           )}
           {displayData.length === 0 && (

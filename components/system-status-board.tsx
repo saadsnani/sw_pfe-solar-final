@@ -148,27 +148,27 @@ export function SystemStatusBoard({ sensors }: SystemStatusBoardProps) {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-foreground">État du Système</h2>
-        <p className="text-sm text-muted-foreground">Surveillance en temps réel de tous les composants</p>
+      <div className="mb-8">
+        <h2 className="text-3xl sm:text-4xl font-bold text-foreground">État du Système</h2>
+        <p className="text-base sm:text-lg text-muted-foreground mt-2 font-medium">Surveillance en temps réel de tous les composants</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {systemStatuses.map((status) => (
-          <Card key={status.id} className={`border ${getStatusColor(status.status)}`}>
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="mt-1">{status.icon}</div>
+          <Card key={status.id} className={`border shadow-lg hover:shadow-xl transition-shadow ${getStatusColor(status.status)}`}>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="mt-1 flex-shrink-0">{status.icon}</div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-sm">{status.title}</h3>
-                      <Badge className={getStatusBadgeColor(status.status)}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-bold text-base sm:text-lg">{status.title}</h3>
+                      <Badge className={`text-sm font-semibold px-3 py-1 ${getStatusBadgeColor(status.status)}`}>
                         {getStatusLabel(status.status)}
                       </Badge>
                     </div>
-                    <p className="text-sm opacity-90">{status.message}</p>
-                    {status.timestamp && <p className="text-xs opacity-60 mt-2">{status.timestamp}</p>}
+                    <p className="text-base opacity-90 font-medium">{status.message}</p>
+                    {status.timestamp && <p className="text-sm opacity-60 mt-3 font-medium">{status.timestamp}</p>}
                   </div>
                 </div>
               </div>

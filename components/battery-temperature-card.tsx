@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Battery, Thermometer } from "lucide-react"
+import { fetchBatteryTemperature } from "@/frontend/lib/api/data-manager"
+import { formatTemperature, getTemperatureStatus, formatRelativeTime } from "@/frontend/lib/ui/ui-manager"
 
 interface BatteryReading {
   batteryTemperature?: number
@@ -26,8 +28,10 @@ export function BatteryTemperatureCard() {
 
   const fetchBatteryData = async () => {
     try {
-      const response = await fetch("/api/sensor-data?type=battery")
-      const data = await response.json()
+      // Use new data-manager module
+      const result = await fetchBatteryTemperature()
+      if (!result.success || !result.data) return
+      const data = result.data
 
       if (data.current && data.current.batteryTemperature !== undefined) {
         setBatteryTemp(data.current.batteryTemperature)

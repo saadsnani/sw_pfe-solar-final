@@ -29,19 +29,19 @@ function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
   }
 
   return (
-    <div className={`relative p-4 rounded-2xl border-2 ${statusColors[status]} backdrop-blur-sm float-animation`}>
+    <div className={`relative p-6 sm:p-7 rounded-2xl border-2 ${statusColors[status]} backdrop-blur-sm float-animation w-full sm:w-auto shadow-lg`}>
       <div
-        className={`w-12 h-12 rounded-xl bg-card flex items-center justify-center mb-3 mx-auto ${iconColors[status]}`}
+        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-card flex items-center justify-center mb-3 sm:mb-4 mx-auto ${iconColors[status]}`}
       >
         {icon}
       </div>
-      <h3 className="text-sm font-semibold text-foreground text-center mb-2">{label}</h3>
-      <div className="space-y-1">
+      <h3 className="text-sm sm:text-base font-semibold text-foreground text-center mb-3">{label}</h3>
+      <div className="space-y-2">
         {values.length === 0 ? (
-          <p className="text-xs text-center text-muted-foreground italic">Non connecté</p>
+          <p className="text-sm text-center text-muted-foreground italic">Non connecté</p>
         ) : (
           values.map((value, index) => (
-            <p key={index} className="text-xs text-center font-mono text-muted-foreground">
+            <p key={index} className="text-sm text-center font-mono text-muted-foreground font-medium">
               {value}
             </p>
           ))
@@ -53,19 +53,37 @@ function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
 
 function EnergyFlowLine() {
   return (
-    <div className="hidden lg:flex items-center justify-center w-24 relative">
-      <div className="w-full h-0.5 bg-border" />
-      <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow"
-            style={{ animationDelay: `${i * 0.6}s` }}
-          />
-        ))}
+    <>
+      {/* Horizontal line for desktop */}
+      <div className="hidden lg:flex items-center justify-center w-24 relative">
+        <div className="w-full h-0.5 bg-border" />
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow"
+              style={{ animationDelay: `${i * 0.6}s` }}
+            />
+          ))}
+        </div>
+        <ArrowRight className="absolute right-0 w-4 h-4 text-energy-green" />
       </div>
-      <ArrowRight className="absolute right-0 w-4 h-4 text-energy-green" />
-    </div>
+      
+      {/* Vertical line for mobile */}
+      <div className="flex lg:hidden items-center justify-center h-12 relative w-full">
+        <div className="w-0.5 h-full bg-border" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
+          {[...Array(2)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow-vertical"
+              style={{ animationDelay: `${i * 0.6}s` }}
+            />
+          ))}
+        </div>
+        <ArrowRight className="absolute bottom-0 w-4 h-4 text-energy-green rotate-90" />
+      </div>
+    </>
   )
 }
 
@@ -91,15 +109,15 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
   const allConnected = isSolarConnected && isBatteryConnected && isGridConnected && isConsumptionConnected
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Zap className="w-5 h-5 text-primary" />
+    <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold">
+          <Zap className="w-7 h-7 text-primary" />
           Synoptique du Système
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-0 py-4">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0 py-6">
           {/* Solar Panel */}
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}

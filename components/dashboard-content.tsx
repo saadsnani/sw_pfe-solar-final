@@ -1,44 +1,148 @@
 "use client"
 
-import { useEffect, lazy, Suspense } from "react"
+import { useEffect, lazy, Suspense, useState } from "react"
 import { SystemSynoptic } from "@/components/system-synoptic"
 import { MetricCards } from "@/components/metric-cards"
 import { EnergyChart } from "@/components/energy-chart"
 import { AIInsightsPanel } from "@/components/ai-insights-panel"
+import { PowerForecastChart } from "@/components/PowerForecastChart"
 import { SystemStatusBoard } from "@/components/system-status-board"
 import { GridIntegrationStatus } from "@/components/grid-integration-status"
 import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
-import { BatteryTemperatureCard } from "@/components/battery-temperature-card"
 import { TemperatureDisplayCard } from "@/components/temperature-display-card"
-import { useAlert } from "@/lib/alert-provider"
-import { useSystemSensors } from "@/hooks/use-sensor-connection"
-import { createDefaultSystemState } from "@/lib/sensor-connection"
+import { createDefaultSystemState, createConnectedSensor } from "@/lib/sensor-connection"
+import type { SystemSensorsState } from "@/lib/sensor-connection"
 
 // Lazy load heavy components
 const WeatherForecast = lazy(() => import("@/components/weather-forecast").then(m => ({ default: m.WeatherForecast })))
 
-export function DashboardContent() {
-  const { addAlert } = useAlert()
-  const { state: sensors } = useSystemSensors()
+// ✅ DEMO MODE TOGGLE: Set to false to use real ESP32 sensors
+const IS_DEMO = true
 
-  // NOTE: In simulation mode, all sensors start as disconnected.
-  // When real hardware is connected, the sensors will be updated with real values.
-  // To test with simulated data, uncomment the code below:
-  /*
+// Helper function to add natural fluctuation to existing value
+const fluctuate = (current: number, min: number, max: number, maxChange: number): number => {
+  const change = (Math.random() - 0.5) * 2 * maxChange
+  const newValue = current + change
+  return Math.max(min, Math.min(max, newValue))
+}
+
+type DemoTemperatureReading = {
+  batteryTemperature?: number
+  temperature?: number
+  wifiSsid?: string
+  sensorError?: boolean
+  timestamp: string
+}
+
+export function DashboardContent() {
+  // ✅ State for simulated sensor data (only used if IS_DEMO = true)
+  const [simulatedData, setSimulatedData] = useState({
+    solarVoltage: 20.0,      // 18V - 22V
+    solarCurrent: 5.0,       // 2A - 8A
+    batteryLevel: 75,        // 40% - 95%
+    gridStatus: "Active",    // "Active" or "Inactive"
+    temperature: 40.0,       // 35°C - 45°C
+    production: 250,         // Calculated from V * I
+    consumption: 180,        // Random consumption
+  })
+
+  const [energyHistory, setEnergyHistory] = useState<Array<{ time: string; production: number; consumption: number }>>([])
+  const [temperatureReadings, setTemperatureReadings] = useState<DemoTemperatureReading[]>([])
+
+  // ✅ Convert simulated data to sensor state format (only used if IS_DEMO = true)
+  const [sensors, setSensors] = useState<SystemSensorsState>(() => {
+    const initial = createDefaultSystemState()
+    return {
+      ...initial,
+      battery: createConnectedSensor(simulatedData.batteryLevel),
+      production: createConnectedSensor(simulatedData.production),
+      consumption: createConnectedSensor(simulatedData.consumption),
+      temperature: createConnectedSensor(simulatedData.temperature),
+      solarVoltage: createConnectedSensor(simulatedData.solarVoltage),
+      solarCurrent: createConnectedSensor(simulatedData.solarCurrent),
+      gridStatus: createConnectedSensor(simulatedData.gridStatus),
+    }
+  })
+
+  // ✅ DEMO MODE: Simulation logic - Updates every 3 seconds (only runs if IS_DEMO = true)
   useEffect(() => {
+    if (!IS_DEMO) return // Skip if using real hardware
+
     const timer = setInterval(() => {
-      // Simulate sensor updates every 5 seconds
-      systemSensors.updateBattery(Math.random() * 100)
-      systemSensors.updateProduction(Math.random() * 500)
-      systemSensors.updateConsumption(100 + Math.random() * 400)
-      systemSensors.updateTemperature(20 + Math.random() * 20)
-    }, 5000)
+      setSimulatedData((prev) => {
+        // Natural fluctuations
+        const newVoltage = fluctuate(prev.solarVoltage, 18, 22, 0.5)
+        const newCurrent = fluctuate(prev.solarCurrent, 2, 8, 0.3)
+        const newBatteryLevel = fluctuate(prev.batteryLevel, 40, 95, 2)
+        const newTemperature = fluctuate(prev.temperature, 35, 45, 1)
+        const newConsumption = fluctuate(prev.consumption, 100, 400, 20)
+        
+        // Toggle grid status occasionally (10% chance)
+        const newGridStatus = Math.random() < 0.1 
+          ? (prev.gridStatus === "Active" ? "Inactive" : "Active")
+          : prev.gridStatus
+
+        // Calculate production from voltage * current
+        const newProduction = newVoltage * newCurrent
+
+        return {
+          solarVoltage: newVoltage,
+          solarCurrent: newCurrent,
+          batteryLevel: newBatteryLevel,
+          gridStatus: newGridStatus,
+          temperature: newTemperature,
+          production: newProduction,
+          consumption: newConsumption,
+        }
+      })
+    }, 3000) // Update every 3 seconds
+
     return () => clearInterval(timer)
-  }, [systemSensors])
-  */
+  }, [])
+
+  // 🔥 DEMO MODE: Update sensors state whenever simulated data changes
+  useEffect(() => {
+    setSensors({
+      battery: createConnectedSensor(simulatedData.batteryLevel),
+      production: createConnectedSensor(simulatedData.production),
+      consumption: createConnectedSensor(simulatedData.consumption),
+      temperature: createConnectedSensor(simulatedData.temperature),
+      solarVoltage: createConnectedSensor(simulatedData.solarVoltage),
+      solarCurrent: createConnectedSensor(simulatedData.solarCurrent),
+      gridVoltage: createConnectedSensor(220 + (Math.random() - 0.5) * 10), // 215-225V
+      gridFrequency: createConnectedSensor(50 + (Math.random() - 0.5) * 0.2), // 49.9-50.1 Hz
+    })
+  }, [simulatedData])
+
+  // 🔥 DEMO MODE: Build chart/table histories
+  useEffect(() => {
+    const now = new Date()
+    const timeLabel = now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+
+    setEnergyHistory((prev) =>
+      [...prev, { time: timeLabel, production: simulatedData.production, consumption: simulatedData.consumption }].slice(-20),
+    )
+
+    setTemperatureReadings((prev) =>
+      [
+        ...prev,
+        {
+          batteryTemperature: simulatedData.temperature,
+          temperature: simulatedData.temperature - 2,
+          wifiSsid: "ESP32-TEMP",
+          timestamp: now.toISOString(),
+        },
+      ].slice(-20),
+    )
+  }, [simulatedData])
+
+  const latestTemperature = temperatureReadings[temperatureReadings.length - 1] ?? null
+  const temperatureDemoData = latestTemperature
+    ? { current: latestTemperature, readings: temperatureReadings, isConnected: true }
+    : undefined
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 w-full overflow-hidden">
       {/* System Synoptic - First */}
       <SystemSynoptic sensors={sensors} />
 
@@ -46,28 +150,31 @@ export function DashboardContent() {
       <MetricCards sensors={sensors} />
 
       {/* Temperature Monitoring - Full Width with Chart */}
-      <div className="grid grid-cols-1 gap-6">
-        <TemperatureDisplayCard />
+      <div className="grid grid-cols-1 gap-4">
+        <TemperatureDisplayCard demoData={temperatureDemoData} />
       </div>
 
       {/* Grid Integration */}
-      <GridIntegrationStatus sensors={sensors} />
+      <GridIntegrationStatus sensors={sensors} gridStatus={simulatedData.gridStatus} />
 
       {/* System Status */}
       <SystemStatusBoard sensors={sensors} />
 
       {/* Charts & AI */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <EnergyChart sensors={sensors} />
-        </div>
-        <div>
-          <AIInsightsPanel sensors={sensors} />
-        </div>
+      <div className="grid grid-cols-1 gap-4">
+        <EnergyChart sensors={sensors} historicalData={energyHistory} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4">
+        <AIInsightsPanel sensors={sensors} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4">
+        <PowerForecastChart />
       </div>
 
       {/* Analytics */}
-      <AnalyticsPageEnhanced sensors={sensors} />
+      <AnalyticsPageEnhanced sensors={sensors} historicalData={energyHistory} />
 
       <Suspense fallback={<div className="h-48 bg-muted rounded-lg animate-pulse" />}>
         <WeatherForecast />

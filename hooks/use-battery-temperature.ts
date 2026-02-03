@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { fetchBatteryTemperature } from "@/frontend/lib/api/data-manager"
 
 export interface BatteryTemperatureData {
   batteryTemperature: number | null
@@ -26,19 +27,19 @@ export function useBatteryTemperature(refreshInterval = 3000) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/sensor-data?type=battery")
-        const result = await response.json()
+        // Use new data-manager module
+        const result = await fetchBatteryTemperature()
 
-        if (result.current && result.current.batteryTemperature !== undefined) {
-          const temp = result.current.batteryTemperature
+        if (result.success && result.data?.current && result.data.current.batteryTemperature !== undefined) {
+          const temp = result.data.current.batteryTemperature
           setData({
             batteryTemperature: temp,
             isConnected: true,
-            lastUpdate: new Date(result.current.timestamp),
+            lastUpdate: new Date(result.data.current.timestamp),
             status: getStatus(temp),
           })
         } else {
-          setData((prev) => ({
+          setData((prev: BatteryTemperatureData) => ({
             ...prev,
             isConnected: false,
             status: "disconnected",
@@ -46,7 +47,7 @@ export function useBatteryTemperature(refreshInterval = 3000) {
         }
       } catch (error) {
         console.error("Error fetching battery temperature:", error)
-        setData((prev) => ({
+        setData((prev: BatteryTemperatureData) => ({
           ...prev,
           isConnected: false,
           status: "disconnected",

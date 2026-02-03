@@ -13,7 +13,16 @@ interface TemperatureReading {
   timestamp: string
 }
 
-export function TemperatureDisplayCard() {
+interface TemperatureDisplayCardProps {
+  demoData?: {
+    current: TemperatureReading
+    readings: TemperatureReading[]
+    isConnected?: boolean
+    errorMsg?: string
+  }
+}
+
+export function TemperatureDisplayCard({ demoData }: TemperatureDisplayCardProps) {
   const [batteryTemp, setBatteryTemp] = useState<number | null>(null)
   const [ambientTemp, setAmbientTemp] = useState<number | null>(null)
   const [wifiSsid, setWifiSsid] = useState<string>("")
@@ -24,10 +33,60 @@ export function TemperatureDisplayCard() {
   const [errorMsg, setErrorMsg] = useState<string>("")
 
   useEffect(() => {
+    if (!demoData) return
+
+    const current = demoData.current
+    const newBatteryTemp = current.batteryTemperature
+    const newAmbientTemp = current.temperature
+    const hasSensorError = current.sensorError
+
+    if (batteryTemp !== null && newBatteryTemp !== undefined) {
+      const diff = newBatteryTemp - batteryTemp
+      if (diff > 0.5) setTrend("up")
+      else if (diff < -0.5) setTrend("down")
+      else setTrend("stable")
+    }
+
+    if (hasSensorError) {
+      setBatteryTemp(null)
+      setErrorMsg(demoData.errorMsg ?? "Capteur déconnecté")
+    } else {
+      setBatteryTemp(newBatteryTemp ?? null)
+      setErrorMsg("")
+    }
+
+    setAmbientTemp(newAmbientTemp ?? null)
+    setWifiSsid(current.wifiSsid ?? "")
+
+    const readingAge = Date.now() - new Date(current.timestamp).getTime()
+    const hasRecentData = readingAge < 30000
+    setIsConnected(demoData.isConnected ?? (hasRecentData || Boolean(current.wifiSsid)))
+
+    const date = new Date(current.timestamp)
+    setLastUpdate(date.toLocaleTimeString("fr-FR"))
+
+    const chartData = demoData.readings
+      .slice(-20)
+      .map((reading: TemperatureReading) => ({
+        time: new Date(reading.timestamp).toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        battery: reading.batteryTemperature ?? null,
+        ambient: reading.temperature ?? null,
+      }))
+      .reverse()
+
+    setHistory(chartData)
+  }, [demoData, batteryTemp])
+
+  useEffect(() => {
+    if (demoData) return
+
     fetchTemperatureData()
     const interval = setInterval(fetchTemperatureData, 3000)
     return () => clearInterval(interval)
-  }, [])
+  }, [demoData])
 
   const fetchTemperatureData = async () => {
     try {

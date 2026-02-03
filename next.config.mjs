@@ -3,8 +3,16 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const isStaticExport =
+  process.env.NEXT_OUTPUT === 'export' ||
+  process.env.CAPACITOR_EXPORT === 'true';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static export for mobile app (Capacitor)
+  ...(isStaticExport ? { output: 'export' } : {}),
+  skipTrailingSlashRedirect: true,
+  
   typescript: {
     ignoreBuildErrors: true,
   },

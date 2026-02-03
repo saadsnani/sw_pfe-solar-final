@@ -33,14 +33,14 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress, isCo
   }
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-colors">
-      <CardContent className="p-4 sm:p-5 md:p-6">
-        <div className="flex items-start justify-between mb-4 gap-2">
-          <div className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl bg-secondary flex items-center justify-center ${statusColors[status]}`}>
-            {icon}
+    <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-colors shadow-lg">
+      <CardContent className="p-6 sm:p-7 md:p-8">
+        <div className="flex items-start justify-between mb-6 gap-4">
+          <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-xl bg-secondary flex items-center justify-center ${statusColors[status]}`}>
+            <span className="w-7 h-7 sm:w-8 sm:h-8">{icon}</span>
           </div>
           {progress !== undefined && progress !== null && (
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                 <circle
                   cx="18"
@@ -64,24 +64,24 @@ function MetricCard({ icon, label, value, unit, status, subValue, progress, isCo
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-[11px] sm:text-xs font-bold ${statusColors[status]}`}>{progress}%</span>
+                <span className={`text-sm sm:text-base font-bold ${statusColors[status]}`}>{progress}%</span>
               </div>
             </div>
           )}
         </div>
         <div>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-1">{label}</p>
-          <div className="flex items-baseline gap-1">
+          <p className="text-sm sm:text-base text-muted-foreground mb-2 font-medium">{label}</p>
+          <div className="flex items-baseline gap-2">
             {isConnected && value !== null ? (
               <>
-                <span className={`text-2xl sm:text-3xl font-bold ${statusColors[status]}`}>{value}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground">{unit}</span>
+                <span className={`text-4xl sm:text-5xl md:text-6xl font-bold ${statusColors[status]}`}>{value}</span>
+                <span className="text-lg sm:text-xl text-muted-foreground font-semibold">{unit}</span>
               </>
             ) : (
-              <span className="text-sm text-muted-foreground">Non connecté</span>
+              <span className="text-base sm:text-lg text-muted-foreground">Non connecté</span>
             )}
           </div>
-          {subValue && <p className="text-[11px] sm:text-xs text-muted-foreground mt-2">{subValue}</p>}
+          {subValue && <p className="text-sm sm:text-base text-muted-foreground mt-3 font-medium">{subValue}</p>}
         </div>
       </CardContent>
     </Card>
