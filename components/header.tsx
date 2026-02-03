@@ -38,11 +38,11 @@ export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 h-20 border-b border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/50 backdrop-blur-xl px-4 sm:px-6">
-      <div className="flex items-center h-full w-full justify-between gap-3">
+    <header className="sticky top-0 z-40 h-16 sm:h-20 border-b border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/50 backdrop-blur-xl px-3 sm:px-4 md:px-6">
+      <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
         {/* Left - Logo & School Info */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="w-12 h-12 flex-shrink-0 overflow-hidden rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
+          <div className="w-10 sm:w-12 h-10 sm:h-12 flex-shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
             <Image
               src="/images.jpg"
               alt="EST Logo"
@@ -52,21 +52,21 @@ export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
               priority
             />
           </div>
-          <div className="text-left leading-tight">
-            <div className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">
-              École Supérieure de Technologie
+          <div className="text-left leading-tight hidden xs:block min-w-0">
+            <div className="text-xs sm:text-sm md:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">
+              École Supérieure
             </div>
-            <div className="text-xs sm:text-sm text-emerald-600/80 dark:text-emerald-400/80">
-              Système Intelligent de Gestion d&apos;Energie
+            <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 truncate">
+              Gestion d&apos;Energie
             </div>
           </div>
         </div>
 
         {/* Center - Time & Project Info */}
-        <div className="flex-1 flex items-center justify-center gap-4">
-          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
-            <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-base font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
+        <div className="flex-1 hidden md:flex items-center justify-center gap-2 lg:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2 bg-emerald-500/10 border border-emerald-500/30 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex-shrink-0">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-xs sm:text-base font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
           </div>
           <div className="hidden lg:flex flex-col items-start text-xs leading-relaxed">
             <span className="text-muted-foreground">Encadré par : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span></span>
@@ -74,24 +74,24 @@ export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
           </div>
         </div>
 
-        {/* Right - User Only */}
-        <div className="flex items-center gap-2">
+        {/* Right - User Dropdown */}
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 px-2 h-10 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
-                  <User className="w-4 h-4 text-primary-foreground" />
+              <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10">
+                <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md flex-shrink-0">
+                  <User className="w-3 sm:w-4 h-3 sm:h-4 text-primary-foreground" />
                 </div>
-                <span className="hidden md:inline text-sm font-semibold text-foreground">
+                <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-foreground truncate max-w-[120px]">
                   {userEmail ? userEmail.split("@")[0] : "Admin"}
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-48 sm:w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col">
-                  <span>Mon Compte</span>
-                  {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1">{userEmail}</span>}
+                  <span className="text-sm">Mon Compte</span>
+                  {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1 truncate">{userEmail}</span>}
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
