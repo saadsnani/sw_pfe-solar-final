@@ -52,12 +52,12 @@ export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
               priority
             />
           </div>
-          <div className="text-left leading-tight hidden xs:block min-w-0">
-            <div className="text-xs sm:text-sm md:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">
-              École Supérieure
+          <div className="text-left leading-tight hidden sm:block min-w-0">
+            <div className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400 truncate">
+              École Supérieure de Technologie
             </div>
-            <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 truncate">
-              Gestion d&apos;Energie
+            <div className="text-xs sm:text-sm text-emerald-600/80 dark:text-emerald-400/80 truncate">
+              Système Intelligent de Gestion d&apos;Energie
             </div>
           </div>
         </div>

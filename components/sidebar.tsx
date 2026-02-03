@@ -63,7 +63,8 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
           return (
             <button
               key={item.id}
-              onClick={() => onPageChange(item.id)}
+              onClick={() => setIsMenuOpen(true)}
+              onMouseEnter={() => setIsMenuOpen(true)}
               className={cn(
                 "w-full flex items-center justify-center p-3 rounded-xl transition-all duration-200 group relative",
                 isActive
@@ -78,6 +79,43 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
           )
         })}
       </nav>
+
+      {/* Desktop Expandable Panel */}
+      {isMenuOpen && (
+        <div 
+          className="hidden md:block fixed left-20 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border shadow-2xl z-50 transition-transform duration-300"
+          onMouseLeave={() => setIsMenuOpen(false)}
+        >
+          <div className="p-4 border-b border-sidebar-border">
+            <h3 className="text-sm font-semibold text-foreground">Navigation</h3>
+          </div>
+          <nav className="flex-1 p-4 space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive = currentPage === item.id
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onPageChange(item.id)
+                    setIsMenuOpen(false)
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
+                    isActive
+                      ? "bg-emerald-500/20 text-emerald-500"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
+                  )}
+                >
+                  <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-emerald-500")} />
+                  <span className="font-medium truncate">{item.label}</span>
+                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                </button>
+              )
+            })}
+          </nav>
+        </div>
+      )}
 
       {/* Mobile Navigation - Slide Out Panel */}
       {isMenuOpen && (
