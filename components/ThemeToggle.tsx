@@ -27,32 +27,38 @@ export function ThemeToggle() {
     if (isDark) {
       // Switch to Light Mode
       htmlElement.classList.remove("dark")
+      htmlElement.style.colorScheme = "light"
       setIsDark(false)
       localStorage.setItem("theme", "light")
+      // Force re-render
+      window.dispatchEvent(new Event('storage'))
     } else {
       // Switch to Dark Mode
       htmlElement.classList.add("dark")
+      htmlElement.style.colorScheme = "dark"
       setIsDark(true)
       localStorage.setItem("theme", "dark")
+      // Force re-render
+      window.dispatchEvent(new Event('storage'))
     }
   }
 
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="p-2 w-9 h-9" />
+      <div className="p-3 w-12 h-12" />
     )
   }
 
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+      className="p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all duration-200 flex items-center justify-center"
       aria-label="Toggle theme"
-      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
     >
       {isDark ? (
-        // Sun Icon ☀️ (Show in Dark Mode)
+        // Sun Icon ☀️ (Show in Dark Mode - Click to go Light)
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -61,7 +67,7 @@ export function ThemeToggle() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-5 h-5 text-yellow-400"
+          className="w-6 h-6 text-yellow-400"
         >
           <circle cx="12" cy="12" r="5" />
           <line x1="12" y1="1" x2="12" y2="3" />
@@ -74,7 +80,7 @@ export function ThemeToggle() {
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
         </svg>
       ) : (
-        // Moon Icon 🌙 (Show in Light Mode)
+        // Moon Icon 🌙 (Show in Light Mode - Click to go Dark)
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -83,7 +89,7 @@ export function ThemeToggle() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-5 h-5 text-slate-700"
+          className="w-6 h-6 text-slate-700 dark:text-slate-300"
         >
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
