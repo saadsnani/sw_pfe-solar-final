@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electrical Monitoring System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+
+    .status.connected {
+      background: #10b981;
+      color: white;
+    }
+
+    .status.disconnected {
+      background: #ef4444;
+      color: white;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .channel-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .channel-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .channel-title {
+      font-size: 1.5rem;
+      color: #667eea;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .metric {
+      margin-bottom: 15px;
+    }
+
+    .metric-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .metric-value .unit {
+      font-size: 1.2rem;
+      color: #999;
+      margin-left: 5px;
+    }
+
+    .metric.voltage .metric-value {
+      color: #3b82f6;
+    }
+
+    .metric.current .metric-value {
+      color: #f59e0b;
+    }
+
+    .metric.power .metric-value {
+      color: #10b981;
+    }
+
+    .timestamp {
+      text-align: center;
+      color: white;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Loading animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>⚡ Electrical Monitoring System</h1>
+      <div class="status" id="status">Connecting...</div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <!-- Channel 1 -->
+      <div class="channel-card">
+        <div class="channel-title">📊 Channel 1</div>
+        
+        <div class="metric voltage">
+          <div class="metric-label">Voltage</div>
+          <div class="metric-value">
+            <span id="voltage1">--</span><span class="unit">V</span>
+          </div>
+        </div>
+
+        <div class="metric current">
+          <div class="metric-label">Current</div>
+          <div class="metric-value">
+            <span id="current1">--</span><span class="unit">A</span>
+          </div>
+        </div>
+
+        <div class="metric power">
+          <div class="metric-label">Power</div>
+          <div class="metric-value">
+            <span id="power1">--</span><span class="unit">W</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Channel 2 -->
+      <div class="channel-card">
+        <div class="channel-title">📊 Channel 2</div>
+        
+        <div class="metric voltage">
+          <div class="metric-label">Voltage</div>
+          <div class="metric-value">
+            <span id="voltage2">--</span><span class="unit">V</span>
+          </div>
+        </div>
+
+        <div class="metric current">
+          <div class="metric-label">Current</div>
+          <div class="metric-value">
+            <span id="current2">--</span><span class="unit">A</span>
+          </div>
+        </div>
+
+        <div class="metric power">
+          <div class="metric-label">Power</div>
+          <div class="metric-value">
+            <span id="power2">--</span><span class="unit">W</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timestamp -->
+    <div class="timestamp" id="timestamp">Waiting for data...</div>
+  </div>
+
+  <script>
+    /**
+     * WebSocket Client - Real-time Data Display
+     */
+
+    // Get DOM elements
+    const statusEl = document.getElementById('status');
+    const timestampEl = document.getElementById('timestamp');
+
+    // WebSocket connection
+    let ws;
+    let reconnectInterval;
+
+    /**
+     * Connect to WebSocket server
+     */
+    function connect() {
+      // Create WebSocket connection to same host
+      ws = new WebSocket(`ws://${window.location.host}`);
+
+      // Connection opened
+      ws.addEventListener('open', () => {
+        console.log('✅ Connected to server');
+        updateStatus('connected');
+        clearInterval(reconnectInterval);
+      });
+
+      // Listen for messages
+      ws.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        
+        if (message.type === 'sensor_data') {
+          updateDashboard(message.data);
+        }
+      });
+
+      // Connection closed
+      ws.addEventListener('close', () => {
+        console.log('❌ Disconnected from server');
+        updateStatus('disconnected');
+        
+        // Attempt to reconnect every 3 seconds
+        reconnectInterval = setInterval(() => {
+          console.log('🔄 Attempting to reconnect...');
+          connect();
+        }, 3000);
+      });
+
+      // Handle errors
+      ws.addEventListener('error', (error) => {
+        console.error('WebSocket error:', error);
+      });
+    }
+
+    /**
+     * Update connection status indicator
+     */
+    function updateStatus(status) {
+      if (status === 'connected') {
+        statusEl.textContent = '● Connected';
+        statusEl.className = 'status connected';
+      } else {
+        statusEl.textContent = '● Disconnected';
+        statusEl.className = 'status disconnected';
+      }
+    }
+
+    /**
+     * Update dashboard with new sensor data
+     */
+    function updateDashboard(data) {
+      // Update Channel 1
+      document.getElementById('voltage1').textContent = data.voltage1;
+      document.getElementById('current1').textContent = data.current1;
+      document.getElementById('power1').textContent = data.power1;
+
+      // Update Channel 2
+      document.getElementById('voltage2').textContent = data.voltage2;
+      document.getElementById('current2').textContent = data.current2;
+      document.getElementById('power2').textContent = data.power2;
+
+      // Update timestamp
+      const date = new Date(data.timestamp);
+      timestampEl.textContent = `Last update: ${date.toLocaleTimeString()}`;
+    }
+
+    // Initialize connection when page loads
+    connect();
+
+    /**
+     * Clean up on page unload
+     */
+    window.addEventListener('beforeunload', () => {
+      if (ws) {
+        ws.close();
+      }
+    });
+  </script>
+</body>
+</html>

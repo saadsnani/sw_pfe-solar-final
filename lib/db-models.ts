@@ -5,7 +5,6 @@
 
 // Sensor Data Model (ESP32 WiFi Data)
 export interface SensorDataModel {
-  _id?: string;
   timestamp: Date;
   temperature: number;
   humidity?: number;
@@ -19,7 +18,6 @@ export interface SensorDataModel {
 
 // Temperature Log Model
 export interface TemperatureLogModel {
-  _id?: string;
   timestamp: Date;
   batteryTemp: number;
   ambientTemp?: number;
@@ -30,7 +28,6 @@ export interface TemperatureLogModel {
 
 // System Status Model
 export interface SystemStatusModel {
-  _id?: string;
   timestamp: Date;
   solarPower: number;
   batteryLevel: number;
@@ -41,7 +38,6 @@ export interface SystemStatusModel {
 
 // Alert Model
 export interface AlertModel {
-  _id?: string;
   timestamp: Date;
   type: 'info' | 'warning' | 'error' | 'critical';
   title: string;
@@ -53,7 +49,6 @@ export interface AlertModel {
 
 // User Activity Log
 export interface UserLogModel {
-  _id?: string;
   timestamp: Date;
   userId?: string;
   action: string;

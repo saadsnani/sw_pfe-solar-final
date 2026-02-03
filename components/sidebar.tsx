@@ -1,7 +1,9 @@
 "use client"
 
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, ChevronLeft, ChevronRight, Sun, User } from "lucide-react"
+import { useState } from "react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, Sun, User, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import type { PageType } from "@/components/dashboard"
 
 interface SidebarProps {
@@ -22,69 +24,75 @@ const navItems = [
 ]
 
 export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse, userEmail }: SidebarProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
   return (
-    <aside
-      className={cn(
-        "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 z-50",
-        "fixed lg:static inset-y-0 left-0",
-        collapsed ? "-translate-x-full lg:translate-x-0 lg:w-20" : "translate-x-0 w-64",
-      )}
-    >
-      {/* Logo */}
-      <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
-            <Sun className="w-5 h-5 text-primary" />
-          </div>
-          {!collapsed && (
-            <div className="overflow-hidden">
-              <h1 className="font-bold text-foreground text-lg">Smart EMS</h1>
-              <p className="text-xs text-muted-foreground truncate">Système IA</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = currentPage === item.id
-          return (
-            <button
-              key={item.id}
-              onClick={() => onPageChange(item.id)}
-              className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-                isActive
-                  ? "bg-primary/20 text-primary"
-                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
-              )}
-            >
-              <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
-              {!collapsed && <span className="font-medium truncate">{item.label}</span>}
-              {isActive && !collapsed && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
-            </button>
-          )
-        })}
-      </nav>
-
-      {/* Collapse Toggle */}
-      <div className="p-4 border-t border-sidebar-border">
+    <>
+      <aside className={cn(
+        "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
+        "fixed inset-y-0 left-0 z-50",
+        "w-20",
+        "md:translate-x-0",
+        collapsed && "-translate-x-full md:translate-x-0"
+      )}>
+      {/* Top Section - Hamburger & Theme Toggle */}
+      <div className="p-4 border-b border-sidebar-border flex flex-col items-center gap-4">
+        {/* Hamburger Menu Button */}
         <button
-          onClick={onToggleCollapse}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
+          onClick={toggleMenu}
+          className="w-12 h-12 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 flex items-center justify-center transition-colors duration-200 border border-emerald-500/30"
+          aria-label="Toggle menu"
         >
-          {collapsed ? (
-            <ChevronRight className="w-5 h-5" />
-          ) : (
-            <>
-              <ChevronLeft className="w-5 h-5" />
-              <span className="text-sm">Réduire</span>
-            </>
-          )}
+          <Menu className="w-6 h-6 text-emerald-500" />
         </button>
+
+        {/* Theme Toggle */}
+        <ThemeToggle />
       </div>
+
+      {/* Navigation Items - Slide Out Panel */}
+      {isMenuOpen && (
+        <div className="fixed left-20 top-20 bottom-0 w-64 bg-sidebar border-r border-sidebar-border shadow-2xl z-50 transition-transform duration-300">
+          <nav className="flex-1 p-4 space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive = currentPage === item.id
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onPageChange(item.id)
+                    setIsMenuOpen(false)
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
+                    isActive
+                      ? "bg-emerald-500/20 text-emerald-500"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
+                  )}
+                >
+                  <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-emerald-500")} />
+                  <span className="font-medium truncate">{item.label}</span>
+                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                </button>
+              )
+            })}
+          </nav>
+        </div>
+      )}
+
+      {/* Backdrop */}
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
     </aside>
+    </>
   )
 }
