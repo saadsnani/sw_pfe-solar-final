@@ -81,6 +81,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
+      {/* Mobile Menu Button */}
       {sidebarCollapsed && (
         <button
           type="button"
@@ -91,6 +92,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
           <Menu className="h-5 w-5" />
         </button>
       )}
+      
       {/* Mobile Sidebar Overlay */}
       {!sidebarCollapsed && (
         <div 
@@ -109,7 +111,8 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         userEmail={userEmail}
       />
-      <div className="flex-1 flex flex-col min-h-screen w-full md:ml-20">
+      
+      <div className="flex-1 flex flex-col min-h-screen w-full lg:ml-64 xl:ml-72">
         <Header 
           onLogout={onLogout} 
           userEmail={userEmail}
