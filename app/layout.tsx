@@ -50,16 +50,26 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `
-            try {
-              const theme = localStorage.getItem('theme') || 'dark';
-              if (theme === 'dark') {
+            (function() {
+              try {
+                const theme = localStorage.getItem('theme') || 'dark';
+                const isDark = theme === 'dark';
+                const html = document.documentElement;
+                
+                if (isDark) {
+                  html.classList.add('dark');
+                } else {
+                  html.classList.remove('dark');
+                }
+              } catch (e) {
+                // Fallback to dark mode if localStorage is unavailable
                 document.documentElement.classList.add('dark');
               }
-            } catch (e) {}
+            })();
           `
         }} />
       </head>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased dark">
         <AlertProvider>
           <ThemeProvider>
             <AlertContainer />

@@ -35,16 +35,17 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
       <aside className={cn(
         "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
         "fixed inset-y-0 left-0 z-50",
-        "w-20",
+        "w-20 md:w-20",
         "md:translate-x-0",
+        "md:relative md:flex-shrink-0",
         collapsed && "-translate-x-full md:translate-x-0"
       )}>
       {/* Top Section - Hamburger & Theme Toggle */}
       <div className="p-4 border-b border-sidebar-border flex flex-col items-center gap-4">
-        {/* Hamburger Menu Button */}
+        {/* Hamburger Menu Button - Hidden on md and above */}
         <button
           onClick={toggleMenu}
-          className="w-12 h-12 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 flex items-center justify-center transition-colors duration-200 border border-emerald-500/30"
+          className="w-12 h-12 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 flex items-center justify-center transition-colors duration-200 border border-emerald-500/30 md:hidden"
           aria-label="Toggle menu"
         >
           <Menu className="w-6 h-6 text-emerald-500" />
@@ -54,9 +55,9 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
         <ThemeToggle />
       </div>
 
-      {/* Navigation Items - Slide Out Panel */}
+      {/* Navigation Items - Slide Out Panel (Mobile) */}
       {isMenuOpen && (
-        <div className="fixed left-20 top-20 bottom-0 w-64 bg-sidebar border-r border-sidebar-border shadow-2xl z-50 transition-transform duration-300">
+        <div className="fixed left-20 top-20 bottom-0 w-64 bg-sidebar border-r border-sidebar-border shadow-2xl z-50 transition-transform duration-300 md:hidden">
           <nav className="flex-1 p-4 space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon
@@ -88,7 +89,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
       {/* Backdrop */}
       {isMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={() => setIsMenuOpen(false)}
         />
       )}

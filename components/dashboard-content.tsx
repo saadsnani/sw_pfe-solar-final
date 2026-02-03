@@ -16,6 +16,9 @@ import type { SystemSensorsState } from "@/lib/sensor-connection"
 // Lazy load heavy components
 const WeatherForecast = lazy(() => import("@/components/weather-forecast").then(m => ({ default: m.WeatherForecast })))
 
+// ✅ DEMO MODE TOGGLE: Set to false to use real ESP32 sensors
+const IS_DEMO = true
+
 // Helper function to add natural fluctuation to existing value
 const fluctuate = (current: number, min: number, max: number, maxChange: number): number => {
   const change = (Math.random() - 0.5) * 2 * maxChange
@@ -32,7 +35,7 @@ type DemoTemperatureReading = {
 }
 
 export function DashboardContent() {
-  // 🔥 DEMO MODE: State for simulated sensor data
+  // ✅ State for simulated sensor data (only used if IS_DEMO = true)
   const [simulatedData, setSimulatedData] = useState({
     solarVoltage: 20.0,      // 18V - 22V
     solarCurrent: 5.0,       // 2A - 8A
@@ -46,7 +49,7 @@ export function DashboardContent() {
   const [energyHistory, setEnergyHistory] = useState<Array<{ time: string; production: number; consumption: number }>>([])
   const [temperatureReadings, setTemperatureReadings] = useState<DemoTemperatureReading[]>([])
 
-  // 🔥 DEMO MODE: Convert simulated data to sensor state format
+  // ✅ Convert simulated data to sensor state format (only used if IS_DEMO = true)
   const [sensors, setSensors] = useState<SystemSensorsState>(() => {
     const initial = createDefaultSystemState()
     return {
@@ -61,8 +64,10 @@ export function DashboardContent() {
     }
   })
 
-  // 🔥 DEMO MODE: Simulation logic - Updates every 3 seconds
+  // ✅ DEMO MODE: Simulation logic - Updates every 3 seconds (only runs if IS_DEMO = true)
   useEffect(() => {
+    if (!IS_DEMO) return // Skip if using real hardware
+
     const timer = setInterval(() => {
       setSimulatedData((prev) => {
         // Natural fluctuations
