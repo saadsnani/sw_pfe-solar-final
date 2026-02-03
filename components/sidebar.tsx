@@ -42,7 +42,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
       )}>
       {/* Top Section - Hamburger & Theme Toggle */}
       <div className="p-4 border-b border-sidebar-border flex flex-col items-center gap-4">
-        {/* Hamburger Menu Button - Hidden on md and above */}
+        {/* Hamburger Menu Button (Mobile Only) */}
         <button
           onClick={toggleMenu}
           className="w-12 h-12 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 flex items-center justify-center transition-colors duration-200 border border-emerald-500/30 md:hidden"
@@ -55,7 +55,31 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
         <ThemeToggle />
       </div>
 
-      {/* Navigation Items - Slide Out Panel (Mobile) */}
+      {/* Desktop Navigation - Icon Only */}
+      <nav className="hidden md:flex flex-col flex-1 p-2 space-y-2">
+        {navItems.map((item) => {
+          const Icon = item.icon
+          const isActive = currentPage === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => onPageChange(item.id)}
+              className={cn(
+                "w-full flex items-center justify-center p-3 rounded-xl transition-all duration-200 group relative",
+                isActive
+                  ? "bg-emerald-500/20 text-emerald-500"
+                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
+              )}
+              title={item.label}
+            >
+              <Icon className={cn("w-6 h-6", isActive && "text-emerald-500")} />
+              {isActive && <div className="absolute right-0 w-1 h-8 rounded-l-full bg-emerald-500" />}
+            </button>
+          )
+        })}
+      </nav>
+
+      {/* Mobile Navigation - Slide Out Panel */}
       {isMenuOpen && (
         <div className="fixed left-20 top-20 bottom-0 w-64 bg-sidebar border-r border-sidebar-border shadow-2xl z-50 transition-transform duration-300 md:hidden">
           <nav className="flex-1 p-4 space-y-2">
