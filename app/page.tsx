@@ -41,8 +41,16 @@ export default function Home() {
   }
 
   if (!isLoggedIn) {
-    return <LoginPage onLogin={handleLogin} />
+    return (
+      <div className="min-h-screen w-full overflow-x-hidden">
+        <LoginPage onLogin={handleLogin} />
+      </div>
+    )
   }
 
-  return <Dashboard onLogout={handleLogout} userEmail={userEmail || undefined} />
+  return (
+    <div className="min-h-screen w-full overflow-x-hidden">
+      <Dashboard onLogout={handleLogout} userEmail={userEmail || undefined} />
+    </div>
+  )
 }

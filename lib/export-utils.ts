@@ -21,37 +21,54 @@ export async function exportToPDF(
     // Wait a bit for any animations to settle
     await new Promise((resolve) => setTimeout(resolve, 300))
 
-    // Hide problematic elements temporarily
-    const svgElements = element.querySelectorAll("svg")
-    const originalDisplays: string[] = []
-    svgElements.forEach((svg, i) => {
-      originalDisplays[i] = (svg as unknown as HTMLElement).style.display
+    // Clone report into an offscreen container to avoid layout issues
+    const wrapper = document.createElement("div")
+    wrapper.style.position = "fixed"
+    wrapper.style.left = "-9999px"
+    wrapper.style.top = "0"
+    wrapper.style.width = "1024px"
+    wrapper.style.background = "#eaf4ff"
+    wrapper.style.padding = "16px"
+    wrapper.style.zIndex = "-1"
+
+    const clone = element.cloneNode(true) as HTMLElement
+    clone.style.background = "#eaf4ff"
+    clone.style.color = "#0f172a"
+    wrapper.appendChild(clone)
+    document.body.appendChild(wrapper)
+
+    const svgElements = clone.querySelectorAll("svg")
+    svgElements.forEach((svg) => {
+      ;(svg as unknown as HTMLElement).style.display = "block"
+      ;(svg as unknown as HTMLElement).style.opacity = "1"
     })
 
-    // Capture with simplified settings
-    const canvas = await html2canvas(element, {
-      scale: 1.5,
-      useCORS: true,
-      allowTaint: true,
-      logging: true,
-      backgroundColor: "#ffffff",
-      onclone: (clonedDoc) => {
-        // Force all SVGs to be visible in clone
-        const clonedSvgs = clonedDoc.querySelectorAll("svg")
-        clonedSvgs.forEach((svg) => {
-          ;(svg as unknown as HTMLElement).style.display = "block"
-          ;(svg as unknown as HTMLElement).style.opacity = "1"
-        })
-      },
-    })
-
-    // Restore original displays
-    svgElements.forEach((svg, i) => {
-      ;(svg as unknown as HTMLElement).style.display = originalDisplays[i]
-    })
-
-    if (!canvas || canvas.width === 0 || canvas.height === 0) {
-      throw new Error("Canvas capture failed - empty canvas")
+    let canvas: HTMLCanvasElement | null = null
+    try {
+      // Capture with safer settings
+      canvas = await html2canvas(clone, {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        backgroundColor: "#eaf4ff",
+        onclone: (clonedDoc) => {
+          const body = clonedDoc.body
+          body.style.background = "#eaf4ff"
+          const clonedSvgs = clonedDoc.querySelectorAll("svg")
+          clonedSvgs.forEach((svg) => {
+            ;(svg as unknown as HTMLElement).style.display = "block"
+            ;(svg as unknown as HTMLElement).style.opacity = "1"
+          })
+        },
+      })
+    } catch (captureError) {
+      console.error("PDF capture failed, falling back to text report:", captureError)
+      canvas = null
+    } finally {
+      if (wrapper.parentNode) {
+        wrapper.parentNode.removeChild(wrapper)
+      }
     }
 
     // Create PDF
@@ -60,7 +77,6 @@ export async function exportToPDF(
     const pageHeight = pdf.internal.pageSize.getHeight()
     const margin = 10
     const imgWidth = pageWidth - margin * 2
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
 
     // Add title
     let yPos = margin
@@ -74,17 +90,24 @@ export async function exportToPDF(
       yPos = margin + 20
     }
 
-    // Add image
-    const imgData = canvas.toDataURL("image/png", 1.0)
-    pdf.addImage(imgData, "PNG", margin, yPos, imgWidth, imgHeight)
+    if (canvas && canvas.width > 0 && canvas.height > 0) {
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      const imgData = canvas.toDataURL("image/png", 1.0)
+      pdf.addImage(imgData, "PNG", margin, yPos, imgWidth, imgHeight)
 
-    // Add extra pages if needed
-    let remainingHeight = imgHeight - (pageHeight - yPos - margin)
-    while (remainingHeight > 0) {
-      pdf.addPage()
-      const offsetY = -(imgHeight - remainingHeight)
-      pdf.addImage(imgData, "PNG", margin, offsetY + margin, imgWidth, imgHeight)
-      remainingHeight -= pageHeight - margin * 2
+      // Add extra pages if needed
+      let remainingHeight = imgHeight - (pageHeight - yPos - margin)
+      while (remainingHeight > 0) {
+        pdf.addPage()
+        const offsetY = -(imgHeight - remainingHeight)
+        pdf.addImage(imgData, "PNG", margin, offsetY + margin, imgWidth, imgHeight)
+        remainingHeight -= pageHeight - margin * 2
+      }
+    } else {
+      pdf.setFontSize(12)
+      pdf.text("Aperçu non disponible - rapport texte", margin, yPos + 10)
+      pdf.setFontSize(10)
+      pdf.text(`Date: ${new Date().toLocaleDateString("fr-FR")}`, margin, yPos + 18)
     }
 
     // Metadata

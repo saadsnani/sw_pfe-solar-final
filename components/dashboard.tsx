@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, lazy, Suspense } from "react"
+import { Menu } from "lucide-react"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import { DashboardContent } from "@/components/dashboard-content"
@@ -80,6 +81,16 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
+      {sidebarCollapsed && (
+        <button
+          type="button"
+          onClick={() => setSidebarCollapsed(false)}
+          className="fixed top-4 left-4 z-50 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-black/60 text-white backdrop-blur lg:hidden"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      )}
       {/* Mobile Sidebar Overlay */}
       {!sidebarCollapsed && (
         <div 
@@ -98,13 +109,13 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         userEmail={userEmail}
       />
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen w-full md:ml-20">
         <Header 
           onLogout={onLogout} 
           userEmail={userEmail}
           onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
-        <main className="flex-1 p-5 sm:p-6 md:p-8 overflow-auto">{renderPage()}</main>
+        <main className="flex-1 p-3 sm:p-4 md:p-8 overflow-auto overflow-x-hidden w-full">{renderPage()}</main>
       </div>
     </div>
   )
