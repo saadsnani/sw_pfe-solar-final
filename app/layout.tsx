@@ -69,7 +69,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className="font-sans antialiased dark">
+      <body className="font-sans antialiased">
         <AlertProvider>
           <ThemeProvider>
             <AlertContainer />
