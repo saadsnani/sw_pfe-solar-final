@@ -38,11 +38,11 @@ export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
   }, [])
 
   return (
-    <header className="sticky top-0 z-40 h-16 sm:h-20 border-b border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/50 backdrop-blur-xl px-3 sm:px-4 md:px-6">
-      <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
+    <header className="sticky top-0 z-40 h-24 sm:h-28 md:h-32 border-b border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/50 backdrop-blur-xl px-4 sm:px-6 md:px-8">
+      <div className="flex items-center h-full w-full justify-between gap-3 sm:gap-4">
         {/* Left - Logo & School Info */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
-          <div className="w-10 sm:w-12 h-10 sm:h-12 flex-shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
+        <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0">
+          <div className="w-14 sm:w-16 md:w-20 h-14 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
             <Image
               src="/images.jpg"
               alt="EST Logo"
@@ -53,22 +53,22 @@ export function Header({ onLogout, userEmail, onMenuClick }: HeaderProps) {
             />
           </div>
           <div className="text-left leading-tight hidden sm:block min-w-0">
-            <div className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400 truncate">
+            <div className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
               École Supérieure de Technologie
             </div>
-            <div className="text-xs sm:text-sm text-emerald-600/80 dark:text-emerald-400/80 truncate">
+            <div className="text-xs sm:text-sm md:text-base text-emerald-600/80 dark:text-emerald-400/80 truncate">
               Système Intelligent de Gestion d&apos;Energie
             </div>
           </div>
         </div>
 
         {/* Center - Time & Project Info */}
-        <div className="flex-1 hidden md:flex items-center justify-center gap-2 lg:gap-4">
-          <div className="flex items-center gap-1 sm:gap-2 bg-emerald-500/10 border border-emerald-500/30 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex-shrink-0">
-            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-xs sm:text-base font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
+        <div className="flex-1 hidden md:flex items-center justify-center gap-3 lg:gap-6">
+          <div className="flex items-center gap-2 sm:gap-3 bg-emerald-500/10 border border-emerald-500/30 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg flex-shrink-0">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-sm sm:text-base md:text-lg font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
           </div>
-          <div className="hidden lg:flex flex-col items-start text-xs leading-relaxed">
+          <div className="hidden lg:flex flex-col items-start text-xs md:text-sm leading-relaxed gap-1">
             <span className="text-muted-foreground">Encadré par : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span></span>
             <span className="text-muted-foreground">Réalisé par : <span className="text-foreground font-semibold">Saad SNANI & Walid EL HALOUAT</span></span>
           </div>
