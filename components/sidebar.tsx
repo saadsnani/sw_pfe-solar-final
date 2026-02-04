@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, Sun, User, Menu } from "lucide-react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, Sun, User, Menu, Bell } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { PageType } from "@/components/dashboard"
 
@@ -53,13 +53,24 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
               <p className="text-xs text-muted-foreground">Navigation</p>
             </div>
           </div>
-          <button
-            onClick={onToggleCollapse}
-            className="p-1 hover:bg-sidebar-accent rounded-lg transition-colors"
-            aria-label="Close menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Notification Icon */}
+            <button
+              className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors relative"
+              aria-label="Notifications"
+            >
+              <Bell className="w-5 h-5 text-muted-foreground" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </button>
+            {/* Close Menu Button */}
+            <button
+              onClick={onToggleCollapse}
+              className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
+              aria-label="Close menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 
