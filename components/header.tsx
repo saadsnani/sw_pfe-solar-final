@@ -75,7 +75,10 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             </div>
             <div className="text-left leading-tight min-w-0 flex-1">
               <div className="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 dark:text-white truncate">
-                École Supérieure de Technologie
+                École Supérieure
+              </div>
+              <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white truncate">
+                de Technologie
               </div>
             </div>
           </div>
