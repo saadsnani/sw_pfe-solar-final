@@ -80,27 +80,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Mobile Menu Button */}
-      {sidebarCollapsed && (
-        <button
-          type="button"
-          onClick={() => setSidebarCollapsed(false)}
-          className="fixed top-4 left-4 z-50 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-black/60 text-white backdrop-blur lg:hidden"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-      )}
-      
-      {/* Mobile Sidebar Overlay */}
-      {!sidebarCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setSidebarCollapsed(true)}
-        />
-      )}
-      
+    <div className="min-h-screen bg-background">
       <Sidebar
         currentPage={currentPage}
         onPageChange={(page) => {
@@ -112,13 +92,17 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
         userEmail={userEmail}
       />
       
-      <div className="flex-1 flex flex-col min-h-screen w-full lg:ml-64 xl:ml-72">
+      <div className="flex flex-col min-h-screen">
         <Header 
           onLogout={onLogout} 
           userEmail={userEmail}
           onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          isMenuOpen={!sidebarCollapsed}
+          showBackButton={false}
         />
-        <main className="flex-1 p-3 sm:p-4 md:p-8 overflow-auto overflow-x-hidden w-full">{renderPage()}</main>
+        <main className="flex-1 p-3 sm:p-4 md:p-8 overflow-auto overflow-x-hidden w-full">
+          {renderPage()}
+        </main>
       </div>
     </div>
   )
