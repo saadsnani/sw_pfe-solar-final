@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Sun, Battery, Zap, Home, ArrowRight, AlertCircle, MoreVertical } from "lucide-react"
+import { Sun, Battery, Zap, Home, ArrowRight, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
 
@@ -111,16 +111,13 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
       <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start">
           <div className="flex items-center gap-3">
             <Zap className="w-6 h-6 text-primary" />
             <CardTitle className="text-xl sm:text-2xl font-bold">
               Synoptique du Système
             </CardTitle>
           </div>
-          <button className="p-2 hover:bg-accent rounded-lg transition-colors">
-            <MoreVertical className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-          </button>
         </div>
       </CardHeader>
       <CardContent>
