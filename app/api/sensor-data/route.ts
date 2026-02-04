@@ -49,6 +49,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { temperature, humidity, batteryTemperature, wifiSsid, sensorError } = body;
     
+    // 🔥 LOG: Show incoming data in terminal
+    console.log('\n' + '='.repeat(60));
+    console.log('📥 DATA MN ESP32 WASSAL:');
+    console.log('='.repeat(60));
+    console.log('🌡️  Battery Temperature:', batteryTemperature !== undefined ? `${batteryTemperature}°C` : 'N/A');
+    console.log('🌡️  Temperature:', temperature !== undefined ? `${temperature}°C` : 'N/A');
+    console.log('💧 Humidity:', humidity !== undefined ? `${humidity}%` : 'N/A');
+    console.log('📡 WiFi SSID:', wifiSsid || 'N/A');
+    console.log('⚠️  Sensor Error:', sensorError ? 'YES' : 'NO');
+    console.log('🕐 Time:', new Date().toLocaleTimeString('fr-FR'));
+    console.log('='.repeat(60) + '\n');
+    
     // Validate data - allow error status even without readings
     if (temperature === undefined && humidity === undefined && batteryTemperature === undefined && !sensorError) {
       return NextResponse.json(

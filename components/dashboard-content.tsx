@@ -17,7 +17,7 @@ import type { SystemSensorsState } from "@/lib/sensor-connection"
 const WeatherForecast = lazy(() => import("@/components/weather-forecast").then(m => ({ default: m.WeatherForecast })))
 
 // ✅ DEMO MODE TOGGLE: Set to false to use real ESP32 sensors
-const IS_DEMO = true
+const IS_DEMO = false
 
 // Helper function to add natural fluctuation to existing value
 const fluctuate = (current: number, min: number, max: number, maxChange: number): number => {
@@ -37,13 +37,13 @@ type DemoTemperatureReading = {
 export function DashboardContent() {
   // ✅ State for simulated sensor data (only used if IS_DEMO = true)
   const [simulatedData, setSimulatedData] = useState({
-    solarVoltage: 20.0,      // 18V - 22V
-    solarCurrent: 5.0,       // 2A - 8A
-    batteryLevel: 75,        // 40% - 95%
-    gridStatus: "Active",    // "Active" or "Inactive"
-    temperature: 40.0,       // 35°C - 45°C
-    production: 250,         // Calculated from V * I
-    consumption: 180,        // Random consumption
+    solarVoltage: 0,         // No data yet
+    solarCurrent: 0,         // No data yet
+    batteryLevel: 0,         // No data yet
+    gridStatus: "Inactive",  // Not connected
+    temperature: 0,          // No data yet
+    production: 0,           // No data yet
+    consumption: 0,          // No data yet
   })
 
   const [energyHistory, setEnergyHistory] = useState<Array<{ time: string; production: number; consumption: number }>>([])
@@ -51,18 +51,58 @@ export function DashboardContent() {
 
   // ✅ Convert simulated data to sensor state format (only used if IS_DEMO = true)
   const [sensors, setSensors] = useState<SystemSensorsState>(() => {
-    const initial = createDefaultSystemState()
-    return {
-      ...initial,
-      battery: createConnectedSensor(simulatedData.batteryLevel),
-      production: createConnectedSensor(simulatedData.production),
-      consumption: createConnectedSensor(simulatedData.consumption),
-      temperature: createConnectedSensor(simulatedData.temperature),
-      solarVoltage: createConnectedSensor(simulatedData.solarVoltage),
-      solarCurrent: createConnectedSensor(simulatedData.solarCurrent),
-      gridStatus: createConnectedSensor(simulatedData.gridStatus),
-    }
+    // Start with all sensors disconnected - no data until ESP32 connects
+    return createDefaultSystemState()
   })
+
+  // 🔥 REAL MODE: Fetch data from ESP32 via API (only runs when IS_DEMO = false)
+  useEffect(() => {
+    if (IS_DEMO) return // Skip if in demo mode
+
+    const fetchSensorData = async () => {
+      try {
+        const response = await fetch('/api/sensor-data?type=all&limit=1')
+        if (response.ok) {
+          const data = await response.json()
+          
+          if (data.readings && data.readings.length > 0) {
+            const latest = data.readings[0]
+            const temp = latest.batteryTemperature || latest.temperature || 0
+            
+            console.log('📥 Data from ESP32:', latest)
+            
+            // Update sensors with real data
+            setSensors(prev => ({
+              ...prev,
+              temperature: temp > 0 ? createConnectedSensor(temp) : prev.temperature,
+              battery: temp > 0 ? createConnectedSensor(75) : prev.battery, // Fake battery level for now
+            }))
+
+            // Add to temperature readings
+            if (temp > 0) {
+              setTemperatureReadings(prev => 
+                [...prev, {
+                  batteryTemperature: temp,
+                  temperature: temp,
+                  wifiSsid: latest.wifiSsid || 'ESP32',
+                  timestamp: latest.timestamp,
+                }].slice(-20)
+              )
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error fetching sensor data:', error)
+      }
+    }
+
+    // Fetch immediately
+    fetchSensorData()
+
+    // Then fetch every 5 seconds
+    const timer = setInterval(fetchSensorData, 5000)
+    return () => clearInterval(timer)
+  }, [])
 
   // ✅ DEMO MODE: Simulation logic - Updates every 3 seconds (only runs if IS_DEMO = true)
   useEffect(() => {
@@ -102,6 +142,8 @@ export function DashboardContent() {
 
   // 🔥 DEMO MODE: Update sensors state whenever simulated data changes
   useEffect(() => {
+    if (!IS_DEMO) return // Skip if not in demo mode - wait for real ESP32 data
+
     setSensors({
       battery: createConnectedSensor(simulatedData.batteryLevel),
       production: createConnectedSensor(simulatedData.production),
@@ -116,6 +158,8 @@ export function DashboardContent() {
 
   // 🔥 DEMO MODE: Build chart/table histories
   useEffect(() => {
+    if (!IS_DEMO) return // Skip if not in demo mode
+
     const now = new Date()
     const timeLabel = now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
 

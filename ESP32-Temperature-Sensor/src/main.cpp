@@ -6,9 +6,10 @@
 const char* ssid = "SS2";
 const char* password = "00000000";
 
-// IP ديال السيرفر (Windows Hotspot Default IP)
-// إلا ماخدمش، دير ipconfig وتأكد من IP
-const char* serverName = "https://sw-pfe-solar-final.vercel.app/api/sensor-data";
+// 🔥 BDEL IP DYALEK HENA (jpuri ipconfig f terminal)
+// Local dev: http://192.168.X.X:3000 (no SSL)
+// Production: https://sw-pfe-solar-final.vercel.app
+const char* serverName = "http://100.97.114.66:3000/api/sensor-data";  // 👈 IP DYALEK
 
 // Pins ربط Mega مع ESP32
 #define RX_PIN 16 // ركب فيه خيط Mega TX (14)
