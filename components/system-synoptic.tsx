@@ -110,17 +110,37 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
-      <CardHeader className="pb-4 flex items-center justify-between">
-        <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold">
-          <Zap className="w-7 h-7 text-primary" />
-          Synoptique du Système
-        </CardTitle>
-        <button className="p-2 hover:bg-accent rounded-lg transition-colors">
-          <MoreVertical className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-        </button>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between mb-3">
+          <CardTitle className="flex items-center gap-3 text-xl sm:text-2xl font-bold">
+            <Zap className="w-6 h-6 text-primary" />
+            Synoptique du Système
+          </CardTitle>
+          <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+            <MoreVertical className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+          </button>
+        </div>
+        
+        {/* Status Info */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm">
+          <div className="flex items-center gap-2">
+            {allConnected ? (
+              <>
+                <div className="w-2 h-2 rounded-full bg-energy-green animate-pulse" />
+                <span className="text-energy-green font-medium">Tous les capteurs connectés</span>
+              </>
+            ) : (
+              <>
+                <AlertCircle className="w-3 h-3 text-yellow-600" />
+                <span className="text-yellow-600 font-medium">Certains capteurs non connectés</span>
+              </>
+            )}
+          </div>
+          <span className="text-muted-foreground">WiFi: Connecté • Cloud: Actif</span>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-between gap-6 py-6">
+        <div className="flex flex-col items-center justify-between gap-4 py-4">
           {/* Solar Panel */}
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}
@@ -133,6 +153,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             status={isSolarConnected ? "good" : "disconnected"}
           />
 
+          <EnergyFlowLine />
+
           {/* MPPT Controller */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
@@ -140,6 +162,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             values={isSolarConnected ? ["Efficacité: 98%", "Mode: MPPT"] : []}
             status={isSolarConnected ? "good" : "disconnected"}
           />
+
+          <EnergyFlowLine />
 
           {/* Battery */}
           <ComponentNode
@@ -161,6 +185,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             }
           />
 
+          <EnergyFlowLine />
+
           {/* Grid/Inverter */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
@@ -168,6 +194,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             values={isGridConnected && gridVoltage !== null ? [`${gridVoltage.toFixed(1)}V AC`, "Mode: Connecté"] : []}
             status={isGridConnected ? "good" : "disconnected"}
           />
+
+          <EnergyFlowLine />
 
           {/* Home Load */}
           <ComponentNode
@@ -177,32 +205,64 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             status={isConsumptionConnected ? "good" : "disconnected"}
           />
         </div>
-
-        {/* Status Bar */}
-        <div
-          className={`mt-6 p-4 rounded-xl border ${
-            allConnected
-              ? "bg-energy-green/10 border-energy-green/30"
-              : "bg-yellow-500/10 border-yellow-500/30"
-          }`}
-        >
+        
+        {/* Project Info Footer */}
+        <div className="mt-4 pt-4 border-t border-border/50 text-xs text-muted-foreground space-y-1">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {allConnected ? (
-                <>
-                  <div className="w-2 h-2 rounded-full bg-energy-green animate-pulse" />
-                  <span className="text-sm text-energy-green font-medium">Tous les capteurs connectés</span>
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-                  <span className="text-sm text-yellow-700 dark:text-yellow-300 font-medium">Certains capteurs non détectés</span>
-                </>
-              )}
+            <span className="font-semibold">École Supérieure de Technologie</span>
+            <span>Projet: SIEM</span>
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <span>Étudiant: Saad SNANI</span>
+            <span>•</span>
+            <span>Encadrant: Prof. [Nom]</span>
+            <span>•</span>
+            <span>Binôme: [Nom Collègue]</span>
+          </div>
+        </div>
+        
+        {/* Project Info Footer */}
+        <div className="mt-4 pt-4 border-t border-border/50 text-xs text-muted-foreground space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">École Supérieure de Technologie</span>
+            <span>Projet: SIEM</span>
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <span>Étudiant: Saad SNANI</span>
+            <span>•</span>
+            <span>Encadrant: Prof. [Nom]</span>
+            <span>•</span>
+            <span>Binôme: [Nom Collègue]</span>
+          </div>
+        </div>
+
+        {/* Status Bar - kept for backward compatibility but hidden on mobile */}
+        <div className="hidden">
+          <div
+            className={`mt-6 p-4 rounded-xl border ${
+              allConnected
+                ? "bg-energy-green/10 border-energy-green/30"
+                : "bg-yellow-500/10 border-yellow-500/30"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {allConnected ? (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-energy-green animate-pulse" />
+                    <span className="text-sm text-energy-green font-medium">Tous les capteurs connectés</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                    <span className="text-sm text-yellow-700 dark:text-yellow-300 font-medium">Certains capteurs non détectés</span>
+                  </>
+                )}
+              </div>
+              <span className="text-xs text-muted-foreground font-mono">
+                {sensors?.battery.lastUpdate ? new Date(sensors.battery.lastUpdate).toLocaleTimeString() : "Pas de données"}
+              </span>
             </div>
-            <span className="text-xs text-muted-foreground font-mono">
-              {sensors?.battery.lastUpdate ? new Date(sensors.battery.lastUpdate).toLocaleTimeString() : "Pas de données"}
-            </span>
           </div>
         </div>
       </CardContent>
