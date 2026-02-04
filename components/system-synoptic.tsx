@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Sun, Battery, Zap, Home, ArrowRight, AlertCircle } from "lucide-react"
+import { Sun, Battery, Zap, Home, ArrowRight, AlertCircle, MoreVertical } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
 
@@ -110,14 +110,17 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 flex items-center justify-between">
         <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold">
           <Zap className="w-7 h-7 text-primary" />
           Synoptique du Système
         </CardTitle>
+        <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+          <MoreVertical className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+        </button>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0 py-6">
+        <div className="flex flex-col items-center justify-between gap-6 py-6">
           {/* Solar Panel */}
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}
@@ -130,8 +133,6 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             status={isSolarConnected ? "good" : "disconnected"}
           />
 
-          <EnergyFlowLine />
-
           {/* MPPT Controller */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
@@ -139,8 +140,6 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             values={isSolarConnected ? ["Efficacité: 98%", "Mode: MPPT"] : []}
             status={isSolarConnected ? "good" : "disconnected"}
           />
-
-          <EnergyFlowLine />
 
           {/* Battery */}
           <ComponentNode
@@ -162,8 +161,6 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             }
           />
 
-          <EnergyFlowLine />
-
           {/* Grid/Inverter */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
@@ -171,8 +168,6 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             values={isGridConnected && gridVoltage !== null ? [`${gridVoltage.toFixed(1)}V AC`, "Mode: Connecté"] : []}
             status={isGridConnected ? "good" : "disconnected"}
           />
-
-          <EnergyFlowLine />
 
           {/* Home Load */}
           <ComponentNode
