@@ -4,7 +4,6 @@ import { LogOut, User, Menu, Activity, Clock, Bell, ArrowLeft } from "lucide-rea
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,7 +95,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             </div>
           </div>
 
-          {/* Right - Notifications, Theme, User */}
+          {/* Right - Notifications, User */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Notification Bell */}
             <DropdownMenu>
@@ -125,9 +124,6 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
 
             {/* User Menu */}
             <DropdownMenu>

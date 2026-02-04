@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, Sun, User, Menu, Bell } from "lucide-react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, User, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import type { PageType } from "@/components/dashboard"
 
 interface SidebarProps {
@@ -46,18 +47,10 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-              <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+              <ThemeToggle />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Notification Icon */}
-            <button
-              className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors relative"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5 text-muted-foreground" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            </button>
             {/* Close Menu Button */}
             <button
               onClick={onToggleCollapse}
