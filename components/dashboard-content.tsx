@@ -12,12 +12,48 @@ import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
 import { TemperatureDisplayCard } from "@/components/temperature-display-card"
 import { createDefaultSystemState, createConnectedSensor } from "@/lib/sensor-connection"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
+import { LocalNotifications } from "@capacitor/local-notifications"
 
 // Lazy load heavy components
 const WeatherForecast = lazy(() => import("@/components/weather-forecast").then(m => ({ default: m.WeatherForecast })))
 
 // ✅ DEMO MODE TOGGLE: Set to false to use real ESP32 sensors
 const IS_DEMO = false
+
+// 🔔 Notification helper
+const sendNotification = async (title: string, body: string, id: number = Math.random()) => {
+  try {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      // Web notification
+      if (Notification.permission === "granted") {
+        new Notification(title, { body, icon: "/icon.png" })
+      } else if (Notification.permission !== "denied") {
+        const permission = await Notification.requestPermission()
+        if (permission === "granted") {
+          new Notification(title, { body, icon: "/icon.png" })
+        }
+      }
+    }
+    
+    // Mobile notification via Capacitor
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: Math.floor(id),
+            title: title,
+            body: body,
+            schedule: { at: new Date(Date.now() + 1000) },
+          },
+        ],
+      })
+    } catch (e) {
+      console.log("Mobile notifications not available (web-only mode)")
+    }
+  } catch (error) {
+    console.error("Notification error:", error)
+  }
+}
 
 // Helper function to add natural fluctuation to existing value
 const fluctuate = (current: number, min: number, max: number, maxChange: number): number => {
@@ -80,14 +116,23 @@ export function DashboardContent() {
 
             // Add to temperature readings
             if (temp > 0) {
-              setTemperatureReadings(prev => 
-                [...prev, {
+              setTemperatureReadings(prev => {
+                const newReadings = [...prev, {
                   batteryTemperature: temp,
                   temperature: temp,
                   wifiSsid: latest.wifiSsid || 'ESP32',
                   timestamp: latest.timestamp,
                 }].slice(-20)
-              )
+                
+                // 🔔 Send notification for new data
+                sendNotification(
+                  "🌡️ Temperature Update",
+                  `Battery: ${temp.toFixed(1)}°C from ${latest.wifiSsid || 'ESP32'}`,
+                  Math.floor(Date.now() / 1000)
+                )
+                
+                return newReadings
+              })
             }
           }
         }
