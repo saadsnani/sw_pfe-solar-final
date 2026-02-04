@@ -158,17 +158,6 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
           </div>
         </div>
       </header>
-
-      {/* Status Bar - System Health */}
-      <div className="fixed top-24 sm:top-28 md:top-32 left-0 right-0 z-35 h-10 md:h-12 border-b border-slate-200 dark:border-white/10 bg-emerald-500/5 dark:bg-emerald-500/10 px-4 sm:px-6 md:px-8 flex items-center gap-3 md:gap-4">
-        <div className="flex items-center gap-2 text-xs md:text-sm">
-          <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="text-emerald-700 dark:text-emerald-400 font-medium">Tous les capteurs connectes</span>
-        </div>
-        <div className="ml-auto text-xs md:text-sm text-muted-foreground">
-          WiFi: Connecte • Cloud: Actif
-        </div>
-      </div>
     </>
   )
 }
