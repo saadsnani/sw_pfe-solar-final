@@ -231,9 +231,11 @@ export function DashboardContent() {
     : undefined
 
   return (
-    <div className="space-y-4 w-full overflow-hidden">
+    <div className="space-y-4 w-full">
       {/* System Synoptic - First */}
-      <SystemSynoptic sensors={sensors} />
+      <div className="relative z-10">
+        <SystemSynoptic sensors={sensors} />
+      </div>
 
       {/* Metric Cards */}
       <MetricCards sensors={sensors} />
