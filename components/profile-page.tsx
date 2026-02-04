@@ -13,11 +13,11 @@ export function ProfilePage() {
   const { addAlert } = useAlert()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
-    fullName: "Administrateur",
-    email: "admin@est.ma",
+    fullName: "Saad Snani",
+    email: "saad.snani@usmba.ac.ma",
     phone: "+212 6 XX XXX XX",
     organization: "École Supérieure de Technologie",
-    role: "Administrateur Système",
+    role: "Étudiant - Projet Fin d'Études",
   })
 
   const [passwordData, setPasswordData] = useState({

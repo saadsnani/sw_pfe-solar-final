@@ -130,15 +130,15 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                     <User className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
                   </div>
                   <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-foreground truncate max-w-[120px]">
-                    {userEmail ? userEmail.split("@")[0] : "Admin"}
+                    Saad Snani
                   </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 sm:w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
-                    <span className="text-sm">Mon Compte</span>
-                    {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1 truncate">{userEmail}</span>}
+                    <span className="text-sm font-bold">Saad Snani</span>
+                    <span className="text-xs font-normal text-muted-foreground mt-1 truncate">saad.snani@usmba.ac.ma</span>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
