@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { LayoutDashboard, BarChart3, Brain, Settings, Activity, Sun, User, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import type { PageType } from "@/components/dashboard"
 
 interface SidebarProps {
@@ -26,35 +25,46 @@ const navItems = [
 export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse, userEmail }: SidebarProps) {
   return (
     <>
+      {/* Backdrop Overlay */}
+      {!collapsed && (
+        <div
+          className="fixed inset-0 bg-black/40 dark:bg-black/60 z-30 backdrop-blur-sm"
+          onClick={() => onToggleCollapse()}
+        />
+      )}
+
+      {/* Sidebar Drawer - 75% width overlay */}
       <aside className={cn(
         "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
-        "fixed inset-y-0 left-0 z-50",
-        "w-64 lg:w-72",
-        "md:translate-x-0",
-        collapsed && "-translate-x-full"
+        "fixed inset-y-0 left-0 z-40",
+        "w-[75vw] sm:w-64 lg:w-72",
+        "top-32 sm:top-28 md:top-32",
+        collapsed ? "-translate-x-full" : "translate-x-0"
       )}>
-      {/* Top Section - Logo & Theme Toggle */}
+      {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
               <Sun className="w-5 h-5 text-emerald-500" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-foreground">Smart EMS</h2>
-              <p className="text-xs text-muted-foreground">Energy Monitor</p>
+              <p className="text-xs text-muted-foreground">Navigation</p>
             </div>
           </div>
-        </div>
-        
-        {/* Theme Toggle */}
-        <div className="flex items-center justify-center">
-          <ThemeToggle />
+          <button
+            onClick={onToggleCollapse}
+            className="p-1 hover:bg-sidebar-accent rounded-lg transition-colors"
+            aria-label="Close menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = currentPage === item.id
