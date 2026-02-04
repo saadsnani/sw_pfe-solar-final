@@ -45,26 +45,26 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
 
   return (
     <>
-      {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 h-24 sm:h-28 md:h-32 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-4 sm:px-6 md:px-8">
-        <div className="flex items-center h-full w-full justify-between gap-3 sm:gap-4">
+      {/* Fixed Header - Reduced height for mobile */}
+      <header className="fixed top-0 left-0 right-0 z-40 h-16 sm:h-20 md:h-24 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-3 sm:px-4 md:px-6">
+        <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
           {/* Left - Menu/Back Button & Logo */}
-          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
             {/* Menu/Back Button */}
             <button
               onClick={showBackButton ? onBackClick : onMenuClick}
-              className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
               aria-label={showBackButton ? "Go back" : "Open menu"}
             >
               {showBackButton ? (
-                <ArrowLeft className="w-6 h-6 md:w-7 md:h-7 text-emerald-600 dark:text-emerald-400" />
+                <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
               ) : (
-                <Menu className="w-6 h-6 md:w-7 md:h-7 text-emerald-600 dark:text-emerald-400" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
               )}
             </button>
 
             {/* Logo & School Info */}
-            <div className="w-14 sm:w-16 md:w-20 h-14 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
+            <div className="w-10 sm:w-14 md:w-16 h-10 sm:h-14 md:h-16 flex-shrink-0 overflow-hidden rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
               <Image
                 src="/images.jpg"
                 alt="EST Logo"
@@ -75,7 +75,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               />
             </div>
             <div className="text-left leading-tight hidden sm:block min-w-0">
-              <div className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
+              <div className="text-xs sm:text-sm md:text-base lg:text-xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
                 École Supérieure de Technologie
               </div>
               <div className="text-xs sm:text-sm md:text-base text-emerald-600/80 dark:text-emerald-400/80 truncate">

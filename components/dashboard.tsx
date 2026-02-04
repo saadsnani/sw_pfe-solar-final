@@ -100,7 +100,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
           isMenuOpen={!sidebarCollapsed}
           showBackButton={false}
         />
-        <main className="flex-1 p-3 sm:p-4 md:p-8 overflow-auto overflow-x-hidden w-full">
+        <main className="flex-1 p-2 sm:p-3 md:p-6 overflow-auto overflow-x-hidden w-full">
           {renderPage()}
         </main>
       </div>

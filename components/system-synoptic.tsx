@@ -29,19 +29,19 @@ function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
   }
 
   return (
-    <div className={`relative p-6 sm:p-7 rounded-2xl border-2 ${statusColors[status]} backdrop-blur-sm float-animation w-full sm:w-auto shadow-lg`}>
+    <div className={`relative p-4 sm:p-5 md:p-6 rounded-2xl border-2 ${statusColors[status]} backdrop-blur-sm float-animation w-full sm:w-auto shadow-lg`}>
       <div
-        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-card flex items-center justify-center mb-3 sm:mb-4 mx-auto ${iconColors[status]}`}
+        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-card flex items-center justify-center mb-2 sm:mb-3 mx-auto ${iconColors[status]}`}
       >
         {icon}
       </div>
-      <h3 className="text-sm sm:text-base font-semibold text-foreground text-center mb-3">{label}</h3>
-      <div className="space-y-2">
+      <h3 className="text-xs sm:text-sm md:text-base font-semibold text-foreground text-center mb-2 sm:mb-3">{label}</h3>
+      <div className="space-y-1 sm:space-y-2">
         {values.length === 0 ? (
-          <p className="text-sm text-center text-muted-foreground italic">Non connecté</p>
+          <p className="text-xs sm:text-sm text-center text-muted-foreground italic">Non connecté</p>
         ) : (
           values.map((value, index) => (
-            <p key={index} className="text-sm text-center font-mono text-muted-foreground font-medium">
+            <p key={index} className="text-xs sm:text-sm text-center font-mono text-muted-foreground font-medium">
               {value}
             </p>
           ))
@@ -70,7 +70,7 @@ function EnergyFlowLine() {
       </div>
       
       {/* Vertical line for mobile */}
-      <div className="flex lg:hidden items-center justify-center h-12 relative w-full">
+      <div className="flex lg:hidden items-center justify-center h-8 sm:h-10 relative w-full">
         <div className="w-0.5 h-full bg-border" />
         <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
           {[...Array(2)].map((_, i) => (
