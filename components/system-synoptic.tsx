@@ -114,12 +114,9 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Zap className="w-6 h-6 text-primary" />
-            <div>
-              <CardTitle className="text-xl sm:text-2xl font-bold">
-                Synoptique du Système
-              </CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">École Supérieure de Technologie</p>
-            </div>
+            <CardTitle className="text-xl sm:text-2xl font-bold">
+              Synoptique du Système
+            </CardTitle>
           </div>
           <button className="p-2 hover:bg-accent rounded-lg transition-colors">
             <MoreVertical className="w-5 h-5 text-muted-foreground hover:text-foreground" />
