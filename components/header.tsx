@@ -45,7 +45,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
   return (
     <>
       {/* Fixed Header - Reduced height for mobile */}
-      <header className="fixed top-0 left-0 right-0 z-40 h-16 sm:h-20 md:h-24 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-3 sm:px-4 md:px-6">
+      <header className="fixed top-0 left-0 right-0 z-40 h-[72px] sm:h-[84px] md:h-[96px] border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-3 sm:px-4 md:px-6">
         <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
           {/* Left - Menu/Back Button & Logo */}
           <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0 flex-1">
@@ -74,10 +74,10 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               />
             </div>
             <div className="text-left leading-tight min-w-0 flex-1">
-              <div className="text-xs sm:text-sm md:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">
+              <div className="text-sm sm:text-base md:text-lg font-bold text-emerald-600 dark:text-emerald-400 truncate">
                 École Supérieure
               </div>
-              <div className="text-xs sm:text-sm text-emerald-600/80 dark:text-emerald-400/80 truncate">
+              <div className="text-sm sm:text-base text-emerald-600/80 dark:text-emerald-400/80 truncate">
                 de Technologie
               </div>
             </div>
