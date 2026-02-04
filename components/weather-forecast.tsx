@@ -3,17 +3,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { Cloud, CloudRain, Sun, CloudSun } from "lucide-react"
 
-const CITIES = [
-  { name: "Fes", latitude: 34.0331, longitude: -5.0003 },
-  { name: "Taza", latitude: 34.21, longitude: -4.01 },
-  { name: "Rabat", latitude: 34.0209, longitude: -6.8416 },
-  { name: "Paris", latitude: 48.8566, longitude: 2.3522 },
-  { name: "New York", latitude: 40.7128, longitude: -74.006 },
-  { name: "Madrid", latitude: 40.4168, longitude: -3.7038 },
-  { name: "London", latitude: 51.5074, longitude: -0.1278 },
-  { name: "Tokyo", latitude: 35.6762, longitude: 139.6503 },
-]
-
 type DailyForecast = {
   date: string
   tMin: number
@@ -36,53 +25,33 @@ export function WeatherForecast() {
   const [data, setData] = useState<CityForecast[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [syncing, setSyncing] = useState(false)
-
-  const fetchUrl = (lat: number, lon: number) =>
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7&timezone=auto`
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
       try {
-        const results = await Promise.all(
-          CITIES.map(async (city) => {
-            const res = await fetch(fetchUrl(city.latitude, city.longitude))
-            const contentType = res.headers.get("content-type") || ""
-            const text = await res.text()
+        const res = await fetch('/api/weather')
+        
+        if (!res.ok) {
+          throw new Error(`Weather API error: ${res.status}`)
+        }
 
-            if (!res.ok) throw new Error(`Erreur API meteo: ${res.status}`)
-
-            if (contentType.includes("text/html") || text.trim().startsWith("<")) {
-              throw new Error("HTML_RESPONSE")
-            }
-
-            const json = JSON.parse(text)
-            const days: DailyForecast[] = json.daily.time.map((date: string, idx: number) => ({
-              date,
-              tMin: json.daily.temperature_2m_min[idx],
-              tMax: json.daily.temperature_2m_max[idx],
-              rainProb: json.daily.precipitation_probability_max[idx],
-            }))
-            return { city: city.name, today: days[0] }
-          })
-        )
+        const json = await res.json()
+        
+        if (!json.success) {
+          throw new Error(json.error || 'Weather API failed')
+        }
 
         if (!cancelled) {
-          setData(results)
+          setData(json.data)
           setError(null)
-          setSyncing(false)
         }
       } catch (err) {
         if (!cancelled) {
-          const message = err instanceof Error ? err.message : "Erreur inconnue"
-          if (message.includes("HTML_RESPONSE") || message.includes("Unexpected token <")) {
-            setSyncing(true)
-            setError(null)
-          } else {
-            setError(message)
-          }
+          const message = err instanceof Error ? err.message : "Erreur météo"
+          setError(message)
+          console.error('Weather fetch error:', err)
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -90,27 +59,28 @@ export function WeatherForecast() {
     }
 
     load()
+    
+    // Refresh every 30 minutes
+    const interval = setInterval(load, 30 * 60 * 1000)
+    
     return () => {
       cancelled = true
+      clearInterval(interval)
     }
   }, [])
 
   const content = useMemo(() => {
     if (loading) {
-      return <p className="text-muted-foreground text-base font-medium">Chargement des prévisions...</p>
+      return <p className="text-muted-foreground text-base font-medium">Chargement météo...</p>
     }
 
-    if (syncing) {
-      return (
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <div className="h-5 w-5 rounded-full border-2 border-emerald-400/40 border-t-emerald-400 animate-spin" />
-          <span className="text-base font-medium">Syncing Data...</span>
-        </div>
-      )
+    if (error) {
+      return <p className="text-destructive text-base font-medium">Météo: {error}</p>
     }
-
-    if (error) return <p className="text-destructive text-base font-medium">{error}</p>
-    if (!data.length) return <p className="text-muted-foreground text-base font-medium">Aucune donnée météo.</p>
+    
+    if (!data.length) {
+      return <p className="text-muted-foreground text-base font-medium">Aucune donnée météo.</p>
+    }
 
     return (
       <div className="flex gap-4 overflow-x-auto pb-2">
