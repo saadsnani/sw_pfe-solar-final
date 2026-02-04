@@ -49,11 +49,11 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
       <header className="fixed top-0 left-0 right-0 z-40 h-16 sm:h-20 md:h-24 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-3 sm:px-4 md:px-6">
         <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
           {/* Left - Menu/Back Button & Logo */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0 flex-1">
             {/* Menu/Back Button */}
             <button
               onClick={showBackButton ? onBackClick : onMenuClick}
-              className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors flex-shrink-0"
               aria-label={showBackButton ? "Go back" : "Open menu"}
             >
               {showBackButton ? (
@@ -63,18 +63,18 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               )}
             </button>
 
-            {/* Logo & School Info */}
-            <div className="w-10 sm:w-14 md:w-16 h-10 sm:h-14 md:h-16 flex-shrink-0 overflow-hidden rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
+            {/* Logo & School Info - Expanded */}
+            <div className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
               <Image
                 src="/images.jpg"
                 alt="EST Logo"
-                width={64}
-                height={64}
+                width={80}
+                height={80}
                 className="object-cover"
                 priority
               />
             </div>
-            <div className="text-left leading-tight min-w-0">
+            <div className="text-left leading-tight min-w-0 flex-1">
               <div className="text-xs sm:text-sm md:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">
                 École Supérieure
               </div>

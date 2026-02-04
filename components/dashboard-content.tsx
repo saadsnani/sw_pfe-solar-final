@@ -233,7 +233,7 @@ export function DashboardContent() {
   return (
     <div className="space-y-4 w-full">
       {/* System Synoptic - First */}
-      <div className="relative z-10 mt-12">
+      <div className="relative z-10 mt-16">
         <SystemSynoptic sensors={sensors} />
       </div>
 
