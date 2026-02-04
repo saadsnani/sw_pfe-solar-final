@@ -48,10 +48,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
               <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-foreground">Smart EMS</h2>
-              <p className="text-xs text-muted-foreground">Navigation</p>
-            </div>
+            <h2 className="text-base sm:text-lg font-bold text-foreground">Smart EMS</h2>
           </div>
           <div className="flex items-center gap-2">
             {/* Notification Icon */}
