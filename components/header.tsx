@@ -163,45 +163,12 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
       <div className="fixed top-24 sm:top-28 md:top-32 left-0 right-0 z-35 h-10 md:h-12 border-b border-slate-200 dark:border-white/10 bg-emerald-500/5 dark:bg-emerald-500/10 px-4 sm:px-6 md:px-8 flex items-center gap-3 md:gap-4">
         <div className="flex items-center gap-2 text-xs md:text-sm">
           <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="text-emerald-700 dark:text-emerald-400 font-medium">Tous les capteurs connectés</span>
+          <span className="text-emerald-700 dark:text-emerald-400 font-medium">Tous les capteurs connectes</span>
         </div>
         <div className="ml-auto text-xs md:text-sm text-muted-foreground">
-          WiFi: Connecté • Cloud: Actif
+          WiFi: Connecte • Cloud: Actif
         </div>
       </div>
     </>
-  )
-}
-
-        {/* Right - User Dropdown */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10">
-                <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md flex-shrink-0">
-                  <User className="w-3 sm:w-4 h-3 sm:h-4 text-primary-foreground" />
-                </div>
-                <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-foreground truncate max-w-[120px]">
-                  {userEmail ? userEmail.split("@")[0] : "Admin"}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 sm:w-56">
-              <DropdownMenuLabel>
-                <div className="flex flex-col">
-                  <span className="text-sm">Mon Compte</span>
-                  {userEmail && <span className="text-xs font-normal text-muted-foreground mt-1 truncate">{userEmail}</span>}
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
-                <LogOut className="w-4 h-4 mr-2" />
-                Déconnexion
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </header>
   )
 }
