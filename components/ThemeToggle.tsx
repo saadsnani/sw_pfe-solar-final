@@ -46,14 +46,14 @@ export function ThemeToggle() {
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="p-3 w-12 h-12" />
+      <div className="p-1 w-8 h-8" />
     )
   }
 
   return (
     <button
       onClick={toggleTheme}
-      className="p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all duration-200 flex items-center justify-center"
+      className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors flex-shrink-0"
       aria-label="Toggle theme"
       title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
     >
@@ -67,7 +67,7 @@ export function ThemeToggle() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-6 h-6 text-yellow-400"
+          className="w-5 h-5 sm:w-5 sm:h-5 text-yellow-400 flex-shrink-0"
         >
           <circle cx="12" cy="12" r="5" />
           <line x1="12" y1="1" x2="12" y2="3" />
@@ -89,7 +89,7 @@ export function ThemeToggle() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-6 h-6 text-slate-700 dark:text-slate-300"
+          className="w-5 h-5 sm:w-5 sm:h-5 text-slate-700 dark:text-slate-300 flex-shrink-0"
         >
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>

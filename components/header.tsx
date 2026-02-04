@@ -102,7 +102,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors relative">
-                  <Bell className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 dark:text-emerald-400" />
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400" />
                   {notifications.length > 0 && (
                     <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                   )}
