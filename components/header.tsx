@@ -78,9 +78,11 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               <div className="text-xs sm:text-sm md:text-base lg:text-xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
                 École Supérieure de Technologie
               </div>
-              <div className="text-xs sm:text-sm md:text-base text-emerald-600/80 dark:text-emerald-400/80 truncate">
-                Système Intelligent de Gestion d&apos;Energie
-              </div>
+            </div>
+            
+            {/* University Name for Mobile - replaces theme toggle */}
+            <div className="sm:hidden text-xs font-semibold text-emerald-600 dark:text-emerald-400 truncate max-w-[140px]">
+              École Supérieure de Technologie
             </div>
           </div>
 
@@ -126,8 +128,10 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
+            {/* Theme Toggle - Hidden on mobile, visible on desktop */}
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
 
             {/* User Menu */}
             <DropdownMenu>
