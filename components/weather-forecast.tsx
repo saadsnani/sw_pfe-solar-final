@@ -99,7 +99,7 @@ export function WeatherForecast() {
         ))}
       </div>
     )
-  }, [loading, syncing, error, data])
+  }, [loading, error, data])
 
   return (
     <section className="space-y-4">
