@@ -40,14 +40,14 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
       </CardHeader>
       <CardContent>
         {displayData.length === 0 ? (
-          <div className="h-80 flex items-center justify-center">
+          <div className="h-[400px] sm:h-[500px] flex items-center justify-center">
             <div className="text-center">
               <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-muted-foreground">Connectez les capteurs pour voir les données</p>
             </div>
           </div>
         ) : (
-          <div className="h-80">
+          <div className="h-[400px] sm:h-[500px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={displayData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
@@ -56,9 +56,9 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
                     <stop offset="95%" stopColor="oklch(0.75 0.2 145)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.01 260)" />
-                <XAxis dataKey="time" stroke="oklch(0.65 0 0)" fontSize={12} tickLine={false} />
-                <YAxis stroke="oklch(0.65 0 0)" fontSize={12} tickLine={false} tickFormatter={(value) => `${value}W`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.01 260)" strokeWidth={1.5} />
+                <XAxis dataKey="time" stroke="oklch(0.65 0 0)" fontSize={14} tickLine={false} height={50} />
+                <YAxis stroke="oklch(0.65 0 0)" fontSize={14} tickLine={false} tickFormatter={(value) => `${value}W`} width={70} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "oklch(0.14 0.005 260)",
@@ -74,7 +74,7 @@ function EnergyChartComponent({ sensors, historicalData }: EnergyChartProps) {
                     type="monotone"
                     dataKey="production"
                     stroke="oklch(0.75 0.2 145)"
-                    strokeWidth={2}
+                    strokeWidth={3}
                     fill="url(#productionGradient)"
                     name="Production"
                     isAnimationActive={false}

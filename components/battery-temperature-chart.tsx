@@ -107,8 +107,8 @@ export function BatteryTemperatureChart() {
             Historique Température Batterie
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-64 flex items-center justify-center">
-          <div className="text-muted-foreground">Chargement...</div>
+        <CardContent className="h-[400px] sm:h-[500px] flex items-center justify-center">
+          <div className="text-muted-foreground text-lg">Chargement...</div>
         </CardContent>
       </Card>
     )
@@ -157,19 +157,21 @@ export function BatteryTemperatureChart() {
 
         {/* Chart */}
         {chartData.length > 0 ? (
-          <div className="w-full h-64">
+          <div className="w-full h-[400px] sm:h-[500px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgb(55, 65, 81)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(55, 65, 81)" strokeWidth={1.5} />
                 <XAxis
                   dataKey="time"
                   stroke="rgb(156, 163, 175)"
-                  style={{ fontSize: "12px" }}
+                  style={{ fontSize: "14px" }}
+                  height={50}
                 />
                 <YAxis
                   stroke="rgb(156, 163, 175)"
                   domain={["dataMin - 5", "dataMax + 5"]}
-                  style={{ fontSize: "12px" }}
+                  style={{ fontSize: "14px" }}
+                  width={70}
                 />
                 <Tooltip
                   contentStyle={{
@@ -183,7 +185,7 @@ export function BatteryTemperatureChart() {
                   type="monotone"
                   dataKey="temperature"
                   stroke="rgb(59, 130, 246)"
-                  strokeWidth={2}
+                  strokeWidth={3}
                   dot={false}
                   isAnimationActive={true}
                 />
@@ -191,8 +193,8 @@ export function BatteryTemperatureChart() {
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-64 flex items-center justify-center bg-secondary/50 rounded-lg">
-            <div className="text-muted-foreground">Aucune donnée disponible</div>
+          <div className="h-[400px] sm:h-[500px] flex items-center justify-center bg-secondary/50 rounded-lg">
+            <div className="text-muted-foreground text-lg">Aucune donnée disponible</div>
           </div>
         )}
       </CardContent>
