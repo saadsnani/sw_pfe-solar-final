@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { getCollection, COLLECTIONS } from '@/lib/db';
 import { SensorDataModel } from '@/lib/db-models';
+import { normalizeEsp32RealtimeData, calculateRealtimePower } from '@/lib/esp32-realtime';
 
 // Allow static export for mobile app
 // This will be cached when used with "output: export"
@@ -12,6 +13,14 @@ interface SensorReading {
   temperature?: number;
   humidity?: number;
   batteryTemperature?: number;
+  Vpv?: number;
+  Ipv?: number;
+  Vbatt?: number;
+  Ibatt?: number;
+  Ppv?: number;
+  Pbatt?: number;
+  block1?: boolean;
+  block2?: boolean;
   wifiSsid?: string;
   sensorError?: boolean;
   timestamp: string;
@@ -47,7 +56,34 @@ function ensureDataFile() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { temperature, humidity, batteryTemperature, wifiSsid, sensorError } = body;
+    const {
+      temperature,
+      humidity,
+      batteryTemperature,
+      Vpv,
+      Ipv,
+      Vbatt,
+      Ibatt,
+      block1,
+      block2,
+      wifiSsid,
+      sensorError,
+      timestamp,
+    } = body;
+
+    const normalizedRealtime = normalizeEsp32RealtimeData({
+      Vpv,
+      Ipv,
+      Vbatt,
+      Ibatt,
+      block1,
+      block2,
+      timestamp,
+    });
+
+    const { Ppv, Pbatt } = normalizedRealtime
+      ? calculateRealtimePower(normalizedRealtime)
+      : { Ppv: null, Pbatt: null };
     
     // 🔥 LOG: Show incoming data in terminal
     console.log('\n' + '='.repeat(60));
@@ -55,6 +91,10 @@ export async function POST(request: NextRequest) {
     console.log('='.repeat(60));
     console.log('🌡️  Battery Temperature:', batteryTemperature !== undefined ? `${batteryTemperature}°C` : 'N/A');
     console.log('🌡️  Temperature:', temperature !== undefined ? `${temperature}°C` : 'N/A');
+    console.log('☀️  Vpv / Ipv:', normalizedRealtime?.Vpv !== null && normalizedRealtime?.Ipv !== null ? `${normalizedRealtime.Vpv}V / ${normalizedRealtime.Ipv}A` : 'N/A');
+    console.log('🔋 Vbatt / Ibatt:', normalizedRealtime?.Vbatt !== null && normalizedRealtime?.Ibatt !== null ? `${normalizedRealtime.Vbatt}V / ${normalizedRealtime.Ibatt}A` : 'N/A');
+    console.log('⚡ Ppv / Pbatt:', Ppv !== null && Pbatt !== null ? `${Ppv.toFixed(2)}W / ${Pbatt.toFixed(2)}W` : 'N/A');
+    console.log('🧲 Relays block1/block2:', normalizedRealtime ? `${normalizedRealtime.block1} / ${normalizedRealtime.block2}` : 'N/A');
     console.log('💧 Humidity:', humidity !== undefined ? `${humidity}%` : 'N/A');
     console.log('📡 WiFi SSID:', wifiSsid || 'N/A');
     console.log('⚠️  Sensor Error:', sensorError ? 'YES' : 'NO');
@@ -62,7 +102,10 @@ export async function POST(request: NextRequest) {
     console.log('='.repeat(60) + '\n');
     
     // Validate data - allow error status even without readings
-    if (temperature === undefined && humidity === undefined && batteryTemperature === undefined && !sensorError) {
+    const hasLegacyReading = temperature !== undefined || humidity !== undefined || batteryTemperature !== undefined;
+    const hasRealtimeReading = [Vpv, Ipv, Vbatt, Ibatt, block1, block2].some((value) => value !== undefined);
+
+    if (!hasLegacyReading && !hasRealtimeReading && !sensorError) {
       return NextResponse.json(
         { error: 'At least one sensor reading is required' },
         { status: 400 }
@@ -74,9 +117,16 @@ export async function POST(request: NextRequest) {
       ...(temperature !== undefined && { temperature: parseFloat(temperature) }),
       ...(humidity !== undefined && { humidity: parseFloat(humidity) }),
       ...(batteryTemperature !== undefined && batteryTemperature !== null && { batteryTemperature: parseFloat(batteryTemperature) }),
+      ...(normalizedRealtime?.Vpv !== null && { Vpv: normalizedRealtime?.Vpv }),
+      ...(normalizedRealtime?.Ipv !== null && { Ipv: normalizedRealtime?.Ipv }),
+      ...(normalizedRealtime?.Vbatt !== null && { Vbatt: normalizedRealtime?.Vbatt }),
+      ...(normalizedRealtime?.Ibatt !== null && { Ibatt: normalizedRealtime?.Ibatt }),
+      ...(Ppv !== null && { Ppv }),
+      ...(Pbatt !== null && { Pbatt }),
+      ...(normalizedRealtime && { block1: normalizedRealtime.block1, block2: normalizedRealtime.block2 }),
       ...(wifiSsid !== undefined && { wifiSsid: String(wifiSsid) }),
       ...(sensorError && { sensorError: true }),
-      timestamp: new Date().toISOString(),
+      timestamp: normalizedRealtime?.timestamp || new Date().toISOString(),
     };
     
     // ALWAYS store in memory (works in both dev and production)
