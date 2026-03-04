@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, lazy, Suspense, useMemo, useState } from "react"
+import { useEffect, lazy, Suspense, useState } from "react"
 import { SystemSynoptic } from "@/components/system-synoptic"
 import { MetricCards } from "@/components/metric-cards"
 import { EnergyChart } from "@/components/energy-chart"
@@ -12,19 +12,10 @@ import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
 import { TemperatureDisplayCard } from "@/components/temperature-display-card"
 import { createDefaultSystemState, createConnectedSensor } from "@/lib/sensor-connection"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
-import {
-  calculateRealtimePower,
-  deriveBatterySocFromVoltage,
-  normalizeEsp32RealtimeData,
-  type Esp32RealtimeData,
-} from "@/lib/esp32-realtime"
 import { LocalNotifications } from "@capacitor/local-notifications"
 
 // Lazy load heavy components
 const WeatherForecast = lazy(() => import("@/components/weather-forecast").then(m => ({ default: m.WeatherForecast })))
-const FIREBASE_RTDB_URL =
-  process.env.NEXT_PUBLIC_FIREBASE_RTDB_URL ||
-  "https://fir-esp-16cb0-default-rtdb.europe-west1.firebasedatabase.app"
 
 // ✅ DEMO MODE TOGGLE: Set to false to use real ESP32 sensors
 const IS_DEMO = false
@@ -93,7 +84,6 @@ export function DashboardContent() {
 
   const [energyHistory, setEnergyHistory] = useState<Array<{ time: string; production: number; consumption: number }>>([])
   const [temperatureReadings, setTemperatureReadings] = useState<DemoTemperatureReading[]>([])
-  const [realtimeData, setRealtimeData] = useState<Esp32RealtimeData | null>(null)
 
   // ✅ Convert simulated data to sensor state format (only used if IS_DEMO = true)
   const [sensors, setSensors] = useState<SystemSensorsState>(() => {
@@ -101,71 +91,63 @@ export function DashboardContent() {
     return createDefaultSystemState()
   })
 
-  const realtimePower = useMemo(() => {
-    return realtimeData ? calculateRealtimePower(realtimeData) : { Ppv: null, Pbatt: null }
-  }, [realtimeData])
-
-  const realtimeGridStatus =
-    realtimeData && (realtimeData.block1 || realtimeData.block2) ? "Active" : "Inactive"
-
-  // 🔥 REAL MODE: Read live ESP32 schema directly from Firebase /sensors
+  // 🔥 REAL MODE: Fetch data from ESP32 via API (only runs when IS_DEMO = false)
   useEffect(() => {
     if (IS_DEMO) return // Skip if in demo mode
 
-    const fetchRealtimeFirebaseData = async () => {
+    const fetchSensorData = async () => {
       try {
-        const baseUrl = FIREBASE_RTDB_URL.replace(/\/$/, "")
-        const response = await fetch(`${baseUrl}/sensors.json`, { cache: "no-store" })
+        const response = await fetch('/api/sensor-data?type=all&limit=1')
         if (response.ok) {
-          const firebasePayload = await response.json()
-          const normalized = normalizeEsp32RealtimeData(firebasePayload)
+          const data = await response.json()
+          
+          if (data.readings && data.readings.length > 0) {
+            const latest = data.readings[0]
+            const temp = latest.batteryTemperature || latest.temperature || 0
+            
+            console.log('📥 Data from ESP32:', latest)
+            
+            // Update sensors with real data
+            setSensors(prev => ({
+              ...prev,
+              temperature: temp > 0 ? createConnectedSensor(temp) : prev.temperature,
+              battery: temp > 0 ? createConnectedSensor(75) : prev.battery, // Fake battery level for now
+            }))
 
-          if (!normalized) return
-
-          setRealtimeData(normalized)
-
-          const { Ppv, Pbatt } = calculateRealtimePower(normalized)
-          const batterySoc = deriveBatterySocFromVoltage(normalized.Vbatt)
-
-          setSensors(prev => ({
-            ...prev,
-            solarVoltage: normalized.Vpv !== null ? createConnectedSensor(normalized.Vpv) : prev.solarVoltage,
-            solarCurrent: normalized.Ipv !== null ? createConnectedSensor(normalized.Ipv) : prev.solarCurrent,
-            battery: batterySoc !== null ? createConnectedSensor(batterySoc) : prev.battery,
-            production: Ppv !== null ? createConnectedSensor(Ppv) : prev.production,
-            consumption: Pbatt !== null ? createConnectedSensor(Math.abs(Pbatt)) : prev.consumption,
-          }))
+            // Add to temperature readings
+            if (temp > 0) {
+              setTemperatureReadings(prev => {
+                const newReadings = [...prev, {
+                  batteryTemperature: temp,
+                  temperature: temp,
+                  wifiSsid: latest.wifiSsid || 'ESP32',
+                  timestamp: latest.timestamp,
+                }].slice(-20)
+                
+                // 🔔 Send notification for new data
+                sendNotification(
+                  "🌡️ Temperature Update",
+                  `Battery: ${temp.toFixed(1)}°C from ${latest.wifiSsid || 'ESP32'}`,
+                  Math.floor(Date.now() / 1000)
+                )
+                
+                return newReadings
+              })
+            }
+          }
         }
       } catch (error) {
-        console.error('❌ Error fetching Firebase realtime sensors:', error)
+        console.error('❌ Error fetching sensor data:', error)
       }
     }
 
-    fetchRealtimeFirebaseData()
+    // Fetch immediately
+    fetchSensorData()
 
-    // lightweight polling fallback (acts as realtime updates)
-    const timer = setInterval(fetchRealtimeFirebaseData, 2000)
+    // Then fetch every 5 seconds
+    const timer = setInterval(fetchSensorData, 5000)
     return () => clearInterval(timer)
   }, [])
-
-  // 🔥 REAL MODE: Build power history from Firebase updates
-  useEffect(() => {
-    if (IS_DEMO || !realtimeData) return
-
-    const now = new Date(realtimeData.timestamp || Date.now())
-    const timeLabel = now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-
-    setEnergyHistory((prev) =>
-      [
-        ...prev,
-        {
-          time: timeLabel,
-          production: realtimePower.Ppv ?? 0,
-          consumption: realtimePower.Pbatt !== null ? Math.abs(realtimePower.Pbatt) : 0,
-        },
-      ].slice(-20),
-    )
-  }, [realtimeData, realtimePower])
 
   // ✅ DEMO MODE: Simulation logic - Updates every 3 seconds (only runs if IS_DEMO = true)
   useEffect(() => {
@@ -264,7 +246,7 @@ export function DashboardContent() {
       </div>
 
       {/* Grid Integration */}
-      <GridIntegrationStatus sensors={sensors} gridStatus={IS_DEMO ? simulatedData.gridStatus : realtimeGridStatus} />
+      <GridIntegrationStatus sensors={sensors} gridStatus={simulatedData.gridStatus} />
 
       {/* System Status */}
       <SystemStatusBoard sensors={sensors} />
