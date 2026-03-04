@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { LayoutDashboard, BarChart3, Brain, Settings, Activity, User, Menu } from "lucide-react"
+import { LayoutDashboard, BarChart3, Brain, Settings, Activity, User, Menu, Power } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import type { PageType } from "@/components/dashboard"
@@ -17,6 +17,7 @@ interface SidebarProps {
 const navItems = [
   { id: "dashboard" as PageType, label: "Tableau de Bord", icon: LayoutDashboard },
   { id: "analytics" as PageType, label: "Analyses & Rapports", icon: BarChart3 },
+  { id: "relay-control" as PageType, label: "Contrôle Relais", icon: Power },
   { id: "ai-predictions" as PageType, label: "Prédictions IA", icon: Brain },
   { id: "system-health" as PageType, label: "Santé du Système", icon: Activity },
   { id: "settings" as PageType, label: "Paramètres", icon: Settings },
@@ -36,9 +37,9 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
 
       {/* Sidebar Drawer - 75% width overlay */}
       <aside className={cn(
-        "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
+        "bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-500 ease-in-out",
         "fixed inset-y-0 left-0 z-40",
-        "w-[75vw] sm:w-64 lg:w-72",
+        "w-[80vw] sm:w-64 lg:w-72",
         "top-16 sm:top-20 md:top-24",
         collapsed ? "-translate-x-full" : "translate-x-0"
       )}>
@@ -75,7 +76,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
               className={cn(
                 "w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200",
                 isActive
-                  ? "bg-emerald-500/20 text-emerald-500 shadow-lg shadow-emerald-500/20"
+                  ? "bg-emerald-600/30 text-emerald-700 shadow-lg shadow-emerald-500/20 border border-emerald-600"
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
               )}
             >

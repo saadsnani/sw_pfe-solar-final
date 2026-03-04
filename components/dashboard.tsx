@@ -8,10 +8,11 @@ import { DashboardContent } from "@/components/dashboard-content"
 
 // Lazy load heavy pages for better performance
 const AnalyticsPageEnhanced = lazy(() => import("@/components/analytics-page-enhanced").then((m) => ({ default: m.AnalyticsPageEnhanced })))
-const AIPredictionsPage = lazy(() => import("@/components/ai-predictions-page").then((m) => ({ default: m.AIPredictionsPage })))
+const AIPredictionsPage = lazy(() => import("@/components/ai-predictions-page"))
 const SettingsPage = lazy(() => import("@/components/settings-page").then((m) => ({ default: m.SettingsPage })))
 const SystemHealthPage = lazy(() => import("@/components/system-health-page").then((m) => ({ default: m.SystemHealthPage })))
 const ProfilePage = lazy(() => import("@/components/profile-page").then((m) => ({ default: m.ProfilePage })))
+const RelayControlPage = lazy(() => import("@/components/relay-control-page").then((m) => ({ default: m.RelayControlPage })))
 // Logs Connexions page removed per request
 
 function LoadingFallback() {
@@ -30,6 +31,7 @@ interface DashboardProps {
 export type PageType =
   | "dashboard"
   | "analytics"
+  | "relay-control"
   | "ai-predictions"
   | "settings"
   | "system-health"
@@ -47,6 +49,12 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
         return (
           <Suspense fallback={<LoadingFallback />}>
             <AnalyticsPageEnhanced />
+          </Suspense>
+        )
+      case "relay-control":
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <RelayControlPage />
           </Suspense>
         )
       case "ai-predictions":
