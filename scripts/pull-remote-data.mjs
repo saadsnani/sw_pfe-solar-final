@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
-const base = process.env.DATA_BASE_URL || "https://solar-dashboard-pfe.vercel.app";
+const base = process.env.DATA_BASE_URL || "https://sw-pfe-solar-final.vercel.app";
 const targets = [
   { url: `${base}/api/feedback`, file: path.join(process.cwd(), "data", "feedback.json") },
   { url: `${base}/api/logs`, file: path.join(process.cwd(), "data", "login-logs.json") },

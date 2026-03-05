@@ -22,7 +22,7 @@ jobs:
 
       - name: Pull remote data
         env:
-          DATA_BASE_URL: https://solar-dashboard-pfe.vercel.app
+          DATA_BASE_URL: https://sw-pfe-solar-final.vercel.app
         run: npm run pull:data
 
       - name: Commit changes
