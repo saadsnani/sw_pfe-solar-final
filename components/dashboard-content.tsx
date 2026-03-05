@@ -9,6 +9,7 @@ import { EnergyChart } from "@/components/energy-chart"
 import { AIInsightsPanel } from "@/components/ai-insights-panel"
 import { PowerForecastChart } from "@/components/PowerForecastChart"
 import { SystemStatusBoard } from "@/components/system-status-board"
+import { HealthReportCard } from "@/components/health-report-card"
 import { GridIntegrationStatus } from "@/components/grid-integration-status"
 import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
 import { TemperatureDisplayCard } from "@/components/temperature-display-card"
@@ -269,6 +270,11 @@ export function DashboardContent() {
 
       {/* System Status */}
       <SystemStatusBoard sensors={sensors} />
+
+      {/* Predictive Maintenance Health Report */}
+      <div className="grid grid-cols-1 gap-4">
+        <HealthReportCard />
+      </div>
 
       {/* Charts & AI */}
       <div className="grid grid-cols-1 gap-4">

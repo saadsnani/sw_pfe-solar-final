@@ -4,6 +4,7 @@ import path from 'path';
 import { getCollection, COLLECTIONS } from '@/lib/db';
 import { SensorDataModel } from '@/lib/db-models';
 import { normalizeEsp32RealtimeData, calculateRealtimePower } from '@/lib/esp32-realtime';
+import { enforceSafetyRules } from '@/lib/safety-override';
 
 // Allow static export for mobile app
 // This will be cached when used with "output: export"
@@ -24,6 +25,22 @@ interface SensorReading {
   wifiSsid?: string;
   sensorError?: boolean;
   timestamp: string;
+}
+
+interface EmergencyControlState {
+  mode: 'manual' | 'ai';
+  relays: {
+    inverter: boolean;
+    block1: boolean;
+    block2: boolean;
+  };
+  updatedAt: string;
+  source: string;
+  safetyOverride: {
+    emergencyShutdown: true;
+    reason: string;
+    triggeredAt: string;
+  };
 }
 
 // In-memory storage for Vercel (since filesystem is read-only in production)
@@ -84,6 +101,38 @@ async function syncToFirebase(reading: SensorReading) {
 
   if (!latestRes.ok || !historyRes.ok) {
     throw new Error(`Firebase sync failed (latest:${latestRes.status}, history:${historyRes.status})`);
+  }
+}
+
+async function pushEmergencyShutdownToFirebase(reason: string) {
+  if (!FIREBASE_RTDB_URL) return;
+
+  const baseUrl = FIREBASE_RTDB_URL.replace(/\/$/, '');
+  const triggeredAt = new Date().toISOString();
+  const emergencyState: EmergencyControlState = {
+    mode: 'ai',
+    relays: {
+      inverter: false,
+      block1: false,
+      block2: false,
+    },
+    updatedAt: triggeredAt,
+    source: 'sensor_data_safety_override',
+    safetyOverride: {
+      emergencyShutdown: true,
+      reason,
+      triggeredAt,
+    },
+  };
+
+  const response = await fetch(`${baseUrl}/control.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(emergencyState),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Emergency shutdown sync failed (${response.status})`);
   }
 }
 
@@ -162,6 +211,22 @@ export async function POST(request: NextRequest) {
       ...(sensorError && { sensorError: true }),
       timestamp: normalizedRealtime?.timestamp || new Date().toISOString(),
     };
+
+    const safetyOverride = enforceSafetyRules({
+      batteryTemperature: reading.batteryTemperature,
+      temperature: reading.temperature,
+      Vbatt: reading.Vbatt,
+    });
+
+    // Trigger fail-safe shutdown immediately when hard safety thresholds are crossed.
+    if (safetyOverride.emergencyShutdown) {
+      try {
+        await pushEmergencyShutdownToFirebase(safetyOverride.reason);
+        console.warn('[SafetyOverride] 🚨 Emergency shutdown applied:', safetyOverride.reason);
+      } catch (safetyError) {
+        console.error('[SafetyOverride] ⚠️ Failed to apply emergency shutdown:', safetyError);
+      }
+    }
     
     // ALWAYS store in memory (works in both dev and production)
     memoryStorage.push(reading);
@@ -250,6 +315,7 @@ export async function POST(request: NextRequest) {
         success: true, 
         message: 'Sensor data received',
         data: reading,
+        safetyOverride,
         storage: isProduction ? 'memory' : 'file+memory',
         memoryCount: memoryStorage.length
       },

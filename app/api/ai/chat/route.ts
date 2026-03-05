@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import OpenAI from 'openai'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -21,7 +22,7 @@ interface ApiResponse {
   message: string
   analysis: string
   relayCommand: RelayCommand | null
-  provider: 'groq'
+  provider: 'openai'
 }
 
 interface SensorsSnapshot {
@@ -42,18 +43,11 @@ interface ControlSnapshot {
   }
 }
 
-interface GroqResponse {
-  choices?: Array<{
-    message?: {
-      content?: string
-    }
-  }>
-}
-
-const GROQ_API_KEY = process.env.GROQ_API_KEY
-const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'
-const GROQ_FALLBACK_MESSAGE =
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini'
+const OPENAI_FALLBACK_MESSAGE =
   'System analysis is temporarily offline due to high traffic, but your energy levels are safe.'
+const openaiClient = OPENAI_API_KEY ? new OpenAI({ apiKey: OPENAI_API_KEY }) : null
 
 const FIREBASE_RTDB_URL =
   process.env.FIREBASE_RTDB_URL ||
@@ -457,7 +451,7 @@ async function fetchFirebaseSnapshot(): Promise<{ sensors: SensorsSnapshot; cont
   }
 }
 
-async function callGroq(params: {
+async function callOpenAI(params: {
   message: string
   language: SupportedLanguage
   history: ChatMessage[]
@@ -471,13 +465,13 @@ async function callGroq(params: {
   const analysis = computeAnalysis(sensors, control, language)
   const includeAnalysis = statusRequested || allowModelRelayOverride
 
-  if (!GROQ_API_KEY) {
+  if (!openaiClient) {
     return {
       success: true,
-      message: GROQ_FALLBACK_MESSAGE,
+      message: OPENAI_FALLBACK_MESSAGE,
       analysis: includeAnalysis ? analysis : '',
       relayCommand: forcedRelayCommand ?? null,
-      provider: 'groq',
+      provider: 'openai',
     }
   }
 
@@ -494,7 +488,7 @@ async function callGroq(params: {
     'If battery temperature > 50°C, highlight critical risk and trigger safety relay command.',
     'Format output using Markdown. Use compact tables only when status is requested.',
     'Return STRICT JSON only with this schema:',
-    '{"success":true,"message":"Friendly response in Markdown","analysis":"Technical details about energy/safety","relayCommand":{"relay":number,"action":"on|off"},"provider":"groq"}',
+    '{"success":true,"message":"Friendly response in Markdown","analysis":"Technical details about energy/safety","relayCommand":{"relay":number,"action":"on|off"},"provider":"openai"}',
     `Status explicitly requested: ${statusRequested ? 'yes' : 'no'}`,
     `Language: ${language}`,
     `Sensors: ${JSON.stringify(sensors)}`,
@@ -507,7 +501,7 @@ async function callGroq(params: {
     .filter((entry) => typeof entry.content === 'string')
     .map((entry) => ({ role: entry.role, content: entry.content }))
 
-  const messages = [
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
     ...chatHistory,
     {
@@ -519,41 +513,14 @@ async function callGroq(params: {
   ]
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.2,
-        messages,
-      }),
+    const completion = await openaiClient.chat.completions.create({
+      model: OPENAI_MODEL,
+      temperature: 0.2,
+      response_format: { type: 'json_object' },
+      messages,
     })
 
-    if (response.status === 429 || response.status >= 500) {
-      return {
-        success: true,
-        message: GROQ_FALLBACK_MESSAGE,
-        analysis: includeAnalysis ? analysis : '',
-        relayCommand: forcedRelayCommand ?? null,
-        provider: 'groq',
-      }
-    }
-
-    if (!response.ok) {
-      return {
-        success: true,
-        message: GROQ_FALLBACK_MESSAGE,
-        analysis: includeAnalysis ? analysis : '',
-        relayCommand: forcedRelayCommand ?? null,
-        provider: 'groq',
-      }
-    }
-
-    const data = (await response.json()) as GroqResponse
-    const raw = data.choices?.[0]?.message?.content?.trim() || ''
+    const raw = completion.choices?.[0]?.message?.content?.trim() || ''
 
     let parsed: Partial<ApiResponse> | null = null
     try {
@@ -562,10 +529,10 @@ async function callGroq(params: {
     } catch {
       parsed = {
         success: true,
-        message: raw || GROQ_FALLBACK_MESSAGE,
+        message: raw || OPENAI_FALLBACK_MESSAGE,
         analysis: includeAnalysis ? analysis : '',
         relayCommand: forcedRelayCommand ?? null,
-        provider: 'groq',
+        provider: 'openai',
       }
     }
 
@@ -574,25 +541,31 @@ async function callGroq(params: {
 
     return {
       success: true,
-      message: typeof parsed?.message === 'string' ? parsed.message : GROQ_FALLBACK_MESSAGE,
+      message: typeof parsed?.message === 'string' ? parsed.message : OPENAI_FALLBACK_MESSAGE,
       analysis: includeAnalysis ? (typeof parsed?.analysis === 'string' ? parsed.analysis : analysis) : '',
       relayCommand: relayCommand ?? null,
-      provider: 'groq',
+      provider: 'openai',
     }
-  } catch {
+  } catch (error) {
+    if (error instanceof OpenAI.APIError) {
+      console.error(`[AI][openai] API error (${error.status ?? 'unknown'}): ${error.message}`)
+    } else {
+      console.error('[AI][openai] Unexpected error:', error)
+    }
+
     return {
       success: true,
-      message: GROQ_FALLBACK_MESSAGE,
+      message: OPENAI_FALLBACK_MESSAGE,
       analysis: includeAnalysis ? analysis : '',
       relayCommand: forcedRelayCommand ?? null,
-      provider: 'groq',
+      provider: 'openai',
     }
   }
 }
 
 export async function POST(request: NextRequest) {
-  const keyPrefix = (process.env.GROQ_API_KEY || '').slice(0, 5)
-  console.log(`[AI][groq] key prefix: ${keyPrefix || 'empty'}`)
+  const keyPrefix = (process.env.OPENAI_API_KEY || '').slice(0, 5)
+  console.log(`[AI][openai] key prefix: ${keyPrefix || 'empty'}`)
 
   try {
     const body = (await request.json()) as {
@@ -611,7 +584,7 @@ export async function POST(request: NextRequest) {
         message: 'Message is required.',
         analysis: 'No message received from client.',
         relayCommand: null,
-        provider: 'groq',
+        provider: 'openai',
       } satisfies ApiResponse)
     }
 
@@ -634,11 +607,11 @@ export async function POST(request: NextRequest) {
         message: directControl.message,
         analysis: directControl.analysis,
         relayCommand: directControl.relayCommand,
-        provider: 'groq',
+        provider: 'openai',
       } satisfies ApiResponse)
     }
 
-    const response = await callGroq({
+    const response = await callOpenAI({
       message,
       language,
       history,
@@ -669,10 +642,10 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json({
       success: true,
-      message: GROQ_FALLBACK_MESSAGE,
+      message: OPENAI_FALLBACK_MESSAGE,
       analysis: 'Fallback response returned due to request processing issue.',
       relayCommand: null,
-      provider: 'groq',
+      provider: 'openai',
     } satisfies ApiResponse)
   }
 }

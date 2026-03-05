@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Brain, Hand, Power, ToggleLeft, RadioTower, Lightbulb, PlugZap, Circle, Check, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useRelayState } from "@/hooks/use-relay-state"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
 
 type ControlMode = "manual" | "ai"
@@ -65,6 +66,22 @@ const INITIAL_RELAYS: RelayState = {
   block2: false,
 }
 
+function enforceRelayDependency(relays: RelayState): RelayState {
+  if (!relays.inverter) {
+    return {
+      inverter: false,
+      block1: false,
+      block2: false,
+    }
+  }
+
+  return relays
+}
+
+function areRelayStatesEqual(a: RelayState, b: RelayState): boolean {
+  return a.inverter === b.inverter && a.block1 === b.block1 && a.block2 === b.block2
+}
+
 function computeAiRelayState(sensors?: SystemSensorsState): RelayState {
   const production = sensors?.production.value ?? 0
   const consumption = sensors?.consumption.value ?? 0
@@ -80,7 +97,6 @@ function computeAiRelayState(sensors?: SystemSensorsState): RelayState {
 
 export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   const [mode, setMode] = useState<ControlMode>("manual")
-  const [relays, setRelays] = useState<RelayState>(INITIAL_RELAYS)
   const [relayMemory, setRelayMemory] = useState<{ block1: boolean; block2: boolean }>({
     block1: false,
     block2: false,
@@ -89,84 +105,142 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   const [statusMessage, setStatusMessage] = useState("")
   const [lastUpdate, setLastUpdate] = useState<string | null>(null)
 
+  const {
+    relayOn: inverter,
+    loading: inverterLoading,
+    error: inverterError,
+    setRelay: setInverter,
+  } = useRelayState({
+    provider: "rtdb",
+    path: "control/relays/inverter",
+    initialValue: INITIAL_RELAYS.inverter,
+  })
+
+  const {
+    relayOn: block1,
+    loading: block1Loading,
+    error: block1Error,
+    setRelay: setBlock1,
+  } = useRelayState({
+    provider: "rtdb",
+    path: "control/relays/block1",
+    initialValue: INITIAL_RELAYS.block1,
+  })
+
+  const {
+    relayOn: block2,
+    loading: block2Loading,
+    error: block2Error,
+    setRelay: setBlock2,
+  } = useRelayState({
+    provider: "rtdb",
+    path: "control/relays/block2",
+    initialValue: INITIAL_RELAYS.block2,
+  })
+
+  const relays = useMemo<RelayState>(
+    () => ({ inverter, block1, block2 }),
+    [inverter, block1, block2],
+  )
+
+  const isLoading = inverterLoading || block1Loading || block2Loading
+  const realtimeError = inverterError || block1Error || block2Error
+
   const aiSuggestedRelays = useMemo(() => computeAiRelayState(sensors), [sensors])
 
-  const saveControl = async (nextMode: ControlMode, nextRelays: RelayState, source: string) => {
-    setIsSaving(true)
-    try {
-      const response = await fetch("/api/relay-control", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: nextMode, relays: nextRelays, source }),
-      })
+  const applyRelayState = useCallback(async (requestedRelays: RelayState, sourceLabel: string) => {
+    const nextRelays = enforceRelayDependency(requestedRelays)
+    const currentRelays = relays
 
-      if (!response.ok) {
-        throw new Error(`Save failed (${response.status})`)
+    if (areRelayStatesEqual(currentRelays, nextRelays)) {
+      setStatusMessage(`✅ ${sourceLabel}`)
+      return
+    }
+
+    setIsSaving(true)
+    setStatusMessage("")
+
+    try {
+      const turningOffInverter = currentRelays.inverter && !nextRelays.inverter
+      const turningOnInverter = !currentRelays.inverter && nextRelays.inverter
+
+      if (turningOffInverter) {
+        if (currentRelays.block1) {
+          await setBlock1(false)
+        }
+        if (currentRelays.block2) {
+          await setBlock2(false)
+        }
+        await setInverter(false)
+      } else {
+        if (turningOnInverter) {
+          await setInverter(true)
+        }
+
+        if (currentRelays.block1 !== nextRelays.block1) {
+          await setBlock1(nextRelays.block1)
+        }
+        if (currentRelays.block2 !== nextRelays.block2) {
+          await setBlock2(nextRelays.block2)
+        }
+
+        if (!turningOnInverter && currentRelays.inverter !== nextRelays.inverter) {
+          await setInverter(nextRelays.inverter)
+        }
       }
 
-      setStatusMessage("✅ Commande enregistrée")
+      setStatusMessage(`✅ ${sourceLabel}`)
       setLastUpdate(new Date().toISOString())
     } catch (error) {
       const details = error instanceof Error ? error.message : "Unknown error"
-      setStatusMessage(`❌ Erreur enregistrement: ${details}`)
+      setStatusMessage(`❌ Erreur commande relais: ${details}`)
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [relays, setBlock1, setBlock2, setInverter])
 
   useEffect(() => {
-    const loadState = async () => {
-      try {
-        const response = await fetch("/api/relay-control", { cache: "no-store" })
-        if (!response.ok) return
-
-        const payload = await response.json()
-        const data = payload?.data
-        if (!data?.relays) return
-
-        setMode(data.mode === "ai" ? "ai" : "manual")
-        setRelays({
-          inverter: Boolean(data.relays.inverter),
-          block1: Boolean(data.relays.block1),
-          block2: Boolean(data.relays.block2),
-        })
-        setRelayMemory({
-          block1: Boolean(data.relays.block1),
-          block2: Boolean(data.relays.block2),
-        })
-        setLastUpdate(typeof data.updatedAt === "string" ? data.updatedAt : null)
-      } catch {
-      }
+    if (!isLoading) {
+      setLastUpdate(new Date().toISOString())
     }
-
-    loadState()
-  }, [])
+  }, [isLoading, relays.inverter, relays.block1, relays.block2])
 
   useEffect(() => {
-    if (mode !== "ai") return
+    if (relays.inverter) {
+      setRelayMemory({
+        block1: relays.block1,
+        block2: relays.block2,
+      })
+    }
+  }, [relays.inverter, relays.block1, relays.block2])
 
-    const changed =
-      relays.inverter !== aiSuggestedRelays.inverter ||
-      relays.block1 !== aiSuggestedRelays.block1 ||
-      relays.block2 !== aiSuggestedRelays.block2
+  useEffect(() => {
+    if (mode !== "ai" || isSaving || isLoading) return
 
-    if (!changed) return
+    if (areRelayStatesEqual(relays, aiSuggestedRelays)) return
 
-    setRelays(aiSuggestedRelays)
-    saveControl("ai", aiSuggestedRelays, "ai_engine")
-  }, [mode, aiSuggestedRelays, relays])
+    void applyRelayState(aiSuggestedRelays, "Mode AI synchronise")
+  }, [mode, aiSuggestedRelays, relays, isSaving, isLoading, applyRelayState])
+
+  useEffect(() => {
+    if (realtimeError) {
+      setStatusMessage(`❌ Erreur realtime: ${realtimeError}`)
+    }
+  }, [realtimeError])
 
   const onModeChange = async (nextMode: ControlMode) => {
     setMode(nextMode)
-    const nextRelays = nextMode === "ai" ? aiSuggestedRelays : relays
+
     if (nextMode === "ai") {
-      setRelays(nextRelays)
+      setStatusMessage("🤖 Mode AI active")
+      return
     }
-    await saveControl(nextMode, nextRelays, "dashboard_mode_switch")
+
+    setStatusMessage("🖐️ Mode manuel actif")
   }
 
   const onToggleRelay = async (key: keyof RelayState, checked: boolean) => {
-    if (mode !== "manual") return
+    if (mode !== "manual" || isLoading || isSaving) return
 
     const nextRelays = { ...relays, [key]: checked }
 
@@ -195,8 +269,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
       })
     }
 
-    setRelays(nextRelays)
-    await saveControl("manual", nextRelays, "dashboard_manual")
+    await applyRelayState(nextRelays, "Commande manuelle enregistree")
   }
 
   const relayItems: Array<{
@@ -211,6 +284,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   ]
 
   const activeRelayCount = [relays.inverter, relays.block1, relays.block2].filter(Boolean).length
+  const isBusy = isSaving || isLoading
 
   return (
     <Card className="relative overflow-hidden bg-card/60 backdrop-blur-md border-border/50 shadow-[0_12px_36px_-12px_rgba(0,0,0,0.45)]">
@@ -248,7 +322,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
           <Button
             variant={mode === "manual" ? "default" : "ghost"}
             onClick={() => onModeChange("manual")}
-            disabled={isSaving}
+            disabled={isBusy}
             className="rounded-lg shadow-sm"
           >
             <Hand className="w-4 h-4 mr-2" />
@@ -257,7 +331,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
           <Button
             variant={mode === "ai" ? "default" : "ghost"}
             onClick={() => onModeChange("ai")}
-            disabled={isSaving}
+            disabled={isBusy}
             className="rounded-lg shadow-sm"
           >
             <Brain className="w-4 h-4 mr-2" />
@@ -269,7 +343,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
           {relayItems.map((item) => {
             const ItemIcon = item.icon
             const isOn = relays[item.key]
-            const isDisabled = mode !== "manual" || isSaving || (item.key !== "inverter" && !relays.inverter)
+            const isDisabled = mode !== "manual" || isBusy || (item.key !== "inverter" && !relays.inverter)
 
             return (
               <div
@@ -333,6 +407,13 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <Power className="w-4 h-4" />
             {statusMessage}
+          </p>
+        )}
+
+        {isLoading && (
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Power className="w-4 h-4 animate-pulse" />
+            Synchronisation realtime en cours...
           </p>
         )}
       </CardContent>
