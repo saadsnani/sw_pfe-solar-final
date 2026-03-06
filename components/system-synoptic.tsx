@@ -51,39 +51,39 @@ function ComponentNode({ icon, label, values, status }: ComponentNodeProps) {
   )
 }
 
-function EnergyFlowLine() {
+function EnergyFlowLineHorizontal() {
   return (
-    <>
-      {/* Horizontal line for desktop */}
-      <div className="hidden lg:flex items-center justify-center w-24 relative">
-        <div className="w-full h-0.5 bg-border" />
-        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow"
-              style={{ animationDelay: `${i * 0.6}s` }}
-            />
-          ))}
-        </div>
-        <ArrowRight className="absolute right-0 w-4 h-4 text-energy-green" />
+    <div className="flex items-center justify-center w-24 relative">
+      <div className="w-full h-0.5 bg-border" />
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow"
+            style={{ animationDelay: `${i * 0.6}s` }}
+          />
+        ))}
       </div>
-      
-      {/* Vertical line for mobile */}
-      <div className="flex lg:hidden items-center justify-center h-8 sm:h-10 relative w-full">
-        <div className="w-0.5 h-full bg-border" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
-          {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow-vertical"
-              style={{ animationDelay: `${i * 0.6}s` }}
-            />
-          ))}
-        </div>
-        <ArrowRight className="absolute bottom-0 w-4 h-4 text-energy-green rotate-90" />
+      <ArrowRight className="absolute right-0 w-4 h-4 text-energy-green" />
+    </div>
+  )
+}
+
+function EnergyFlowLineVertical() {
+  return (
+    <div className="flex items-center justify-center h-8 sm:h-10 relative w-full">
+      <div className="w-0.5 h-full bg-border" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
+        {[...Array(2)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-3 h-3 rounded-full bg-energy-green energy-flow-vertical"
+            style={{ animationDelay: `${i * 0.6}s` }}
+          />
+        ))}
       </div>
-    </>
+      <ArrowRight className="absolute bottom-0 w-4 h-4 text-energy-green rotate-90" />
+    </div>
   )
 }
 
@@ -121,8 +121,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col lg:flex-row lg:flex-nowrap items-center lg:items-stretch justify-between gap-4 py-4 overflow-x-auto lg:overflow-visible">
-          {/* Solar Panel */}
+        {/* Mobile: vertical flow */}
+        <div className="flex lg:hidden flex-col items-center gap-4 py-4">
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}
             label="Panneau Solaire"
@@ -134,9 +134,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             status={isSolarConnected ? "good" : "disconnected"}
           />
 
-          <EnergyFlowLine />
+          <EnergyFlowLineVertical />
 
-          {/* MPPT Controller */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
             label="Contrôleur MPPT"
@@ -144,9 +143,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             status={isSolarConnected ? "good" : "disconnected"}
           />
 
-          <EnergyFlowLine />
+          <EnergyFlowLineVertical />
 
-          {/* Battery */}
           <ComponentNode
             icon={<Battery className="w-6 h-6" />}
             label="Batterie 12V"
@@ -166,9 +164,8 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             }
           />
 
-          <EnergyFlowLine />
+          <EnergyFlowLineVertical />
 
-          {/* Grid/Inverter */}
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
             label="Onduleur / Réseau"
@@ -176,9 +173,70 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             status={isGridConnected ? "good" : "disconnected"}
           />
 
-          <EnergyFlowLine />
+          <EnergyFlowLineVertical />
 
-          {/* Home Load */}
+          <ComponentNode
+            icon={<Home className="w-6 h-6" />}
+            label="Charge Maison"
+            values={isConsumptionConnected && consumption !== null ? [`${consumption.toFixed(0)}W`, "Actif"] : []}
+            status={isConsumptionConnected ? "good" : "disconnected"}
+          />
+        </div>
+
+        {/* Desktop: horizontal flow */}
+        <div className="hidden lg:flex flex-row flex-nowrap items-center justify-start gap-4 py-4 overflow-x-auto">
+          <ComponentNode
+            icon={<Sun className="w-6 h-6" />}
+            label="Panneau Solaire"
+            values={
+              isSolarConnected && solarVoltage !== null && solarCurrent !== null
+                ? [`${solarVoltage.toFixed(1)}V / ${solarCurrent.toFixed(1)}A`, solarProduction ? `${solarProduction.toFixed(0)}W` : '']
+                : []
+            }
+            status={isSolarConnected ? "good" : "disconnected"}
+          />
+
+          <EnergyFlowLineHorizontal />
+
+          <ComponentNode
+            icon={<Zap className="w-6 h-6" />}
+            label="Contrôleur MPPT"
+            values={isSolarConnected ? ["Efficacité: 98%", "Mode: MPPT"] : []}
+            status={isSolarConnected ? "good" : "disconnected"}
+          />
+
+          <EnergyFlowLineHorizontal />
+
+          <ComponentNode
+            icon={<Battery className="w-6 h-6" />}
+            label="Batterie 12V"
+            values={
+              isBatteryConnected && batteryVoltage !== null
+                ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp ? `Temp: ${batteryTemp.toFixed(1)}°C` : '']
+                : []
+            }
+            status={
+              isBatteryConnected
+                ? batteryVoltage !== null && batteryVoltage >= 70
+                  ? "good"
+                  : batteryVoltage !== null && batteryVoltage >= 20
+                    ? "warning"
+                    : "critical"
+                : "disconnected"
+            }
+          />
+
+          <EnergyFlowLineHorizontal />
+
+          <ComponentNode
+            icon={<Zap className="w-6 h-6" />}
+            label="Onduleur / Réseau"
+            values={isGridConnected && gridVoltage !== null ? [`${gridVoltage.toFixed(1)}V AC`, "Mode: Connecté"] : []}
+            status={isGridConnected ? "good" : "disconnected"}
+          />
+
+          <EnergyFlowLineHorizontal />
+
           <ComponentNode
             icon={<Home className="w-6 h-6" />}
             label="Charge Maison"
