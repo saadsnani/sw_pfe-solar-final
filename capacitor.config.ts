@@ -1,11 +1,16 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
+const CAPACITOR_LIVE_SERVER_URL =
+  process.env.CAPACITOR_LIVE_SERVER_URL ||
+  'https://sw-pfe-solar-final.vercel.app';
+
 const config: CapacitorConfig = {
   appId: 'com.solardashboard.app',
   appName: 'Solar Dashboard',
   webDir: 'out',
   bundledWebRuntime: false,
   server: {
+    url: CAPACITOR_LIVE_SERVER_URL,
     androidScheme: 'https',
     cleartext: true,
     allowNavigation: ['*']

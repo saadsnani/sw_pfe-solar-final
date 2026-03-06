@@ -43,6 +43,17 @@ interface EmergencyControlState {
   };
 }
 
+interface ControlSnapshot {
+  mode?: 'manual' | 'ai';
+  relays?: {
+    inverter?: boolean;
+    block1?: boolean;
+    block2?: boolean;
+  };
+  updatedAt?: string;
+  source?: string;
+}
+
 // In-memory storage for Vercel (since filesystem is read-only in production)
 let memoryStorage: SensorReading[] = [];
 const MAX_READINGS = 1000;
@@ -75,8 +86,31 @@ async function syncToFirebase(reading: SensorReading) {
   if (!FIREBASE_RTDB_URL) return;
 
   const baseUrl = FIREBASE_RTDB_URL.replace(/\/$/, '');
+  let controlSnapshot: ControlSnapshot | null = null;
+
+  try {
+    const controlResponse = await fetch(`${baseUrl}/control.json`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    if (controlResponse.ok) {
+      controlSnapshot = (await controlResponse.json()) as ControlSnapshot | null;
+    }
+  } catch (error) {
+    // Keep sensor sync resilient even if control snapshot cannot be read.
+    console.warn('[Firebase] Control snapshot unavailable during sensor sync:', error);
+  }
+
   const latestPayload = {
     ...reading,
+    ...(controlSnapshot?.relays?.inverter !== undefined && { inverter: Boolean(controlSnapshot.relays.inverter) }),
+    ...(controlSnapshot?.relays?.block1 !== undefined && { block1: Boolean(controlSnapshot.relays.block1) }),
+    ...(controlSnapshot?.relays?.block2 !== undefined && { block2: Boolean(controlSnapshot.relays.block2) }),
+    ...(controlSnapshot?.mode && { mode: controlSnapshot.mode }),
+    ...(controlSnapshot?.updatedAt && { controlUpdatedAt: controlSnapshot.updatedAt }),
+    ...(controlSnapshot?.updatedAt && { relayMirrorUpdatedAt: controlSnapshot.updatedAt }),
+    ...(controlSnapshot?.source && { controlSource: controlSnapshot.source }),
     source: 'api_sensor_data',
     updatedAt: new Date().toISOString(),
   };

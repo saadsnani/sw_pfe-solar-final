@@ -10,6 +10,10 @@ import {
   type SafetyOverrideResult,
   type SafetySensorDataInput,
 } from '@/lib/safety-override'
+import {
+  isControlSecurityConfigured,
+  isRelayControlRequestAuthorized,
+} from '@/lib/control-session'
 
 type ControlMode = 'manual' | 'ai'
 
@@ -120,6 +124,29 @@ async function writeControlToFirebase(state: ControlState) {
   }
 }
 
+async function mirrorControlToSensors(state: ControlState) {
+  const baseUrl = FIREBASE_RTDB_URL.replace(/\/$/, '')
+  const mirrorPayload = {
+    inverter: state.relays.inverter,
+    block1: state.relays.block1,
+    block2: state.relays.block2,
+    mode: state.mode,
+    controlSource: state.source,
+    controlUpdatedAt: state.updatedAt,
+    relayMirrorUpdatedAt: new Date().toISOString(),
+  }
+
+  const response = await fetch(`${baseUrl}/sensors.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(mirrorPayload),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Firebase sensors mirror failed (${response.status})`)
+  }
+}
+
 async function readControlFromFirebase(): Promise<ControlState | null> {
   const baseUrl = FIREBASE_RTDB_URL.replace(/\/$/, '')
   const response = await fetch(`${baseUrl}/control.json`, {
@@ -164,6 +191,26 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isControlSecurityConfigured()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Control security is not configured. Set CONTROL_PANEL_PASSWORD and CONTROL_SESSION_SECRET.',
+        },
+        { status: 503 },
+      )
+    }
+
+    if (!isRelayControlRequestAuthorized(request)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized control request',
+        },
+        { status: 401 },
+      )
+    }
+
     const body = await request.json()
     const currentRelayStateFromBody = body?.currentRelayState ?? {}
     const rawSensorData =
@@ -223,6 +270,7 @@ export async function POST(request: NextRequest) {
 
       try {
         await writeControlToFirebase(emergencyState)
+        await mirrorControlToSensors(emergencyState)
         console.warn('[RelayControl] 🚨 Emergency shutdown synced to Firebase /control')
       } catch (firebaseError) {
         console.error('[RelayControl] ⚠️ Safety override sync failed:', firebaseError)
@@ -263,6 +311,7 @@ export async function POST(request: NextRequest) {
 
     try {
       await writeControlToFirebase(nextState)
+      await mirrorControlToSensors(nextState)
       console.log('[RelayControl] ✅ Synced to Firebase /control')
     } catch (firebaseError) {
       console.error('[RelayControl] ⚠️ Firebase sync failed:', firebaseError)
