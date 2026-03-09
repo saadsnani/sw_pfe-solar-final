@@ -23,12 +23,23 @@ const bodyFont = Plus_Jakarta_Sans({
 
 export function LoginPage({ onLogin }: LoginPageProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [transitionPhase, setTransitionPhase] = useState<"preparing" | "launching">("preparing")
   const { t, direction } = useLanguage()
 
   const handleEnter = async () => {
+    if (isLoading || isTransitioning) return
+
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 600))
+    await new Promise((resolve) => setTimeout(resolve, 450))
     setIsLoading(false)
+
+    // Play a staged transition before switching to dashboard view.
+    setIsTransitioning(true)
+    setTransitionPhase("preparing")
+    await new Promise((resolve) => setTimeout(resolve, 420))
+    setTransitionPhase("launching")
+    await new Promise((resolve) => setTimeout(resolve, 620))
     onLogin()
   }
 
@@ -44,7 +55,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_76%,rgba(250,204,21,0.14),transparent_30%),radial-gradient(circle_at_88%_22%,rgba(34,211,238,0.12),transparent_28%)]" />
 
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-6 sm:max-w-lg sm:px-6">
-        <section className="relative w-full overflow-hidden rounded-[32px] border border-white/80 bg-[linear-gradient(165deg,rgba(255,255,255,0.985),rgba(240,253,248,0.95)_43%,rgba(236,248,255,0.93))] p-6 shadow-[0_32px_76px_rgba(7,26,43,0.35),0_0_0_1px_rgba(255,255,255,0.3)] backdrop-blur-xl sm:p-8 animate-[riseFade_0.45s_ease-out]">
+        <section
+          className={`relative w-full overflow-hidden rounded-[32px] border border-white/80 bg-[linear-gradient(165deg,rgba(255,255,255,0.985),rgba(240,253,248,0.95)_43%,rgba(236,248,255,0.93))] p-6 shadow-[0_32px_76px_rgba(7,26,43,0.35),0_0_0_1px_rgba(255,255,255,0.3)] backdrop-blur-xl transition-all duration-700 sm:p-8 ${
+            isTransitioning ? "scale-[1.02] opacity-0 blur-sm" : "animate-[riseFade_0.45s_ease-out]"
+          }`}
+        >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,rgba(255,255,255,0.78),transparent_34%),radial-gradient(circle_at_82%_0%,rgba(34,211,238,0.14),transparent_32%),radial-gradient(circle_at_50%_102%,rgba(16,185,129,0.16),transparent_44%)]" />
           <div className="pointer-events-none absolute -left-[62%] top-[-30%] h-[230px] w-[200%] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.52),transparent)] blur-2xl animate-[cardShimmer_6.2s_ease-in-out_infinite]" />
           <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full bg-emerald-300/45 blur-3xl" />
@@ -127,7 +142,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   type="button"
                   onClick={handleEnter}
                   className="group relative h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 via-green-500 to-sky-500 px-7 text-[15px] font-bold text-white shadow-[0_16px_34px_rgba(14,165,233,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_46px_rgba(16,185,129,0.45)] focus-visible:ring-2 focus-visible:ring-emerald-400"
-                  disabled={isLoading}
+                  disabled={isLoading || isTransitioning}
                 >
                   <span className="pointer-events-none absolute inset-y-0 left-[-45%] w-[38%] skew-x-[-24deg] bg-white/45 opacity-0 transition-all duration-700 group-hover:left-[126%] group-hover:opacity-100" />
                   {isLoading ? (
@@ -194,6 +209,33 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             </footer>
           </div>
         </section>
+
+        {isTransitioning && (
+          <div className="absolute inset-0 z-30 grid place-items-center rounded-[32px] bg-[radial-gradient(circle_at_50%_35%,rgba(16,185,129,0.24),rgba(15,23,42,0.76))] backdrop-blur-[2px]">
+            <div className="w-[84%] max-w-xs rounded-2xl border border-emerald-300/65 bg-white/92 px-6 py-5 text-center shadow-[0_14px_30px_rgba(15,23,42,0.26)]">
+              <div className="relative mx-auto h-12 w-12">
+                <span className="absolute inset-0 rounded-full border-2 border-emerald-300/60" />
+                <span className="absolute inset-[5px] rounded-full border-2 border-sky-300/70 border-t-transparent animate-spin" />
+                <span className="absolute inset-0 grid place-items-center">
+                  <Sun className={`h-5 w-5 text-emerald-600 ${transitionPhase === "launching" ? "animate-pulse" : ""}`} />
+                </span>
+              </div>
+
+              <p className="mt-3 text-sm font-semibold tracking-[0.06em] text-emerald-700">
+                {transitionPhase === "preparing" ? "Preparing Dashboard..." : "Launching Dashboard..."}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">SMART EMS secure initialization</p>
+
+              <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-emerald-100">
+                <span
+                  className={`block h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 transition-all duration-500 ${
+                    transitionPhase === "preparing" ? "w-2/5" : "w-full"
+                  }`}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
