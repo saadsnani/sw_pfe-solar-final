@@ -1,63 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
-  <title id="title">Chmicha Neon Solar Logo</title>
-  <desc id="desc">Neon green circular energy ring over layered solar panels.</desc>
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: light) {
+      .background { fill: black; }
+      .foreground { fill: white; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .background { fill: white; }
+      .foreground { fill: black; }
+    }
+  </style>
+  <g clip-path="url(#clip0_7960_43945)">
+    <rect class="background" width="180" height="180" rx="37" />
+    <g style="transform: scale(95%); transform-origin: center">
+      <path class="foreground"
+        d="M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z" />
+      <path class="foreground"
+        d="M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z" />
+    </g>
+  </g>
   <defs>
-    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#bbffb9"/>
-      <stop offset="40%" stop-color="#65ff7c"/>
-      <stop offset="100%" stop-color="#21d94f"/>
-    </linearGradient>
-    <linearGradient id="panelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#9bffb0"/>
-      <stop offset="100%" stop-color="#25df56"/>
-    </linearGradient>
-    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <clipPath id="clip0_7960_43945">
+      <rect width="180" height="180" fill="white" />
+    </clipPath>
   </defs>
-
-  <g opacity="0.22" fill="#14ff58" filter="url(#glow)">
-    <ellipse cx="510" cy="890" rx="370" ry="36"/>
-  </g>
-
-  <g filter="url(#glow)" stroke="url(#ringGrad)" fill="none" stroke-linecap="round">
-    <path d="M 258 524 C 242 372, 352 230, 512 214 C 672 198, 812 308, 830 470 C 846 616, 758 742, 620 784" stroke-width="26"/>
-    <path d="M 272 530 C 266 386, 366 266, 510 252 C 656 238, 772 332, 788 476 C 804 606, 726 714, 610 748" stroke-width="10" opacity="0.75"/>
-  </g>
-
-  <g filter="url(#glow)" stroke="#66ff8d" stroke-width="8" stroke-linecap="round" opacity="0.75">
-    <line x1="290" y1="320" x2="245" y2="270"/>
-    <line x1="360" y1="250" x2="330" y2="184"/>
-    <line x1="452" y1="220" x2="445" y2="145"/>
-    <line x1="548" y1="220" x2="563" y2="146"/>
-    <line x1="640" y1="252" x2="674" y2="188"/>
-    <line x1="715" y1="320" x2="770" y2="274"/>
-  </g>
-
-  <g filter="url(#glow)" fill="none" stroke="url(#panelGrad)" stroke-width="12" stroke-linejoin="round">
-    <polygon points="150,632 630,632 730,706 250,706"/>
-    <polygon points="220,556 700,556 800,630 320,630"/>
-    <polygon points="300,486 780,486 874,552 394,552"/>
-  </g>
-
-  <g opacity="0.55" stroke="#58ff82" stroke-width="5" fill="none">
-    <line x1="228" y1="648" x2="708" y2="648"/>
-    <line x1="296" y1="572" x2="776" y2="572"/>
-    <line x1="374" y1="500" x2="848" y2="500"/>
-    <line x1="310" y1="706" x2="390" y2="632"/>
-    <line x1="392" y1="706" x2="470" y2="632"/>
-    <line x1="474" y1="706" x2="552" y2="632"/>
-    <line x1="556" y1="706" x2="634" y2="632"/>
-    <line x1="638" y1="706" x2="716" y2="632"/>
-  </g>
-
-  <g fill="#adffbf" opacity="0.9">
-    <circle cx="606" cy="544" r="6"/>
-    <circle cx="654" cy="512" r="5"/>
-    <circle cx="686" cy="556" r="4"/>
-  </g>
 </svg>
