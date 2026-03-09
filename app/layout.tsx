@@ -4,6 +4,7 @@ import { Inter, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/lib/theme-provider"
 import { AlertProvider } from "@/lib/alert-provider"
+import { LanguageProvider } from "@/lib/language-provider"
 import { AlertContainer } from "@/components/alert-container"
 import "./globals.css"
 
@@ -46,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `
@@ -70,13 +71,15 @@ export default function RootLayout({
         }} />
       </head>
       <body className="font-sans antialiased">
-        <AlertProvider>
-          <ThemeProvider>
-            <AlertContainer />
-            {children}
-            <Analytics />
-          </ThemeProvider>
-        </AlertProvider>
+        <LanguageProvider>
+          <AlertProvider>
+            <ThemeProvider>
+              <AlertContainer />
+              {children}
+              <Analytics />
+            </ThemeProvider>
+          </AlertProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

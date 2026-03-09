@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import { LayoutDashboard, BarChart3, Brain, Settings, Activity, User, Menu, Power } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import type { PageType } from "@/components/dashboard"
+import { useLanguage } from "@/lib/language-provider"
 
 interface SidebarProps {
   currentPage: PageType
@@ -15,16 +15,18 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { id: "dashboard" as PageType, label: "Tableau de Bord", icon: LayoutDashboard },
-  { id: "analytics" as PageType, label: "Analyses & Rapports", icon: BarChart3 },
-  { id: "relay-control" as PageType, label: "Contrôle Relais", icon: Power },
-  { id: "ai-predictions" as PageType, label: "Prédictions IA", icon: Brain },
-  { id: "system-health" as PageType, label: "Santé du Système", icon: Activity },
-  { id: "settings" as PageType, label: "Paramètres", icon: Settings },
-  { id: "profile" as PageType, label: "Mon Profil", icon: User },
+  { id: "dashboard" as PageType, labelKey: "sidebar.dashboard", icon: LayoutDashboard },
+  { id: "analytics" as PageType, labelKey: "sidebar.analytics", icon: BarChart3 },
+  { id: "relay-control" as PageType, labelKey: "sidebar.relayControl", icon: Power },
+  { id: "ai-predictions" as PageType, labelKey: "sidebar.aiPredictions", icon: Brain },
+  { id: "system-health" as PageType, labelKey: "sidebar.systemHealth", icon: Activity },
+  { id: "settings" as PageType, labelKey: "sidebar.settings", icon: Settings },
+  { id: "profile" as PageType, labelKey: "sidebar.profile", icon: User },
 ]
 
 export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse, userEmail }: SidebarProps) {
+  const { t } = useLanguage()
+
   return (
     <>
       {/* Backdrop Overlay */}
@@ -56,7 +58,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
             <button
               onClick={onToggleCollapse}
               className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
-              aria-label="Close menu"
+              aria-label={t("sidebar.closeMenu")}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -81,7 +83,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
               )}
             >
               <Icon className={cn("w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0", isActive && "text-emerald-500")} />
-              <span className="font-medium text-sm sm:text-base">{item.label}</span>
+              <span className="font-medium text-sm sm:text-base">{t(item.labelKey)}</span>
               {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
             </button>
           )
@@ -97,7 +99,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs sm:text-sm font-medium text-foreground truncate">{userEmail.split("@")[0]}</p>
-              <p className="text-xs text-muted-foreground">Administrateur</p>
+              <p className="text-xs text-muted-foreground">{t("sidebar.administrator")}</p>
             </div>
           </div>
         </div>
