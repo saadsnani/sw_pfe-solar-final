@@ -53,8 +53,8 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             {/* Logo & School Info - Expanded */}
             <div className="w-11 sm:w-16 md:w-20 h-11 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(236,253,248,0.86),rgba(233,247,255,0.84))] dark:bg-white/5 border border-emerald-300/55 dark:border-emerald-400/25 flex items-center justify-center shadow-md">
               <Image
-                src="/images.jpg"
-                alt="EST Logo"
+                src="/chmicha-logo.svg"
+                alt="Chmicha Logo"
                 width={80}
                 height={80}
                 className="object-cover"
@@ -74,7 +74,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
           {/* Center - Project Info */}
           <div className="hidden lg:flex flex-1 items-center justify-center gap-3">
             <div className="inline-flex items-center rounded-full border border-emerald-300/55 bg-white/70 dark:bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.11em] text-emerald-700 dark:text-emerald-200 shadow-[0_8px_18px_rgba(16,185,129,0.14)]">
-              Smart EMS Control Center
+              Chmicha Control Center
             </div>
             <div className="hidden 2xl:flex flex-col items-start text-xs leading-relaxed gap-0.5">
               <span className="text-muted-foreground">

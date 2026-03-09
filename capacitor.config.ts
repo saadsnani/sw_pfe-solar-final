@@ -6,7 +6,7 @@ const CAPACITOR_LIVE_SERVER_URL =
 
 const config: CapacitorConfig = {
   appId: 'com.solardashboard.app',
-  appName: 'Solar Dashboard',
+  appName: 'Chmicha',
   webDir: 'out',
   bundledWebRuntime: false,
   server: {
