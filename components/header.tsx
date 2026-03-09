@@ -24,7 +24,8 @@ interface HeaderProps {
 
 export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackButton = false, onBackClick }: HeaderProps) {
   const { t } = useLanguage()
-  const schoolName = "ÉCOLE SUPÉRIEURE DE TECHNOLOGIE DE FÈS"
+  const schoolLine1 = "École Supérieure"
+  const schoolLine2 = "de Technologie"
   const notifications: Array<{ id: number; messageKey: string; type: "warning" | "error" | "info" }> = [
     { id: 1, messageKey: "header.notification.batteryLow", type: "warning" },
   ]
@@ -60,24 +61,27 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                 priority
               />
             </div>
-            <div className="text-left min-w-0 flex-1">
-              <p
-                className="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] font-extrabold text-slate-900 dark:text-white leading-none tracking-tight whitespace-nowrap overflow-hidden text-ellipsis"
-                title={schoolName}
-              >
-                {schoolName}
+            <div className="text-left min-w-0 flex-1 leading-tight">
+              <p className="text-[13px] sm:text-[15px] md:text-[17px] font-extrabold text-slate-900 dark:text-white tracking-[-0.012em] whitespace-nowrap overflow-hidden text-ellipsis" title={schoolLine1}>
+                {schoolLine1}
+              </p>
+              <p className="text-[10px] sm:text-[11px] md:text-[12px] font-semibold uppercase tracking-[0.12em] text-emerald-700 dark:text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis" title={schoolLine2}>
+                {schoolLine2}
               </p>
             </div>
           </div>
 
           {/* Center - Project Info */}
-          <div className="hidden xl:flex flex-1 items-center justify-center gap-3 lg:gap-6">
-            <div className="hidden xl:flex flex-col items-start text-xs md:text-sm leading-relaxed gap-1">
+          <div className="hidden lg:flex flex-1 items-center justify-center gap-3">
+            <div className="inline-flex items-center rounded-full border border-emerald-300/55 bg-white/70 dark:bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.11em] text-emerald-700 dark:text-emerald-200 shadow-[0_8px_18px_rgba(16,185,129,0.14)]">
+              Smart EMS Control Center
+            </div>
+            <div className="hidden 2xl:flex flex-col items-start text-xs leading-relaxed gap-0.5">
               <span className="text-muted-foreground">
-                {t("header.supervisedBy")} : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span>
+                {t("header.supervisedBy")}: <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span>
               </span>
               <span className="text-muted-foreground">
-                {t("header.realizedBy")} : <span className="text-foreground font-semibold">Saad SNANI & Walid EL HALOUAT</span>
+                {t("header.realizedBy")}: <span className="text-foreground font-semibold">Saad SNANI & Walid EL HALOUAT</span>
               </span>
             </div>
           </div>
