@@ -14,7 +14,7 @@ export function Navbar() {
             <span className="text-sm font-bold">EMS</span>
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Smart EMS</div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Chmicha</div>
             <div className="text-xs text-slate-500 dark:text-slate-400">Solar Monitoring</div>
           </div>
         </div>

@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "start": "next start",
     "pull:data": "node scripts/pull-remote-data.mjs",
-    "mobile:prepare:webdir": "node -e \"const fs=require('node:fs');fs.mkdirSync('out',{recursive:true});const file='out/index.html';if(!fs.existsSync(file)){fs.writeFileSync(file,'<!doctype html><html><head><meta charset=\\\"utf-8\\\"><meta name=\\\"viewport\\\" content=\\\"width=device-width,initial-scale=1\\\"><title>Solar Dashboard</title></head><body style=\\\"font-family:sans-serif;padding:16px\\\">Launching Solar Dashboard...</body></html>');}\"",
+    "mobile:prepare:webdir": "node -e \"const fs=require('node:fs');fs.mkdirSync('out',{recursive:true});const file='out/index.html';if(!fs.existsSync(file)){fs.writeFileSync(file,'<!doctype html><html><head><meta charset=\\\"utf-8\\\"><meta name=\\\"viewport\\\" content=\\\"width=device-width,initial-scale=1\\\"><title>Chmicha</title></head><body style=\\\"font-family:sans-serif;padding:16px\\\">Launching Chmicha...</body></html>');}\"",
     "mobile:init": "npx cap init",
     "mobile:add:android": "npx cap add android",
     "mobile:sync": "npm run build:mobile && npx cap sync android",

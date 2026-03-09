@@ -72,7 +72,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <div className="relative flex w-full items-center justify-start gap-4 rounded-2xl border border-emerald-300/70 bg-[linear-gradient(118deg,rgba(16,185,129,0.14),rgba(255,255,255,0.9)_38%,rgba(14,165,233,0.14))] px-5 py-4 shadow-[0_10px_24px_rgba(16,185,129,0.14)] sm:px-6 sm:py-4">
                 <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/75 to-transparent" />
                 <div className="h-12 w-12 overflow-hidden rounded-xl border border-white/90 bg-white shadow-[0_6px_14px_rgba(16,185,129,0.2)] ring-1 ring-emerald-300/55 sm:h-14 sm:w-14">
-                  <Image src="/images.jpg" alt={t("login.school")} width={64} height={64} className="h-full w-full object-cover" priority />
+                  <Image src="/chmicha-logo.svg" alt="Chmicha Logo" width={64} height={64} className="h-full w-full object-cover" priority />
                 </div>
                 <div className="min-w-0 flex-1 space-y-1 text-left leading-snug">
                   <p className="text-[12px] font-bold leading-snug text-emerald-900 sm:text-[13px]">
@@ -90,7 +90,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
                 <div className="relative z-10 flex flex-col items-center gap-4 text-center">
                   <div className="inline-flex items-center rounded-full border border-emerald-300/75 bg-white/90 px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.13em] text-emerald-700">
-                    Smart Energy Platform
+                    Chmicha Energy Platform
                   </div>
 
                   <div className="relative flex h-[4.15rem] w-[4.15rem] items-center justify-center rounded-[1.15rem] border border-emerald-300/85 bg-white shadow-[0_10px_24px_rgba(16,185,129,0.22)] animate-[logoBreath_4.8s_ease-in-out_infinite]">
@@ -200,7 +200,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <div className="border-t border-slate-200/75 pt-3">
                 <p className="text-[11px] font-medium text-slate-500 sm:text-xs">{t("login.rightsReserved")}</p>
                 <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-emerald-700 sm:text-xs">
-                  @2026 SMART EMS
+                  @2026 CHMICHA
                 </p>
                 <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700/90 sm:text-[11px]">
                   By Saad Snani
@@ -224,7 +224,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <p className="mt-3 text-sm font-semibold tracking-[0.06em] text-emerald-700">
                 {transitionPhase === "preparing" ? "Preparing Dashboard..." : "Launching Dashboard..."}
               </p>
-              <p className="mt-1 text-xs text-slate-500">SMART EMS secure initialization</p>
+              <p className="mt-1 text-xs text-slate-500">CHMICHA secure initialization</p>
 
               <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-emerald-100">
                 <span
