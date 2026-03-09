@@ -4,6 +4,7 @@ import type React from "react"
 
 import { Sun, Battery, Zap, Home, ArrowRight, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRelayState } from "@/hooks/use-relay-state"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
 
 interface ComponentNodeProps {
@@ -106,6 +107,51 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
   const isGridConnected = sensors?.gridVoltage.connected
   const isConsumptionConnected = sensors?.consumption.connected
 
+  const { relayOn: inverterRelayOn, loading: inverterRelayLoading } = useRelayState({
+    provider: "rtdb",
+    path: "control/relays/inverter",
+    initialValue: false,
+  })
+
+  const { relayOn: block1RelayOn, loading: block1RelayLoading } = useRelayState({
+    provider: "rtdb",
+    path: "control/relays/block1",
+    initialValue: false,
+  })
+
+  const { relayOn: block2RelayOn, loading: block2RelayLoading } = useRelayState({
+    provider: "rtdb",
+    path: "control/relays/block2",
+    initialValue: false,
+  })
+
+  const relayLoading = inverterRelayLoading || block1RelayLoading || block2RelayLoading
+  const isChargeRelayOn = block1RelayOn || block2RelayOn
+
+  const solarValues =
+    isSolarConnected && solarVoltage !== null && solarCurrent !== null
+      ? [`${solarVoltage.toFixed(1)}V / ${solarCurrent.toFixed(1)}A`, solarProduction !== null ? `${solarProduction.toFixed(0)}W` : ""]
+          .filter(Boolean)
+      : []
+
+  const batteryValues =
+    isBatteryConnected && batteryVoltage !== null
+      ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp !== null ? `Temp: ${batteryTemp.toFixed(1)}°C` : ""].filter(Boolean)
+      : []
+
+  const inverterValues = relayLoading
+    ? ["Synchronisation..."]
+    : inverterRelayOn
+      ? [gridVoltage !== null ? `${gridVoltage.toFixed(1)}V AC` : "Onduleur ON", "Actif"]
+      : ["OFF"]
+
+  const chargeValues = relayLoading
+    ? ["Synchronisation..."]
+    : [
+        `Block 1: ${block1RelayOn ? "ON" : "OFF"}`,
+        `Block 2: ${block2RelayOn ? "ON" : "OFF"}`,
+      ]
+
   const allConnected = isSolarConnected && isBatteryConnected && isGridConnected && isConsumptionConnected
 
   return (
@@ -126,11 +172,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}
             label="Panneau Solaire"
-            values={
-              isSolarConnected && solarVoltage !== null && solarCurrent !== null
-                ? [`${solarVoltage.toFixed(1)}V / ${solarCurrent.toFixed(1)}A`, solarProduction ? `${solarProduction.toFixed(0)}W` : '']
-                : []
-            }
+            values={solarValues}
             status={isSolarConnected ? "good" : "disconnected"}
           />
 
@@ -148,11 +190,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
           <ComponentNode
             icon={<Battery className="w-6 h-6" />}
             label="Batterie 12V"
-            values={
-              isBatteryConnected && batteryVoltage !== null
-                ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp ? `Temp: ${batteryTemp.toFixed(1)}°C` : '']
-                : []
-            }
+            values={batteryValues}
             status={
               isBatteryConnected
                 ? batteryVoltage !== null && batteryVoltage >= 70
@@ -168,18 +206,18 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
 
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
-            label="Onduleur / Réseau"
-            values={isGridConnected && gridVoltage !== null ? [`${gridVoltage.toFixed(1)}V AC`, "Mode: Connecté"] : []}
-            status={isGridConnected ? "good" : "disconnected"}
+            label="Onduleur"
+            values={inverterValues}
+            status={relayLoading ? "warning" : inverterRelayOn ? "good" : "disconnected"}
           />
 
           <EnergyFlowLineVertical />
 
           <ComponentNode
             icon={<Home className="w-6 h-6" />}
-            label="Charge Maison"
-            values={isConsumptionConnected && consumption !== null ? [`${consumption.toFixed(0)}W`, "Actif"] : []}
-            status={isConsumptionConnected ? "good" : "disconnected"}
+            label="Charge"
+            values={chargeValues}
+            status={relayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
           />
         </div>
 
@@ -188,11 +226,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
           <ComponentNode
             icon={<Sun className="w-6 h-6" />}
             label="Panneau Solaire"
-            values={
-              isSolarConnected && solarVoltage !== null && solarCurrent !== null
-                ? [`${solarVoltage.toFixed(1)}V / ${solarCurrent.toFixed(1)}A`, solarProduction ? `${solarProduction.toFixed(0)}W` : '']
-                : []
-            }
+            values={solarValues}
             status={isSolarConnected ? "good" : "disconnected"}
           />
 
@@ -210,11 +244,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
           <ComponentNode
             icon={<Battery className="w-6 h-6" />}
             label="Batterie 12V"
-            values={
-              isBatteryConnected && batteryVoltage !== null
-                ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp ? `Temp: ${batteryTemp.toFixed(1)}°C` : '']
-                : []
-            }
+            values={batteryValues}
             status={
               isBatteryConnected
                 ? batteryVoltage !== null && batteryVoltage >= 70
@@ -230,18 +260,18 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
 
           <ComponentNode
             icon={<Zap className="w-6 h-6" />}
-            label="Onduleur / Réseau"
-            values={isGridConnected && gridVoltage !== null ? [`${gridVoltage.toFixed(1)}V AC`, "Mode: Connecté"] : []}
-            status={isGridConnected ? "good" : "disconnected"}
+            label="Onduleur"
+            values={inverterValues}
+            status={relayLoading ? "warning" : inverterRelayOn ? "good" : "disconnected"}
           />
 
           <EnergyFlowLineHorizontal />
 
           <ComponentNode
             icon={<Home className="w-6 h-6" />}
-            label="Charge Maison"
-            values={isConsumptionConnected && consumption !== null ? [`${consumption.toFixed(0)}W`, "Actif"] : []}
-            status={isConsumptionConnected ? "good" : "disconnected"}
+            label="Charge"
+            values={chargeValues}
+            status={relayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
           />
         </div>
       </CardContent>
