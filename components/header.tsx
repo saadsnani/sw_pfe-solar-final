@@ -1,9 +1,11 @@
 "use client"
 
-import { LogOut, User, Menu, Activity, Clock, Bell, ArrowLeft } from "lucide-react"
+import { LogOut, User, Menu, Clock, Bell, ArrowLeft } from "lucide-react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { useLanguage } from "@/lib/language-provider"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,24 +25,29 @@ interface HeaderProps {
 }
 
 export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackButton = false, onBackClick }: HeaderProps) {
+  const { t, locale } = useLanguage()
   const [time, setTime] = useState<string>("00:00:00")
-  const [notifications, setNotifications] = useState<Array<{id: number; message: string; type: 'warning' | 'error' | 'info'}>>([
-    { id: 1, message: "Battery Low", type: "warning" },
-  ])
+  const notifications: Array<{ id: number; messageKey: string; type: "warning" | "error" | "info" }> = [
+    { id: 1, messageKey: "header.notification.batteryLow", type: "warning" },
+  ]
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      const hours = String(now.getHours()).padStart(2, "0")
-      const minutes = String(now.getMinutes()).padStart(2, "0")
-      const seconds = String(now.getSeconds()).padStart(2, "0")
-      setTime(`${hours}:${minutes}:${seconds}`)
+      setTime(
+        now.toLocaleTimeString(locale, {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }),
+      )
     }
 
     updateTime()
     const interval = setInterval(updateTime, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [locale])
 
   return (
     <>
@@ -53,7 +60,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             <button
               onClick={showBackButton ? onBackClick : onMenuClick}
               className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors flex-shrink-0"
-              aria-label={showBackButton ? "Go back" : "Open menu"}
+              aria-label={showBackButton ? t("header.aria.goBack") : t("header.aria.openMenu")}
             >
               {showBackButton ? (
                 <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
@@ -75,10 +82,10 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             </div>
             <div className="text-left leading-tight min-w-0 flex-1">
               <div className="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 dark:text-white truncate">
-                École Supérieure
+                {t("header.school.line1")}
               </div>
               <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white truncate">
-                de Technologie
+                {t("header.school.line2")}
               </div>
             </div>
           </div>
@@ -90,13 +97,19 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               <span className="text-sm sm:text-base md:text-lg font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
             </div>
             <div className="hidden lg:flex flex-col items-start text-xs md:text-sm leading-relaxed gap-1">
-              <span className="text-muted-foreground">Encadré par : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span></span>
-              <span className="text-muted-foreground">Réalisé par : <span className="text-foreground font-semibold">Saad SNANI & Walid EL HALOUAT</span></span>
+              <span className="text-muted-foreground">
+                {t("header.supervisedBy")} : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span>
+              </span>
+              <span className="text-muted-foreground">
+                {t("header.realizedBy")} : <span className="text-foreground font-semibold">Saad SNANI & Walid EL HALOUAT</span>
+              </span>
             </div>
           </div>
 
           {/* Right - Notifications, User */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <LanguageSwitcher compact className="h-8 sm:h-9" />
+
             {/* Notification Bell */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -108,19 +121,23 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>Notifications ({notifications.length})</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  {t("header.notifications")} ({notifications.length})
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {notifications.length > 0 ? (
                   notifications.map((notif) => (
                     <DropdownMenuItem key={notif.id} className="p-3 flex flex-col">
-                      <span className="font-medium">{notif.message}</span>
-                      <span className={`text-xs ${notif.type === 'warning' ? 'text-yellow-600' : notif.type === 'error' ? 'text-red-600' : 'text-blue-600'}`}>
-                        {notif.type.toUpperCase()}
+                      <span className="font-medium">{t(notif.messageKey)}</span>
+                      <span
+                        className={`text-xs ${notif.type === "warning" ? "text-yellow-600" : notif.type === "error" ? "text-red-600" : "text-blue-600"}`}
+                      >
+                        {t(`header.notificationType.${notif.type}`)}
                       </span>
                     </DropdownMenuItem>
                   ))
                 ) : (
-                  <DropdownMenuItem disabled>No notifications</DropdownMenuItem>
+                  <DropdownMenuItem disabled>{t("header.noNotifications")}</DropdownMenuItem>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -147,7 +164,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
                   <LogOut className="w-4 h-4 mr-2" />
-                  Déconnexion
+                  {t("header.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

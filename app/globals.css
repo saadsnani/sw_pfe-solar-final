@@ -190,6 +190,46 @@
   }
 }
 
+@keyframes riseFade {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logoBreath {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: saturate(1);
+  }
+  50% {
+    transform: scale(1.035);
+    filter: saturate(1.12);
+  }
+}
+
+@keyframes cardShimmer {
+  0% {
+    transform: translateX(-60%) rotate(12deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.55;
+  }
+  58% {
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateX(72%) rotate(12deg);
+    opacity: 0;
+  }
+}
+
 .energy-flow {
   animation: energyFlow 2s ease-in-out infinite;
 }
