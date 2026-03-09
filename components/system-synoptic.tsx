@@ -90,10 +90,9 @@ function EnergyFlowLineVertical() {
 
 interface SystemSynopticProps {
   sensors?: SystemSensorsState
-  previewAllConnected?: boolean
 }
 
-export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemSynopticProps) {
+export function SystemSynoptic({ sensors }: SystemSynopticProps) {
   // Extract sensor values
   const solarVoltage = sensors?.solarVoltage.value
   const solarCurrent = sensors?.solarCurrent.value
@@ -101,12 +100,9 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
   const batteryVoltage = sensors?.battery.value
   const batteryTemp = sensors?.temperature.value
   const gridVoltage = sensors?.gridVoltage.value
-  const consumption = sensors?.consumption.value
 
   const isSolarConnected = sensors?.solarVoltage.connected && sensors?.solarCurrent.connected
   const isBatteryConnected = sensors?.battery.connected
-  const isGridConnected = sensors?.gridVoltage.connected
-  const isConsumptionConnected = sensors?.consumption.connected
 
   const { relayOn: inverterRelayOn, loading: inverterRelayLoading } = useRelayState({
     provider: "rtdb",
@@ -127,10 +123,9 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
   })
 
   const relayLoading = inverterRelayLoading || block1RelayLoading || block2RelayLoading
-  const effectiveRelayLoading = previewAllConnected ? false : relayLoading
-  const inverterActive = previewAllConnected ? true : inverterRelayOn
-  const block1Active = previewAllConnected ? true : block1RelayOn
-  const block2Active = previewAllConnected ? true : block2RelayOn
+  const inverterActive = inverterRelayOn
+  const block1Active = block1RelayOn
+  const block2Active = block2RelayOn
   const isChargeRelayOn = block1Active || block2Active
 
   const solarValues =
@@ -144,20 +139,18 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
       ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp !== null ? `Temp: ${batteryTemp.toFixed(1)}°C` : ""].filter(Boolean)
       : []
 
-  const inverterValues = effectiveRelayLoading
+  const inverterValues = relayLoading
     ? ["Synchronisation..."]
     : inverterActive
       ? [gridVoltage !== null ? `${gridVoltage.toFixed(1)}V AC` : "Onduleur ON", "Actif"]
       : ["OFF"]
 
-  const chargeValues = effectiveRelayLoading
+  const chargeValues = relayLoading
     ? ["Synchronisation..."]
     : [
         `Block 1: ${block1Active ? "ON" : "OFF"}`,
         `Block 2: ${block2Active ? "ON" : "OFF"}`,
       ]
-
-  const allConnected = isSolarConnected && isBatteryConnected && isGridConnected && isConsumptionConnected
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
@@ -213,7 +206,7 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
             icon={<Zap className="w-6 h-6" />}
             label="Onduleur"
             values={inverterValues}
-            status={effectiveRelayLoading ? "warning" : inverterActive ? "good" : "disconnected"}
+            status={relayLoading ? "warning" : inverterActive ? "good" : "disconnected"}
           />
 
           <EnergyFlowLineVertical />
@@ -222,7 +215,7 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
             icon={<Home className="w-6 h-6" />}
             label="Charge"
             values={chargeValues}
-            status={effectiveRelayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
+            status={relayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
           />
         </div>
 
@@ -267,7 +260,7 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
             icon={<Zap className="w-6 h-6" />}
             label="Onduleur"
             values={inverterValues}
-            status={effectiveRelayLoading ? "warning" : inverterActive ? "good" : "disconnected"}
+            status={relayLoading ? "warning" : inverterActive ? "good" : "disconnected"}
           />
 
           <EnergyFlowLineHorizontal />
@@ -276,7 +269,7 @@ export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemS
             icon={<Home className="w-6 h-6" />}
             label="Charge"
             values={chargeValues}
-            status={effectiveRelayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
+            status={relayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
           />
         </div>
       </CardContent>
