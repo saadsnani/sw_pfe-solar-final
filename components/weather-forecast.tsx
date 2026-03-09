@@ -220,44 +220,73 @@ export function WeatherForecast() {
     setStatus("Ville mise a jour automatiquement • Autonomie recalculee en temps reel")
   }
 
+  const autonomyProgress = useMemo(() => {
+    return Math.max(8, Math.min(100, (autonomyHours / baseAutonomyHours) * 100))
+  }, [autonomyHours, baseAutonomyHours])
+
   return (
     <section className="space-y-4">
       <div className="rounded-[24px] border border-slate-200/70 bg-white/55 p-4 shadow-[0_12px_35px_rgba(15,23,42,0.12)] backdrop-blur-[15px] sm:p-5">
-        <div className="mb-4 rounded-[16px] border border-emerald-300/70 bg-emerald-50/80 p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
+        <div className="mb-4 rounded-[18px] border border-emerald-300/70 bg-[linear-gradient(165deg,rgba(236,253,245,0.94),rgba(255,255,255,0.86)_54%,rgba(224,242,254,0.78))] p-4 shadow-[0_12px_24px_rgba(16,185,129,0.12)] sm:p-5">
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+            <div className="space-y-3">
               <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-emerald-700">Autonomie Estimee (IA)</p>
-              <p className="mt-1 text-2xl font-black text-emerald-800">
-                {autonomyHours.toFixed(1)}
-                {" heures"}
-              </p>
-              <p className="mt-1 text-xs font-medium text-emerald-700">
-                Niveau: {autonomyBand}
-                {" • Ville: "}
-                {selectedCity}
+
+              <div className="flex flex-wrap items-end gap-2">
+                <p className="text-4xl font-black leading-none text-emerald-800 sm:text-5xl">
+                  {autonomyHours.toFixed(1)}h
+                </p>
+                <span className="rounded-full border border-emerald-400/70 bg-emerald-500/15 px-2.5 py-1 text-xs font-bold uppercase tracking-[0.1em] text-emerald-700">
+                  {autonomyBand}
+                </span>
+              </div>
+
+              <p className="text-xs font-medium text-emerald-700">
+                Ville: {selectedCity}
                 {" • "}
                 {periodLabel}
               </p>
+
+              <div className="h-2.5 w-full overflow-hidden rounded-full border border-emerald-300/60 bg-white/70">
+                <span
+                  className="block h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500"
+                  style={{ width: `${autonomyProgress.toFixed(0)}%` }}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2">
+                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700">Solar Factor</p>
+                  <p className="text-sm font-bold text-emerald-900">{cityData.solarFactor.toFixed(2)}</p>
+                </div>
+                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2">
+                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700">Disponibilite</p>
+                  <p className="text-sm font-bold text-emerald-900">{solarAvailability.toFixed(2)}</p>
+                </div>
+                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2 col-span-2 sm:col-span-1">
+                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700">Base Pleine</p>
+                  <p className="text-sm font-bold text-emerald-900">{baseAutonomyHours.toFixed(1)}h</p>
+                </div>
+              </div>
             </div>
 
-            <div className="max-w-[380px] rounded-xl border border-emerald-300/70 bg-white/70 p-3 text-sm text-emerald-900">
+            <div className="rounded-xl border border-emerald-300/70 bg-white/72 p-4 text-sm text-emerald-900">
               <p className="font-semibold flex items-center gap-2">
                 <Brain className="h-4 w-4" />
                 Explication Autonomie
               </p>
-              <p className="text-xs mt-1 text-emerald-800">{autonomyExplanation}</p>
-              <p className="text-xs mt-2 text-emerald-700">
-                Solar Factor ville: {cityData.solarFactor.toFixed(2)} • Disponibilite horaire: {solarAvailability.toFixed(2)}
-              </p>
-              <p className="text-xs text-emerald-700 mt-1">
-                Formule: (Battery 10kWh / Load 2kWh) x SolarFactor x Disponibilite
-              </p>
-            </div>
-          </div>
+              <p className="text-xs mt-2 leading-relaxed text-emerald-800">{autonomyExplanation}</p>
 
-          <div className="mt-3 flex items-center gap-2 text-xs text-emerald-700">
-            {periodLabel === "Nuit" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            <span>Autonomie base batterie pleine: {baseAutonomyHours.toFixed(1)}h</span>
+              <div className="mt-3 space-y-1.5 text-xs text-emerald-700">
+                <p>
+                  Formule: (Battery 10kWh / Load 2kWh) x SolarFactor x Disponibilite
+                </p>
+                <p className="flex items-center gap-1.5">
+                  {periodLabel === "Nuit" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+                  Mode {periodLabel.toLowerCase()} actif
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -295,14 +324,14 @@ export function WeatherForecast() {
           </div>
         </div>
 
-        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
           {cityData.forecast.map((day, index) => (
             <article
               key={`${selectedCity}-${day.day}-${index}`}
-              className={`min-w-[140px] rounded-[18px] border p-3 text-center ${
+              className={`rounded-[18px] border p-3 text-center ${
                 index === 0
-                  ? "border-slate-300/80 bg-slate-200/70 shadow-[0_8px_16px_rgba(128,149,171,0.22)]"
-                  : "border-slate-200/70 bg-white/70"
+                  ? "border-emerald-300/80 bg-emerald-50/70 shadow-[0_8px_18px_rgba(16,185,129,0.18)]"
+                  : "border-slate-200/70 bg-white/75"
               }`}
             >
               <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-700">{day.day}</p>

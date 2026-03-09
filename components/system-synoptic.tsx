@@ -90,9 +90,10 @@ function EnergyFlowLineVertical() {
 
 interface SystemSynopticProps {
   sensors?: SystemSensorsState
+  previewAllConnected?: boolean
 }
 
-export function SystemSynoptic({ sensors }: SystemSynopticProps) {
+export function SystemSynoptic({ sensors, previewAllConnected = false }: SystemSynopticProps) {
   // Extract sensor values
   const solarVoltage = sensors?.solarVoltage.value
   const solarCurrent = sensors?.solarCurrent.value
@@ -126,7 +127,11 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
   })
 
   const relayLoading = inverterRelayLoading || block1RelayLoading || block2RelayLoading
-  const isChargeRelayOn = block1RelayOn || block2RelayOn
+  const effectiveRelayLoading = previewAllConnected ? false : relayLoading
+  const inverterActive = previewAllConnected ? true : inverterRelayOn
+  const block1Active = previewAllConnected ? true : block1RelayOn
+  const block2Active = previewAllConnected ? true : block2RelayOn
+  const isChargeRelayOn = block1Active || block2Active
 
   const solarValues =
     isSolarConnected && solarVoltage !== null && solarCurrent !== null
@@ -139,17 +144,17 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
       ? [`${batteryVoltage.toFixed(1)}% charge`, batteryTemp !== null ? `Temp: ${batteryTemp.toFixed(1)}°C` : ""].filter(Boolean)
       : []
 
-  const inverterValues = relayLoading
+  const inverterValues = effectiveRelayLoading
     ? ["Synchronisation..."]
-    : inverterRelayOn
+    : inverterActive
       ? [gridVoltage !== null ? `${gridVoltage.toFixed(1)}V AC` : "Onduleur ON", "Actif"]
       : ["OFF"]
 
-  const chargeValues = relayLoading
+  const chargeValues = effectiveRelayLoading
     ? ["Synchronisation..."]
     : [
-        `Block 1: ${block1RelayOn ? "ON" : "OFF"}`,
-        `Block 2: ${block2RelayOn ? "ON" : "OFF"}`,
+        `Block 1: ${block1Active ? "ON" : "OFF"}`,
+        `Block 2: ${block2Active ? "ON" : "OFF"}`,
       ]
 
   const allConnected = isSolarConnected && isBatteryConnected && isGridConnected && isConsumptionConnected
@@ -208,7 +213,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             icon={<Zap className="w-6 h-6" />}
             label="Onduleur"
             values={inverterValues}
-            status={relayLoading ? "warning" : inverterRelayOn ? "good" : "disconnected"}
+            status={effectiveRelayLoading ? "warning" : inverterActive ? "good" : "disconnected"}
           />
 
           <EnergyFlowLineVertical />
@@ -217,7 +222,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             icon={<Home className="w-6 h-6" />}
             label="Charge"
             values={chargeValues}
-            status={relayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
+            status={effectiveRelayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
           />
         </div>
 
@@ -262,7 +267,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             icon={<Zap className="w-6 h-6" />}
             label="Onduleur"
             values={inverterValues}
-            status={relayLoading ? "warning" : inverterRelayOn ? "good" : "disconnected"}
+            status={effectiveRelayLoading ? "warning" : inverterActive ? "good" : "disconnected"}
           />
 
           <EnergyFlowLineHorizontal />
@@ -271,7 +276,7 @@ export function SystemSynoptic({ sensors }: SystemSynopticProps) {
             icon={<Home className="w-6 h-6" />}
             label="Charge"
             values={chargeValues}
-            status={relayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
+            status={effectiveRelayLoading ? "warning" : isChargeRelayOn ? "good" : "disconnected"}
           />
         </div>
       </CardContent>
