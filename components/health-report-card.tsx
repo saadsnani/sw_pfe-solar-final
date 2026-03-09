@@ -50,7 +50,11 @@ function statusStyles(status: HealthStatus): {
   }
 }
 
-export function HealthReportCard() {
+interface HealthReportCardProps {
+  previewAllHealthy?: boolean
+}
+
+export function HealthReportCard({ previewAllHealthy = false }: HealthReportCardProps) {
   const [healthReport, setHealthReport] = useState<HealthReport>(() =>
     fallbackHealthReport("Analyzing the last 24h of sensor data..."),
   )
@@ -59,6 +63,17 @@ export function HealthReportCard() {
   const [sampleCount, setSampleCount] = useState(0)
 
   const loadHealthReport = useCallback(async () => {
+    if (previewAllHealthy) {
+      setIsLoading(false)
+      setSampleCount(500)
+      setLastUpdated(new Date().toISOString())
+      setHealthReport({
+        status: "NORMAL",
+        message: "Systeme stable: tous les composants sont connectes et fonctionnent normalement.",
+      })
+      return
+    }
+
     try {
       setIsLoading(true)
 
@@ -85,7 +100,7 @@ export function HealthReportCard() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [previewAllHealthy])
 
   useEffect(() => {
     void loadHealthReport()

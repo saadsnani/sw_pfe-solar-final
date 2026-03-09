@@ -1,6 +1,6 @@
 
 "use client"
-const IS_DEMO = false
+const IS_DEMO = true
 
 import { useEffect, Suspense, useMemo, useState } from "react"
 import { SystemSynoptic } from "@/components/system-synoptic"
@@ -80,16 +80,26 @@ type DemoTemperatureReading = {
   timestamp: string
 }
 
+type SimulatedSystemData = {
+  solarVoltage: number
+  solarCurrent: number
+  batteryLevel: number
+  gridStatus: "Active" | "Inactive"
+  temperature: number
+  production: number
+  consumption: number
+}
+
 export function DashboardContent() {
   // ✅ State for simulated sensor data (only used if IS_DEMO = true)
-  const [simulatedData, setSimulatedData] = useState({
-    solarVoltage: 0,         // No data yet
-    solarCurrent: 0,         // No data yet
-    batteryLevel: 0,         // No data yet
-    gridStatus: "Inactive",  // Not connected
-    temperature: 0,          // No data yet
-    production: 0,           // No data yet
-    consumption: 0,          // No data yet
+  const [simulatedData, setSimulatedData] = useState<SimulatedSystemData>({
+    solarVoltage: 21.2,
+    solarCurrent: 6.4,
+    batteryLevel: 86,
+    gridStatus: "Active",
+    temperature: 33,
+    production: 136,
+    consumption: 104,
   })
 
   const [energyHistory, setEnergyHistory] = useState<Array<{ time: string; production: number; consumption: number }>>([])
@@ -176,16 +186,14 @@ export function DashboardContent() {
     const timer = setInterval(() => {
       setSimulatedData((prev) => {
         // Natural fluctuations
-        const newVoltage = fluctuate(prev.solarVoltage, 18, 22, 0.5)
-        const newCurrent = fluctuate(prev.solarCurrent, 2, 8, 0.3)
-        const newBatteryLevel = fluctuate(prev.batteryLevel, 40, 95, 2)
-        const newTemperature = fluctuate(prev.temperature, 35, 45, 1)
-        const newConsumption = fluctuate(prev.consumption, 100, 400, 20)
-        
-        // Toggle grid status occasionally (10% chance)
-        const newGridStatus = Math.random() < 0.1 
-          ? (prev.gridStatus === "Active" ? "Inactive" : "Active")
-          : prev.gridStatus
+        const newVoltage = fluctuate(prev.solarVoltage, 20, 23, 0.35)
+        const newCurrent = fluctuate(prev.solarCurrent, 5, 9, 0.3)
+        const newBatteryLevel = fluctuate(prev.batteryLevel, 78, 98, 1.2)
+        const newTemperature = fluctuate(prev.temperature, 28, 36, 0.7)
+        const newConsumption = fluctuate(prev.consumption, 90, 220, 12)
+
+        // Demo healthy preview keeps grid active.
+        const newGridStatus = "Active"
 
         // Calculate production from voltage * current
         const newProduction = newVoltage * newCurrent
@@ -214,6 +222,7 @@ export function DashboardContent() {
       production: createConnectedSensor(simulatedData.production),
       consumption: createConnectedSensor(simulatedData.consumption),
       temperature: createConnectedSensor(simulatedData.temperature),
+      humidity: createConnectedSensor(52 + (Math.random() - 0.5) * 8),
       solarVoltage: createConnectedSensor(simulatedData.solarVoltage),
       solarCurrent: createConnectedSensor(simulatedData.solarCurrent),
       gridVoltage: createConnectedSensor(220 + (Math.random() - 0.5) * 10), // 215-225V
@@ -258,7 +267,7 @@ export function DashboardContent() {
 
       {/* System Synoptic - First */}
       <div className="relative z-10 mt-16">
-        <SystemSynoptic sensors={sensors} />
+        <SystemSynoptic sensors={sensors} previewAllConnected={IS_DEMO} />
       </div>
 
       {/* Metric Cards */}
@@ -277,7 +286,7 @@ export function DashboardContent() {
 
       {/* Predictive Maintenance Health Report */}
       <div className="grid grid-cols-1 gap-4">
-        <HealthReportCard />
+        <HealthReportCard previewAllHealthy={IS_DEMO} />
       </div>
 
       {/* Charts & AI */}
