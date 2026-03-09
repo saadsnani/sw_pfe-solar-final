@@ -108,7 +108,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
           isMenuOpen={!sidebarCollapsed}
           showBackButton={false}
         />
-        <main className="relative z-10 flex-1 w-full overflow-auto overflow-x-hidden px-2 pb-4 pt-[82px] sm:px-3 sm:pb-6 sm:pt-[94px] md:px-6 md:pb-8 md:pt-[108px]">
+        <main className="relative z-10 flex-1 w-full overflow-auto overflow-x-hidden px-2 pb-4 pt-[98px] sm:px-3 sm:pb-6 sm:pt-[112px] md:px-6 md:pb-8 md:pt-[118px]">
           <div className="mx-auto w-full max-w-[1500px] rounded-[28px] border border-emerald-200/60 bg-white/45 p-1.5 shadow-[0_22px_48px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-emerald-400/20 dark:bg-slate-950/35 md:p-2.5">
             {renderPage()}
           </div>

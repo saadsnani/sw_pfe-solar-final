@@ -33,10 +33,10 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
   return (
     <>
       {/* Fixed Header - Reduced height for mobile */}
-      <header className="fixed top-0 left-0 right-0 z-40 h-[72px] sm:h-[84px] md:h-[96px] border-b border-emerald-200/70 dark:border-emerald-400/20 bg-[linear-gradient(125deg,rgba(255,255,255,0.94),rgba(240,253,248,0.9)_48%,rgba(235,247,255,0.9))] dark:bg-[linear-gradient(125deg,rgba(2,6,23,0.88),rgba(6,78,59,0.32)_52%,rgba(14,116,144,0.3))] shadow-[0_10px_30px_rgba(15,23,42,0.12)] backdrop-blur-xl px-3 sm:px-4 md:px-6">
-        <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
+      <header className="fixed top-0 left-0 right-0 z-40 h-[78px] sm:h-[90px] md:h-[96px] border-b border-emerald-200/70 dark:border-emerald-400/20 bg-[linear-gradient(125deg,rgba(255,255,255,0.94),rgba(240,253,248,0.9)_48%,rgba(235,247,255,0.9))] dark:bg-[linear-gradient(125deg,rgba(2,6,23,0.88),rgba(6,78,59,0.32)_52%,rgba(14,116,144,0.3))] shadow-[0_10px_30px_rgba(15,23,42,0.12)] backdrop-blur-xl px-2.5 sm:px-4 md:px-6">
+        <div className="flex items-center h-full w-full justify-between gap-1.5 sm:gap-3">
           {/* Left - Menu/Back Button & Logo */}
-          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0 flex-1">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             {/* Menu/Back Button */}
             <button
               onClick={showBackButton ? onBackClick : onMenuClick}
@@ -51,7 +51,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             </button>
 
             {/* Logo & School Info - Expanded */}
-            <div className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(236,253,248,0.86),rgba(233,247,255,0.84))] dark:bg-white/5 border border-emerald-300/55 dark:border-emerald-400/25 flex items-center justify-center shadow-md">
+            <div className="w-11 sm:w-16 md:w-20 h-11 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(236,253,248,0.86),rgba(233,247,255,0.84))] dark:bg-white/5 border border-emerald-300/55 dark:border-emerald-400/25 flex items-center justify-center shadow-md">
               <Image
                 src="/images.jpg"
                 alt="EST Logo"
@@ -62,10 +62,10 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
               />
             </div>
             <div className="text-left leading-tight min-w-0 flex-1">
-              <div className="text-[9px] sm:text-[10px] md:text-xs lg:text-[13px] font-extrabold text-slate-900 dark:text-white leading-tight truncate" title={schoolLine1}>
+              <div className="text-[10.5px] sm:text-[11.5px] md:text-xs lg:text-[13px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight truncate" title={schoolLine1}>
                 {schoolLine1}
               </div>
-              <div className="text-[8px] sm:text-[9px] md:text-[11px] lg:text-xs font-bold text-slate-900 dark:text-white leading-tight truncate" title={schoolLine2}>
+              <div className="text-[10px] sm:text-[11px] md:text-[11px] lg:text-xs font-bold text-slate-900 dark:text-white leading-tight tracking-tight truncate" title={schoolLine2}>
                 {schoolLine2}
               </div>
             </div>
@@ -84,7 +84,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
           </div>
 
           {/* Right - Notifications, User */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
             {/* Notification Bell */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -120,7 +120,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-emerald-200/70 dark:border-emerald-400/25 bg-[linear-gradient(120deg,rgba(255,255,255,0.86),rgba(236,253,248,0.82),rgba(233,247,255,0.8))] dark:bg-white/5 hover:bg-emerald-500/15 dark:hover:bg-emerald-400/15">
+                <Button variant="ghost" className="hidden md:flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-emerald-200/70 dark:border-emerald-400/25 bg-[linear-gradient(120deg,rgba(255,255,255,0.86),rgba(236,253,248,0.82),rgba(233,247,255,0.8))] dark:bg-white/5 hover:bg-emerald-500/15 dark:hover:bg-emerald-400/15">
                   <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md flex-shrink-0">
                     <User className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
                   </div>

@@ -43,7 +43,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
         "border-r border-emerald-200/70 dark:border-emerald-400/20 bg-[linear-gradient(165deg,rgba(255,255,255,0.95),rgba(236,253,248,0.9)_48%,rgba(233,246,255,0.88))] dark:bg-[linear-gradient(165deg,rgba(2,6,23,0.92),rgba(6,78,59,0.46)_48%,rgba(14,116,144,0.42))] shadow-[0_24px_40px_rgba(15,23,42,0.15)] backdrop-blur-xl flex flex-col transition-transform duration-500 ease-in-out",
         "fixed inset-y-0 left-0 z-40",
         "w-[80vw] sm:w-64 lg:w-72",
-        "top-[72px] sm:top-[84px] md:top-[96px]",
+        "top-[78px] sm:top-[90px] md:top-[96px]",
         collapsed ? "-translate-x-full" : "translate-x-0"
       )}>
       {/* Header */}
