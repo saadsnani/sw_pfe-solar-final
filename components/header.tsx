@@ -1,10 +1,8 @@
 "use client"
 
-import { LogOut, User, Menu, Clock, Bell, ArrowLeft } from "lucide-react"
+import { LogOut, User, Menu, Bell, ArrowLeft } from "lucide-react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { LanguageSwitcher } from "@/components/language-switcher"
 import { useLanguage } from "@/lib/language-provider"
 import {
   DropdownMenu,
@@ -25,29 +23,10 @@ interface HeaderProps {
 }
 
 export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackButton = false, onBackClick }: HeaderProps) {
-  const { t, locale } = useLanguage()
-  const [time, setTime] = useState<string>("00:00:00")
+  const { t } = useLanguage()
   const notifications: Array<{ id: number; messageKey: string; type: "warning" | "error" | "info" }> = [
     { id: 1, messageKey: "header.notification.batteryLow", type: "warning" },
   ]
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date()
-      setTime(
-        now.toLocaleTimeString(locale, {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        }),
-      )
-    }
-
-    updateTime()
-    const interval = setInterval(updateTime, 1000)
-    return () => clearInterval(interval)
-  }, [locale])
 
   return (
     <>
@@ -90,12 +69,8 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             </div>
           </div>
 
-          {/* Center - Time & Project Info */}
+          {/* Center - Project Info */}
           <div className="flex-1 hidden md:flex items-center justify-center gap-3 lg:gap-6">
-            <div className="flex items-center gap-2 sm:gap-3 bg-emerald-500/10 border border-emerald-500/30 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg flex-shrink-0">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-sm sm:text-base md:text-lg font-mono text-emerald-600 dark:text-emerald-400 font-bold">{time}</span>
-            </div>
             <div className="hidden lg:flex flex-col items-start text-xs md:text-sm leading-relaxed gap-1">
               <span className="text-muted-foreground">
                 {t("header.supervisedBy")} : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span>
@@ -108,8 +83,6 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
 
           {/* Right - Notifications, User */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <LanguageSwitcher compact className="h-8 sm:h-9" />
-
             {/* Notification Bell */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

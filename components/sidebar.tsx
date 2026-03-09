@@ -3,6 +3,7 @@
 import { LayoutDashboard, BarChart3, Brain, Settings, Activity, User, Menu, Power } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import type { PageType } from "@/components/dashboard"
 import { useLanguage } from "@/lib/language-provider"
 
@@ -52,6 +53,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggleCollapse
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 dark:bg-emerald-400/15 flex items-center justify-center border border-emerald-500/35 dark:border-emerald-300/35">
               <ThemeToggle />
             </div>
+            <LanguageSwitcher compact className="h-8 sm:h-10" />
           </div>
           <div className="flex items-center gap-2">
             {/* Close Menu Button */}
