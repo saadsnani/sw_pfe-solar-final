@@ -27,7 +27,7 @@ export function LanguageSwitcher({ className, compact = false }: LanguageSwitche
         <Button
           variant="ghost"
           className={cn(
-            "inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 text-slate-700 shadow-sm transition hover:bg-slate-200 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10",
+            "inline-flex items-center gap-1 rounded-full border border-emerald-200/70 bg-[linear-gradient(120deg,rgba(255,255,255,0.86),rgba(236,253,248,0.82),rgba(233,247,255,0.8))] text-slate-700 shadow-sm transition hover:bg-emerald-500/15 dark:border-emerald-400/25 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-emerald-400/15",
             compact ? "h-8 px-2" : "h-9 px-2.5",
             className,
           )}

@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Geist_Mono } from "next/font/google"
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/lib/theme-provider"
 import { AlertProvider } from "@/lib/alert-provider"
@@ -8,8 +8,8 @@ import { LanguageProvider } from "@/lib/language-provider"
 import { AlertContainer } from "@/components/alert-container"
 import "./globals.css"
 
-const _inter = Inter({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-plus-jakarta" })
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
   title: "Smart EMS - Intelligent Energy Management",
@@ -70,7 +70,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className="font-sans antialiased">
+      <body className={`${plusJakarta.variable} ${geistMono.variable} font-sans antialiased`}>
         <LanguageProvider>
           <AlertProvider>
             <ThemeProvider>

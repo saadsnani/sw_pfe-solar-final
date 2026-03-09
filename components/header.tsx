@@ -52,14 +52,14 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
   return (
     <>
       {/* Fixed Header - Reduced height for mobile */}
-      <header className="fixed top-0 left-0 right-0 z-40 h-[72px] sm:h-[84px] md:h-[96px] border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-3 sm:px-4 md:px-6">
+      <header className="fixed top-0 left-0 right-0 z-40 h-[72px] sm:h-[84px] md:h-[96px] border-b border-emerald-200/70 dark:border-emerald-400/20 bg-[linear-gradient(125deg,rgba(255,255,255,0.94),rgba(240,253,248,0.9)_48%,rgba(235,247,255,0.9))] dark:bg-[linear-gradient(125deg,rgba(2,6,23,0.88),rgba(6,78,59,0.32)_52%,rgba(14,116,144,0.3))] shadow-[0_10px_30px_rgba(15,23,42,0.12)] backdrop-blur-xl px-3 sm:px-4 md:px-6">
         <div className="flex items-center h-full w-full justify-between gap-2 sm:gap-3">
           {/* Left - Menu/Back Button & Logo */}
           <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 min-w-0 flex-1">
             {/* Menu/Back Button */}
             <button
               onClick={showBackButton ? onBackClick : onMenuClick}
-              className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors flex-shrink-0"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-emerald-500/15 dark:hover:bg-emerald-400/15 transition-colors flex-shrink-0"
               aria-label={showBackButton ? t("header.aria.goBack") : t("header.aria.openMenu")}
             >
               {showBackButton ? (
@@ -70,7 +70,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             </button>
 
             {/* Logo & School Info - Expanded */}
-            <div className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shadow-md">
+            <div className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(236,253,248,0.86),rgba(233,247,255,0.84))] dark:bg-white/5 border border-emerald-300/55 dark:border-emerald-400/25 flex items-center justify-center shadow-md">
               <Image
                 src="/images.jpg"
                 alt="EST Logo"
@@ -113,7 +113,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             {/* Notification Bell */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors relative">
+                <button className="p-2 rounded-lg hover:bg-emerald-500/15 dark:hover:bg-emerald-400/15 transition-colors relative">
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400" />
                   {notifications.length > 0 && (
                     <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
@@ -145,7 +145,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10">
+                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 h-8 sm:h-10 rounded-full border border-emerald-200/70 dark:border-emerald-400/25 bg-[linear-gradient(120deg,rgba(255,255,255,0.86),rgba(236,253,248,0.82),rgba(233,247,255,0.8))] dark:bg-white/5 hover:bg-emerald-500/15 dark:hover:bg-emerald-400/15">
                   <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md flex-shrink-0">
                     <User className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
                   </div>

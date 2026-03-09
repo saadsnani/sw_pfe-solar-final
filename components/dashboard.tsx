@@ -88,7 +88,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen app-shell-bg">
       <Sidebar
         currentPage={currentPage}
         onPageChange={(page) => {
@@ -100,7 +100,7 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
         userEmail={userEmail}
       />
       
-      <div className="flex flex-col min-h-screen">
+      <div className="relative flex min-h-screen flex-col">
         <Header 
           onLogout={onLogout} 
           userEmail={userEmail}
@@ -108,8 +108,10 @@ export function Dashboard({ onLogout, userEmail }: DashboardProps) {
           isMenuOpen={!sidebarCollapsed}
           showBackButton={false}
         />
-        <main className="flex-1 p-2 sm:p-3 md:p-6 overflow-auto overflow-x-hidden w-full">
-          {renderPage()}
+        <main className="relative z-10 flex-1 w-full overflow-auto overflow-x-hidden px-2 pb-4 pt-[82px] sm:px-3 sm:pb-6 sm:pt-[94px] md:px-6 md:pb-8 md:pt-[108px]">
+          <div className="mx-auto w-full max-w-[1500px] rounded-[28px] border border-emerald-200/60 bg-white/45 p-1.5 shadow-[0_22px_48px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-emerald-400/20 dark:bg-slate-950/35 md:p-2.5">
+            {renderPage()}
+          </div>
         </main>
       </div>
     </div>
