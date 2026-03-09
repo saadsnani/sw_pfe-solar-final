@@ -5,7 +5,6 @@ import { Brain, Hand, Power, ToggleLeft, RadioTower, Lightbulb, PlugZap, Circle,
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { useRelayState } from "@/hooks/use-relay-state"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
 
@@ -105,11 +104,6 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [statusMessage, setStatusMessage] = useState("")
   const [lastUpdate, setLastUpdate] = useState<string | null>(null)
-  const [authChecked, setAuthChecked] = useState(false)
-  const [authConfigured, setAuthConfigured] = useState(true)
-  const [isAuthorized, setIsAuthorized] = useState(false)
-  const [authPassword, setAuthPassword] = useState("")
-  const [authLoading, setAuthLoading] = useState(false)
 
   const {
     relayOn: inverter,
@@ -173,11 +167,6 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   }, [relays])
 
   const applyRelayState = useCallback(async (requestedRelays: RelayState, sourceLabel: string) => {
-    if (!isAuthorized) {
-      setStatusMessage("🔒 Déverrouillez d'abord le contrôle")
-      return
-    }
-
     const nextRelays = enforceRelayDependency(requestedRelays)
     const currentRelays = relays
 
@@ -204,7 +193,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
     } finally {
       setIsSaving(false)
     }
-  }, [isAuthorized, mode, relays, persistControlSnapshot])
+  }, [mode, relays, persistControlSnapshot])
 
   useEffect(() => {
     if (!isLoading) {
@@ -235,86 +224,8 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
     }
   }, [realtimeError])
 
-  useEffect(() => {
-    let cancelled = false
-
-    const checkSession = async () => {
-      try {
-        const response = await fetch("/api/control-auth", { cache: "no-store" })
-        const payload = (await response.json().catch(() => null)) as
-          | { success?: boolean; data?: { configured?: boolean; authenticated?: boolean } }
-          | null
-
-        if (cancelled) return
-
-        setAuthConfigured(Boolean(payload?.data?.configured ?? false))
-        setIsAuthorized(Boolean(payload?.data?.authenticated))
-      } catch (error) {
-        if (cancelled) return
-        const details = error instanceof Error ? error.message : "Unknown error"
-        setStatusMessage(`❌ Erreur auth: ${details}`)
-      } finally {
-        if (!cancelled) {
-          setAuthChecked(true)
-        }
-      }
-    }
-
-    void checkSession()
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const onUnlockControl = async () => {
-    if (!authPassword.trim() || authLoading) return
-
-    setAuthLoading(true)
-
-    try {
-      const response = await fetch("/api/control-auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password: authPassword }),
-      })
-
-      const payload = (await response.json().catch(() => null)) as { success?: boolean; error?: string } | null
-      if (!response.ok || !payload?.success) {
-        throw new Error(payload?.error || `Auth failed (${response.status})`)
-      }
-
-      setIsAuthorized(true)
-      setAuthPassword("")
-      setStatusMessage("🔓 Contrôle déverrouillé")
-    } catch (error) {
-      const details = error instanceof Error ? error.message : "Unknown error"
-      setStatusMessage(`❌ Accès refusé: ${details}`)
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  const onLockControl = async () => {
-    if (authLoading) return
-
-    setAuthLoading(true)
-    try {
-      await fetch("/api/control-auth", { method: "DELETE" })
-      setIsAuthorized(false)
-      setStatusMessage("🔒 Contrôle verrouillé")
-    } catch (error) {
-      const details = error instanceof Error ? error.message : "Unknown error"
-      setStatusMessage(`❌ Erreur lock: ${details}`)
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
   const onModeChange = async (nextMode: ControlMode) => {
-    if (!isAuthorized || isLoading || isSaving || authLoading) return
+    if (isLoading || isSaving) return
 
     setMode(nextMode)
     setIsSaving(true)
@@ -333,7 +244,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   }
 
   const onToggleRelay = async (key: keyof RelayState, checked: boolean) => {
-    if (!isAuthorized || mode !== "manual" || isLoading || isSaving || authLoading) return
+    if (mode !== "manual" || isLoading || isSaving) return
 
     const nextRelays = { ...relays, [key]: checked }
 
@@ -377,7 +288,7 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
   ]
 
   const activeRelayCount = [relays.inverter, relays.block1, relays.block2].filter(Boolean).length
-  const isBusy = isSaving || isLoading || authLoading || !isAuthorized
+  const isBusy = isSaving || isLoading
 
   return (
     <Card className="relative overflow-hidden bg-card/60 backdrop-blur-md border-border/50 shadow-[0_12px_36px_-12px_rgba(0,0,0,0.45)]">
@@ -388,50 +299,12 @@ export function RelayControlPanel({ sensors }: RelayControlPanelProps) {
             <Power className="w-5 h-5 text-primary" />
             Contrôle Relais Intelligent
           </CardTitle>
-          <Badge className={isAuthorized ? (mode === "ai" ? "bg-purple-600" : "bg-emerald-600") : "bg-amber-600"}>
-            {isAuthorized ? (mode === "ai" ? "Mode AI" : "Mode Manuel") : "Verrouillé"}
+          <Badge className={mode === "ai" ? "bg-purple-600" : "bg-emerald-600"}>
+            {mode === "ai" ? "Mode AI" : "Mode Manuel"}
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {!authChecked && (
-          <div className="rounded-lg border border-border p-3 text-sm text-muted-foreground">
-            Vérification de la session de contrôle...
-          </div>
-        )}
-
-        {authChecked && !authConfigured && (
-          <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-700">
-            Sécurité non configurée. Définissez `CONTROL_PANEL_PASSWORD` et `CONTROL_SESSION_SECRET` côté serveur.
-          </div>
-        )}
-
-        {authChecked && authConfigured && !isAuthorized && (
-          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 space-y-3">
-            <p className="text-sm text-amber-800">Entrez le mot de passe de contrôle pour activer les relais.</p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                type="password"
-                value={authPassword}
-                onChange={(event) => setAuthPassword(event.target.value)}
-                placeholder="Mot de passe contrôle"
-                disabled={authLoading}
-              />
-              <Button onClick={onUnlockControl} disabled={authLoading || !authPassword.trim()}>
-                Déverrouiller
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {authChecked && authConfigured && isAuthorized && (
-          <div className="flex justify-end">
-            <Button variant="outline" onClick={onLockControl} disabled={authLoading}>
-              Verrouiller contrôle
-            </Button>
-          </div>
-        )}
-
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="rounded-xl border border-border/70 bg-background/40 p-3 shadow-inner">
             <p className="text-xs text-muted-foreground">Relais Actifs</p>

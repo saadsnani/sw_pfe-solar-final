@@ -10,10 +10,6 @@ import {
   type SafetyOverrideResult,
   type SafetySensorDataInput,
 } from '@/lib/safety-override'
-import {
-  isControlSecurityConfigured,
-  isRelayControlRequestAuthorized,
-} from '@/lib/control-session'
 
 type ControlMode = 'manual' | 'ai'
 
@@ -191,26 +187,6 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!isControlSecurityConfigured()) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Control security is not configured. Set CONTROL_PANEL_PASSWORD and CONTROL_SESSION_SECRET.',
-        },
-        { status: 503 },
-      )
-    }
-
-    if (!isRelayControlRequestAuthorized(request)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Unauthorized control request',
-        },
-        { status: 401 },
-      )
-    }
-
     const body = await request.json()
     const currentRelayStateFromBody = body?.currentRelayState ?? {}
     const rawSensorData =
