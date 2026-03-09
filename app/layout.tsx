@@ -12,14 +12,18 @@ const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-pl
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: "Chmicha - Intelligent Energy Management",
+  title: "Smart EMS - Intelligent Energy Management",
   description: "Système Photovoltaïque Off-Grid Intelligent Assisté par IA",
   generator: "v0.app",
   icons: {
     icon: [
       {
-        url: "/chmicha-logo.svg",
-        type: "image/svg+xml",
+        url: "/icon-light-32x32.png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icon-dark-32x32.png",
+        media: "(prefers-color-scheme: dark)",
       },
       {
         url: "/icon.svg",
