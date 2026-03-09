@@ -24,8 +24,7 @@ interface HeaderProps {
 
 export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackButton = false, onBackClick }: HeaderProps) {
   const { t } = useLanguage()
-  const schoolLine1 = "UNIVERSITÉ SIDI MOHAMED BEN ABDELLAH"
-  const schoolLine2 = "ÉCOLE SUPÉRIEURE DE TECHNOLOGIE DE FÈS"
+  const schoolName = "ÉCOLE SUPÉRIEURE DE TECHNOLOGIE DE FÈS"
   const notifications: Array<{ id: number; messageKey: string; type: "warning" | "error" | "info" }> = [
     { id: 1, messageKey: "header.notification.batteryLow", type: "warning" },
   ]
@@ -61,19 +60,19 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                 priority
               />
             </div>
-            <div className="text-left leading-tight min-w-0 flex-1">
-              <div className="text-[10.5px] sm:text-[11.5px] md:text-xs lg:text-[13px] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight truncate" title={schoolLine1}>
-                {schoolLine1}
-              </div>
-              <div className="text-[10px] sm:text-[11px] md:text-[11px] lg:text-xs font-bold text-slate-900 dark:text-white leading-tight tracking-tight truncate" title={schoolLine2}>
-                {schoolLine2}
-              </div>
+            <div className="text-left min-w-0 flex-1">
+              <p
+                className="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] font-extrabold text-slate-900 dark:text-white leading-none tracking-tight whitespace-nowrap overflow-hidden text-ellipsis"
+                title={schoolName}
+              >
+                {schoolName}
+              </p>
             </div>
           </div>
 
           {/* Center - Project Info */}
-          <div className="flex-1 hidden md:flex items-center justify-center gap-3 lg:gap-6">
-            <div className="hidden lg:flex flex-col items-start text-xs md:text-sm leading-relaxed gap-1">
+          <div className="hidden xl:flex flex-1 items-center justify-center gap-3 lg:gap-6">
+            <div className="hidden xl:flex flex-col items-start text-xs md:text-sm leading-relaxed gap-1">
               <span className="text-muted-foreground">
                 {t("header.supervisedBy")} : <span className="text-foreground font-semibold">Mr. Abdelaziz FRI</span>
               </span>
@@ -124,7 +123,7 @@ export function Header({ onLogout, userEmail, onMenuClick, isMenuOpen, showBackB
                   <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md flex-shrink-0">
                     <User className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
                   </div>
-                  <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-foreground truncate max-w-[120px]">
+                  <span className="hidden xl:inline text-xs sm:text-sm font-semibold text-foreground truncate max-w-[120px]">
                     Saad Snani
                   </span>
                 </Button>
