@@ -91,6 +91,30 @@ function toErrorMessage(error: unknown): string {
   return "Unknown Firebase error"
 }
 
+function parseRelayBoolean(value: unknown, fallback: boolean): boolean {
+  if (typeof value === "boolean") {
+    return value
+  }
+
+  if (typeof value === "number") {
+    return value !== 0
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase()
+
+    if (normalized === "1" || normalized === "true" || normalized === "on") {
+      return true
+    }
+
+    if (normalized === "0" || normalized === "false" || normalized === "off") {
+      return false
+    }
+  }
+
+  return fallback
+}
+
 export function useRelayState(options: UseRelayStateOptions): UseRelayStateResult {
   const {
     provider = "rtdb",
@@ -134,7 +158,7 @@ export function useRelayState(options: UseRelayStateOptions): UseRelayStateResul
       const unsubscribe = onValue(
         relayRef,
         (snapshot) => {
-          setRelayOn(Boolean(snapshot.val()))
+          setRelayOn(parseRelayBoolean(snapshot.val(), initialValue))
           setLoading(false)
         },
         (listenerError) => {
@@ -159,7 +183,7 @@ export function useRelayState(options: UseRelayStateOptions): UseRelayStateResul
         }
 
         const rawValue = getNestedValue(snapshot.data(), firestoreFieldPath)
-        setRelayOn(Boolean(rawValue))
+        setRelayOn(parseRelayBoolean(rawValue, initialValue))
         setLoading(false)
       },
       (listenerError) => {

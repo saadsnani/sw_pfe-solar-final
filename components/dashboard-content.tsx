@@ -2,19 +2,16 @@
 "use client"
 const IS_DEMO = true
 
-import { useEffect, Suspense, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import dynamic from "next/dynamic"
 import { SystemSynoptic } from "@/components/system-synoptic"
 import { MetricCards } from "@/components/metric-cards"
 import { EnergyChart } from "@/components/energy-chart"
-import { AIInsightsPanel } from "@/components/ai-insights-panel"
-import { PowerForecastChart } from "@/components/PowerForecastChart"
 import { SystemStatusBoard } from "@/components/system-status-board"
 import { HealthReportCard } from "@/components/health-report-card"
 import { GridIntegrationStatus } from "@/components/grid-integration-status"
 import { EmergencyBanner } from "@/components/emergency-banner"
-import { AnalyticsPageEnhanced } from "@/components/analytics-page-enhanced"
 import { TemperatureDisplayCard } from "@/components/temperature-display-card"
-import { WeatherForecast } from "@/components/weather-forecast"
 import { createDefaultSystemState, createConnectedSensor } from "@/lib/sensor-connection"
 import type { SystemSensorsState } from "@/lib/sensor-connection"
 import {
@@ -23,47 +20,34 @@ import {
   normalizeEsp32RealtimeData,
   type Esp32RealtimeData,
 } from "@/lib/esp32-realtime"
-import { LocalNotifications } from "@capacitor/local-notifications"
 
 const FIREBASE_RTDB_URL =
   process.env.NEXT_PUBLIC_FIREBASE_RTDB_URL ||
   "https://fir-esp-16cb0-default-rtdb.europe-west1.firebasedatabase.app"
 
-
-// 🔔 Notification helper
-const sendNotification = async (title: string, body: string, id: number = Math.random()) => {
-  try {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      // Web notification
-      if (Notification.permission === "granted") {
-        new Notification(title, { body, icon: "/icon.png" })
-      } else if (Notification.permission !== "denied") {
-        const permission = await Notification.requestPermission()
-        if (permission === "granted") {
-          new Notification(title, { body, icon: "/icon.png" })
-        }
-      }
-    }
-    
-    // Mobile notification via Capacitor
-    try {
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: Math.floor(id),
-            title: title,
-            body: body,
-            schedule: { at: new Date(Date.now() + 1000) },
-          },
-        ],
-      })
-    } catch (e) {
-      console.log("Mobile notifications not available (web-only mode)")
-    }
-  } catch (error) {
-    console.error("Notification error:", error)
-  }
+function DeferredSectionSkeleton() {
+  return <div className="h-40 rounded-lg bg-muted animate-pulse" />
 }
+
+const AIInsightsPanel = dynamic(
+  () => import("@/components/ai-insights-panel").then((module) => module.AIInsightsPanel),
+  { loading: () => <DeferredSectionSkeleton /> },
+)
+
+const PowerForecastChart = dynamic(
+  () => import("@/components/PowerForecastChart").then((module) => module.PowerForecastChart),
+  { loading: () => <DeferredSectionSkeleton /> },
+)
+
+const AnalyticsPageEnhanced = dynamic(
+  () => import("@/components/analytics-page-enhanced").then((module) => module.AnalyticsPageEnhanced),
+  { loading: () => <DeferredSectionSkeleton /> },
+)
+
+const WeatherForecast = dynamic(
+  () => import("@/components/weather-forecast").then((module) => module.WeatherForecast),
+  { loading: () => <DeferredSectionSkeleton /> },
+)
 
 // Helper function to add natural fluctuation to existing value
 const fluctuate = (current: number, min: number, max: number, maxChange: number): number => {
@@ -105,6 +89,7 @@ export function DashboardContent() {
   const [energyHistory, setEnergyHistory] = useState<Array<{ time: string; production: number; consumption: number }>>([])
   const [temperatureReadings, setTemperatureReadings] = useState<DemoTemperatureReading[]>([])
   const [realtimeData, setRealtimeData] = useState<Esp32RealtimeData | null>(null)
+  const [showDeferredSections, setShowDeferredSections] = useState(false)
 
   // ✅ Convert simulated data to sensor state format (only used if IS_DEMO = true)
   const [sensors, setSensors] = useState<SystemSensorsState>(() => {
@@ -259,6 +244,24 @@ export function DashboardContent() {
     ? { current: latestTemperature, readings: temperatureReadings, isConnected: true }
     : undefined
 
+  useEffect(() => {
+    if (typeof globalThis === "undefined") {
+      return
+    }
+
+    if (typeof globalThis.requestIdleCallback === "function") {
+      const idleId = globalThis.requestIdleCallback(() => setShowDeferredSections(true), { timeout: 1200 })
+      return () => {
+        if (typeof globalThis.cancelIdleCallback === "function") {
+          globalThis.cancelIdleCallback(idleId)
+        }
+      }
+    }
+
+    const timeoutId = globalThis.setTimeout(() => setShowDeferredSections(true), 600)
+    return () => globalThis.clearTimeout(timeoutId)
+  }, [])
+
   return (
     <div className="space-y-6 w-full px-2 sm:px-4 md:px-8">
       <div className="relative z-20">
@@ -267,7 +270,7 @@ export function DashboardContent() {
 
       {/* System Synoptic - First */}
       <div className="relative z-10 mt-16">
-        <SystemSynoptic sensors={sensors} previewAllConnected={IS_DEMO} />
+        <SystemSynoptic sensors={sensors} />
       </div>
 
       {/* Metric Cards */}
@@ -295,19 +298,21 @@ export function DashboardContent() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        <AIInsightsPanel sensors={sensors} />
+        {showDeferredSections ? <AIInsightsPanel sensors={sensors} /> : <DeferredSectionSkeleton />}
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        <PowerForecastChart />
+        {showDeferredSections ? <PowerForecastChart /> : <DeferredSectionSkeleton />}
       </div>
 
       {/* Analytics */}
-      <AnalyticsPageEnhanced sensors={sensors} historicalData={energyHistory} />
+      {showDeferredSections ? (
+        <AnalyticsPageEnhanced sensors={sensors} historicalData={energyHistory} />
+      ) : (
+        <DeferredSectionSkeleton />
+      )}
 
-      <Suspense fallback={<div className="h-48 bg-muted rounded-lg animate-pulse" />}>
-        <WeatherForecast />
-      </Suspense>
+      {showDeferredSections ? <WeatherForecast /> : <DeferredSectionSkeleton />}
     </div>
   )
 }

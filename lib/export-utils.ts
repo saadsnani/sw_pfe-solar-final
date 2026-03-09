@@ -1,6 +1,3 @@
-import jsPDF from "jspdf"
-import html2canvas from "html2canvas"
-
 interface ExportOptions {
   filename: string
   title?: string
@@ -13,6 +10,12 @@ export async function exportToPDF(
   options: ExportOptions
 ): Promise<void> {
   try {
+    // Load heavy PDF dependencies only when export is requested.
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ])
+
     // Wait for fonts
     if (typeof (document as any).fonts?.ready !== "undefined") {
       await (document as any).fonts.ready.catch(() => {})
@@ -133,6 +136,24 @@ export function generateReportData(data: Record<string, unknown>): string {
   return JSON.stringify(data, null, 2)
 }
 
+function toExcelCell(value: unknown): string {
+  if (value === null || value === undefined) {
+    return ""
+  }
+
+  if (typeof value === "object") {
+    return JSON.stringify(value)
+  }
+
+  return String(value)
+}
+
+function toCsvRow(cells: string[]): string {
+  return cells
+    .map((cell) => `"${cell.replace(/"/g, '""')}"`)
+    .join(",")
+}
+
 export async function downloadJSON(
   data: Record<string, unknown>,
   filename: string
@@ -143,6 +164,25 @@ export async function downloadJSON(
   const link = document.createElement("a")
   link.href = url
   link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
+export async function downloadExcel(
+  data: Record<string, unknown>,
+  filename: string
+): Promise<void> {
+  const rows = Object.entries(data).map(([key, value]) => [key, toExcelCell(value)])
+  const csvLines = [toCsvRow(["Champ", "Valeur"]), ...rows.map((row) => toCsvRow(row))]
+  const csvContent = `\uFEFF${csvLines.join("\n")}`
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename.toLowerCase().endsWith(".csv") ? filename : `${filename}.csv`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

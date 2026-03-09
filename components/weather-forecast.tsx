@@ -226,28 +226,28 @@ export function WeatherForecast() {
 
   return (
     <section className="space-y-4">
-      <div className="rounded-[24px] border border-slate-200/70 bg-white/55 p-4 shadow-[0_12px_35px_rgba(15,23,42,0.12)] backdrop-blur-[15px] sm:p-5">
-        <div className="mb-4 rounded-[18px] border border-emerald-300/70 bg-[linear-gradient(165deg,rgba(236,253,245,0.94),rgba(255,255,255,0.86)_54%,rgba(224,242,254,0.78))] p-4 shadow-[0_12px_24px_rgba(16,185,129,0.12)] sm:p-5">
+      <div className="rounded-[24px] border border-slate-200/70 bg-white/55 p-4 shadow-[0_12px_35px_rgba(15,23,42,0.12)] backdrop-blur-[15px] dark:border-emerald-400/20 dark:bg-[linear-gradient(165deg,rgba(15,23,42,0.62),rgba(6,78,59,0.36)_52%,rgba(14,116,144,0.34))] dark:shadow-[0_18px_36px_rgba(2,6,23,0.45)] sm:p-5">
+        <div className="mb-4 rounded-[18px] border border-emerald-300/70 bg-[linear-gradient(165deg,rgba(236,253,245,0.94),rgba(255,255,255,0.86)_54%,rgba(224,242,254,0.78))] p-4 shadow-[0_12px_24px_rgba(16,185,129,0.12)] dark:border-emerald-400/30 dark:bg-[linear-gradient(165deg,rgba(6,78,59,0.48),rgba(15,23,42,0.78)_58%,rgba(14,116,144,0.46))] dark:shadow-[0_14px_26px_rgba(2,6,23,0.38)] sm:p-5">
           <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
             <div className="space-y-3">
-              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-emerald-700">Autonomie Estimee (IA)</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-emerald-700 dark:text-emerald-300">Autonomie Estimee (IA)</p>
 
               <div className="flex flex-wrap items-end gap-2">
-                <p className="text-4xl font-black leading-none text-emerald-800 sm:text-5xl">
+                <p className="text-4xl font-black leading-none text-emerald-800 dark:text-emerald-100 sm:text-5xl">
                   {autonomyHours.toFixed(1)}h
                 </p>
-                <span className="rounded-full border border-emerald-400/70 bg-emerald-500/15 px-2.5 py-1 text-xs font-bold uppercase tracking-[0.1em] text-emerald-700">
+                <span className="rounded-full border border-emerald-400/70 bg-emerald-500/15 px-2.5 py-1 text-xs font-bold uppercase tracking-[0.1em] text-emerald-700 dark:border-emerald-300/45 dark:bg-emerald-400/18 dark:text-emerald-200">
                   {autonomyBand}
                 </span>
               </div>
 
-              <p className="text-xs font-medium text-emerald-700">
+              <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                 Ville: {selectedCity}
                 {" • "}
                 {periodLabel}
               </p>
 
-              <div className="h-2.5 w-full overflow-hidden rounded-full border border-emerald-300/60 bg-white/70">
+              <div className="h-2.5 w-full overflow-hidden rounded-full border border-emerald-300/60 bg-white/70 dark:border-emerald-300/35 dark:bg-slate-900/55">
                 <span
                   className="block h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500"
                   style={{ width: `${autonomyProgress.toFixed(0)}%` }}
@@ -255,29 +255,29 @@ export function WeatherForecast() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700">Solar Factor</p>
-                  <p className="text-sm font-bold text-emerald-900">{cityData.solarFactor.toFixed(2)}</p>
+                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2 dark:border-emerald-300/35 dark:bg-slate-900/55">
+                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Solar Factor</p>
+                  <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">{cityData.solarFactor.toFixed(2)}</p>
                 </div>
-                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2">
-                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700">Disponibilite</p>
-                  <p className="text-sm font-bold text-emerald-900">{solarAvailability.toFixed(2)}</p>
+                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2 dark:border-emerald-300/35 dark:bg-slate-900/55">
+                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Disponibilite</p>
+                  <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">{solarAvailability.toFixed(2)}</p>
                 </div>
-                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2 col-span-2 sm:col-span-1">
-                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700">Base Pleine</p>
-                  <p className="text-sm font-bold text-emerald-900">{baseAutonomyHours.toFixed(1)}h</p>
+                <div className="rounded-lg border border-emerald-300/60 bg-white/70 px-2.5 py-2 col-span-2 dark:border-emerald-300/35 dark:bg-slate-900/55 sm:col-span-1">
+                  <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Base Pleine</p>
+                  <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">{baseAutonomyHours.toFixed(1)}h</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-300/70 bg-white/72 p-4 text-sm text-emerald-900">
+            <div className="rounded-xl border border-emerald-300/70 bg-white/72 p-4 text-sm text-emerald-900 dark:border-emerald-300/35 dark:bg-slate-900/58 dark:text-emerald-100">
               <p className="font-semibold flex items-center gap-2">
                 <Brain className="h-4 w-4" />
                 Explication Autonomie
               </p>
-              <p className="text-xs mt-2 leading-relaxed text-emerald-800">{autonomyExplanation}</p>
+              <p className="text-xs mt-2 leading-relaxed text-emerald-800 dark:text-emerald-200">{autonomyExplanation}</p>
 
-              <div className="mt-3 space-y-1.5 text-xs text-emerald-700">
+              <div className="mt-3 space-y-1.5 text-xs text-emerald-700 dark:text-emerald-300">
                 <p>
                   Formule: (Battery 10kWh / Load 2kWh) x SolarFactor x Disponibilite
                 </p>
@@ -307,9 +307,9 @@ export function WeatherForecast() {
           </div>
 
           <div className="relative w-full max-w-[380px]">
-            <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-300" />
             <select
-              className="w-full appearance-none rounded-[14px] border border-slate-300/70 bg-white/70 py-2 pl-9 pr-9 text-sm text-foreground outline-none transition-colors focus:border-emerald-500/60"
+              className="w-full appearance-none rounded-[14px] border border-slate-300/70 bg-white/70 py-2 pl-9 pr-9 text-sm text-foreground outline-none transition-colors focus:border-emerald-500/60 dark:border-emerald-300/35 dark:bg-slate-900/55 dark:text-slate-100 dark:focus:border-emerald-400/55"
               value={selectedCity}
               onChange={(event) => handleCitySelect(event.target.value)}
               aria-label="Selectionner la ville"
@@ -320,7 +320,7 @@ export function WeatherForecast() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-300" />
           </div>
         </div>
 
@@ -330,28 +330,28 @@ export function WeatherForecast() {
               key={`${selectedCity}-${day.day}-${index}`}
               className={`rounded-[18px] border p-3 text-center ${
                 index === 0
-                  ? "border-emerald-300/80 bg-emerald-50/70 shadow-[0_8px_18px_rgba(16,185,129,0.18)]"
-                  : "border-slate-200/70 bg-white/75"
+                  ? "border-emerald-300/80 bg-emerald-50/70 shadow-[0_8px_18px_rgba(16,185,129,0.18)] dark:border-emerald-300/45 dark:bg-emerald-950/38 dark:shadow-[0_10px_20px_rgba(2,6,23,0.35)]"
+                  : "border-slate-200/70 bg-white/75 dark:border-emerald-300/25 dark:bg-slate-900/52"
               }`}
             >
-              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-700">{day.day}</p>
-              <p className="text-xs font-semibold text-slate-500">({day.date})</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-100">{day.day}</p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">({day.date})</p>
 
               <div className="my-2 flex justify-center">{getWeatherIcon(day.condition)}</div>
 
-              <p className="text-xl font-black text-slate-900">
+              <p className="text-xl font-black text-slate-900 dark:text-slate-100">
                 {day.high}
                 {"° / "}
                 {day.low}
                 °
               </p>
-              <p className="text-sm font-semibold text-slate-600">{day.precipitation}% Pluie</p>
-              <p className="mt-1 text-xs font-medium text-slate-500">{day.condition}</p>
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-200">{day.precipitation}% Pluie</p>
+              <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-300">{day.condition}</p>
             </article>
           ))}
         </div>
 
-        <p className="mt-3 text-xs text-slate-500">{status}</p>
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-300">{status}</p>
       </div>
     </section>
   )
