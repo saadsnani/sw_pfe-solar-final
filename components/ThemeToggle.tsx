@@ -53,7 +53,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors flex-shrink-0"
+      className="p-1 rounded-lg hover:bg-emerald-500/15 dark:hover:bg-emerald-400/15 transition-colors flex-shrink-0"
       aria-label="Toggle theme"
       title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
     >

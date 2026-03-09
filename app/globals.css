@@ -6,24 +6,24 @@
 /* Light and Dark theme for industrial IoT dashboard with neon green energy accents */
 :root {
   /* Light Mode Colors */
-  --background: oklch(0.98 0 0);
-  --foreground: oklch(0.15 0.01 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 260);
+  --background: oklch(0.982 0.01 188);
+  --foreground: oklch(0.2 0.014 248);
+  --card: oklch(0.992 0.012 186);
+  --card-foreground: oklch(0.2 0.014 248);
+  --popover: oklch(0.994 0.011 190);
+  --popover-foreground: oklch(0.2 0.014 248);
   --primary: oklch(0.55 0.2 145);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.95 0.005 260);
-  --secondary-foreground: oklch(0.15 0.01 260);
-  --muted: oklch(0.95 0.005 260);
-  --muted-foreground: oklch(0.45 0.01 260);
+  --secondary: oklch(0.965 0.012 202);
+  --secondary-foreground: oklch(0.2 0.014 248);
+  --muted: oklch(0.962 0.01 205);
+  --muted-foreground: oklch(0.43 0.014 242);
   --accent: oklch(0.55 0.2 145);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.6 0.25 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.85 0.005 260);
-  --input: oklch(0.95 0.005 260);
+  --border: oklch(0.88 0.012 220);
+  --input: oklch(0.966 0.012 205);
   --ring: oklch(0.55 0.2 145);
   --chart-1: oklch(0.55 0.2 145);
   --chart-2: oklch(0.6 0.15 60);
@@ -31,13 +31,13 @@
   --chart-4: oklch(0.5 0.15 220);
   --chart-5: oklch(0.45 0.12 280);
   --radius: 0.75rem;
-  --sidebar: oklch(0.98 0 0);
-  --sidebar-foreground: oklch(0.15 0.01 260);
+  --sidebar: oklch(0.988 0.01 188);
+  --sidebar-foreground: oklch(0.2 0.014 248);
   --sidebar-primary: oklch(0.55 0.2 145);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.95 0.005 260);
-  --sidebar-accent-foreground: oklch(0.15 0.01 260);
-  --sidebar-border: oklch(0.85 0.005 260);
+  --sidebar-accent: oklch(0.965 0.012 202);
+  --sidebar-accent-foreground: oklch(0.2 0.014 248);
+  --sidebar-border: oklch(0.88 0.012 220);
   --sidebar-ring: oklch(0.55 0.2 145);
 
   /* Custom energy colors */
@@ -51,43 +51,43 @@
 
 .dark {
   /* Dark Mode Colors */
-  --background: oklch(0.11 0.005 260);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.14 0.005 260);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.14 0.005 260);
-  --popover-foreground: oklch(0.95 0 0);
+  --background: oklch(0.145 0.018 242);
+  --foreground: oklch(0.94 0.012 176);
+  --card: oklch(0.2 0.024 230);
+  --card-foreground: oklch(0.94 0.012 176);
+  --popover: oklch(0.19 0.022 228);
+  --popover-foreground: oklch(0.94 0.012 176);
   --primary: oklch(0.75 0.2 145);
   --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.2 0.005 260);
-  --secondary-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.2 0.005 260);
-  --muted-foreground: oklch(0.65 0 0);
+  --secondary: oklch(0.235 0.018 226);
+  --secondary-foreground: oklch(0.94 0.012 176);
+  --muted: oklch(0.23 0.016 228);
+  --muted-foreground: oklch(0.74 0.014 196);
   --accent: oklch(0.75 0.2 145);
   --accent-foreground: oklch(0.1 0 0);
   --destructive: oklch(0.6 0.25 25);
   --destructive-foreground: oklch(0.95 0 0);
-  --border: oklch(0.25 0.01 260);
-  --input: oklch(0.18 0.005 260);
+  --border: oklch(0.32 0.024 208);
+  --input: oklch(0.22 0.02 224);
   --ring: oklch(0.75 0.2 145);
   --chart-1: oklch(0.75 0.2 145);
   --chart-2: oklch(0.7 0.15 60);
   --chart-3: oklch(0.65 0.2 25);
   --chart-4: oklch(0.6 0.15 220);
   --chart-5: oklch(0.55 0.12 280);
-  --sidebar: oklch(0.09 0.005 260);
-  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar: oklch(0.135 0.018 240);
+  --sidebar-foreground: oklch(0.94 0.012 176);
   --sidebar-primary: oklch(0.75 0.2 145);
   --sidebar-primary-foreground: oklch(0.1 0 0);
-  --sidebar-accent: oklch(0.18 0.005 260);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.25 0.01 260);
+  --sidebar-accent: oklch(0.2 0.018 228);
+  --sidebar-accent-foreground: oklch(0.94 0.012 176);
+  --sidebar-border: oklch(0.3 0.022 210);
   --sidebar-ring: oklch(0.75 0.2 145);
 }
 
 @theme inline {
-  --font-sans: "Inter", "Inter Fallback", system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
+  --font-sans: var(--font-plus-jakarta), "Inter", "Inter Fallback", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "Geist Mono Fallback", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -138,7 +138,36 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at 12% 10%, oklch(0.82 0.135 154 / 0.18), transparent 34%),
+      radial-gradient(circle at 88% 8%, oklch(0.8 0.11 228 / 0.16), transparent 34%),
+      radial-gradient(circle at 50% 98%, oklch(0.88 0.11 96 / 0.13), transparent 36%),
+      linear-gradient(144deg, oklch(0.992 0.008 172), oklch(0.985 0.01 220) 56%, oklch(0.976 0.012 190));
+    background-attachment: fixed;
   }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at 14% 8%, oklch(0.56 0.16 154 / 0.24), transparent 33%),
+      radial-gradient(circle at 86% 10%, oklch(0.56 0.12 228 / 0.22), transparent 35%),
+      radial-gradient(circle at 52% 96%, oklch(0.55 0.12 96 / 0.16), transparent 37%),
+      linear-gradient(148deg, oklch(0.155 0.02 244), oklch(0.16 0.022 202) 52%, oklch(0.145 0.02 222));
+  }
+}
+
+.app-shell-bg {
+  background-image:
+    radial-gradient(circle at 8% 4%, oklch(0.84 0.12 154 / 0.16), transparent 30%),
+    radial-gradient(circle at 92% 0%, oklch(0.84 0.1 228 / 0.15), transparent 30%),
+    linear-gradient(150deg, oklch(0.988 0.01 178), oklch(0.98 0.012 222) 52%, oklch(0.974 0.014 190));
+  background-attachment: fixed;
+}
+
+.dark .app-shell-bg {
+  background-image:
+    radial-gradient(circle at 12% 8%, oklch(0.54 0.16 154 / 0.22), transparent 30%),
+    radial-gradient(circle at 86% 4%, oklch(0.54 0.12 228 / 0.2), transparent 30%),
+    linear-gradient(155deg, oklch(0.148 0.022 246), oklch(0.145 0.024 198) 48%, oklch(0.142 0.02 222));
 }
 
 /* Energy flow animation */
