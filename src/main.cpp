@@ -2,12 +2,12 @@
 #include <HTTPClient.h>
 
 // WiFi credentials
-const char* ssid = "SS2";
-const char* password = "00000000";
+const char* ssid = "ssss";
+const char* password = "01010101";
 
 // Firebase test endpoint
 const char* firebaseHost = "https://fir-esp-16cb0-default-rtdb.europe-west1.firebasedatabase.app";
-const char* firebasePath = "/sensorReadings.json"; // t9dr tbdlha l path li bghiti
+const char* firebasePath = "/allData.json"; // kolchi yb9a f dossier wahd
 
 void setup() {
   Serial.begin(115200);
@@ -19,14 +19,25 @@ void setup() {
     Serial.print(".");
   }
   Serial.println(" Connected!");
+}
 
+void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     String url = String(firebaseHost) + String(firebasePath);
     http.begin(url);
     http.addHeader("Content-Type", "application/json");
-    String jsonPayload = "{\"temperature\":36.5, \"humidity\":76.7, \"source\":\"esp32_test\"}";
-    int httpResponseCode = http.PUT(jsonPayload); // PUT katbdl l data, POST katzid
+
+    // Generate random temperature and humidity
+    float temperature = random(200, 400) / 10.0; // 20.0 to 40.0
+    float humidity = random(300, 900) / 10.0;    // 30.0 to 90.0
+
+    String jsonPayload = "{";
+    jsonPayload += "\"temperature\":" + String(temperature, 1) + ", ";
+    jsonPayload += "\"humidity\":" + String(humidity, 1) + ", ";
+    jsonPayload += "\"source\":\"esp32_test\"}";
+
+    int httpResponseCode = http.POST(jsonPayload); // POST kayzid entry jdida f allData
 
     if (httpResponseCode > 0) {
       Serial.print("HTTP Response code: ");
@@ -38,8 +49,5 @@ void setup() {
     }
     http.end();
   }
-}
-
-void loop() {
-  // ma kayn walo hna, test f setup
+  delay(5000); // update every 5 seconds
 }
