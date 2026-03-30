@@ -192,11 +192,11 @@ export function DashboardContent() {
       production: createConnectedSensor(simulatedData.production),
       consumption: createConnectedSensor(simulatedData.consumption),
       temperature: createConnectedSensor(simulatedData.temperature),
-      humidity: createConnectedSensor(52), // Valeur fixe
-      solarVoltage: createConnectedSensor(simulatedData.solarVoltage),
-      solarCurrent: createConnectedSensor(simulatedData.solarCurrent),
-      gridVoltage: createConnectedSensor(220), // Valeur fixe
-      gridFrequency: createConnectedSensor(50), // Valeur fixe
+  humidity: createConnectedSensor(52), // Valeur fixe
+  solarVoltage: createConnectedSensor(simulatedData.solarVoltage),
+  solarCurrent: createConnectedSensor(simulatedData.solarCurrent),
+  gridVoltage: createConnectedSensor(220), // Valeur fixe
+  gridFrequency: createConnectedSensor(50), // Valeur fixe
     })
   }, [simulatedData])
 
@@ -297,8 +297,8 @@ export function DashboardContent() {
         <DeferredSectionSkeleton />
       )}
 
-      {/* WeatherForecast désactivé car composant manquant */}
-      {/* {showDeferredSections ? <WeatherForecast /> : <DeferredSectionSkeleton />} */}
+  {/* WeatherForecast désactivé car composant manquant */}
+  {/* {showDeferredSections ? <WeatherForecast /> : <DeferredSectionSkeleton />} */}
     </div>
   )
 }

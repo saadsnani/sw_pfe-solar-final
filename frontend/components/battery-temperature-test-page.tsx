@@ -53,7 +53,11 @@ export function BatteryTemperatureTestPage() {
 
     try {
       for (let i = 0; i < 10; i++) {
+<<<<<<< HEAD
         const temp = 40 // Valeur fixe pour éviter l'aléatoire
+=======
+        const temp = 20 + Math.random() * 40
+>>>>>>> 4ae30edf5152de3cc8da60822ced882b6c6cea8f
         await fetch("/api/sensor-data", {
           method: "POST",
           headers: {
